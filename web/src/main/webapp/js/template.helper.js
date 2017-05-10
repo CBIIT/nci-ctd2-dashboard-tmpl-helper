@@ -771,6 +771,10 @@ $ctd2.TempObservationView = Backbone.View.extend({
             };
             var obvTemp = this.template(cellModel);
             $(this.el).append(obvTemp);
+            var uploaded = $(this.el).find(".uploaded");
+            $(this.el).find("input").change(function() {
+                $(uploaded).text("");
+            } );
         }
 
     }
@@ -984,6 +988,9 @@ $ctd2.getArray = function (searchTag) {
     return s;
 };
 
+$ctd2.UPLOAD_SIZE_LIMIT = 10485760; // 10 MB
+$ctd2.UPLOAD_TYPES_ALLOWED = ['image/png', 'image/jpeg', 'application/pdf', 'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 $ctd2.observationArray = [];
 $ctd2.getObservations = function () {
     var columns = $(".observation-header").length / 2;
@@ -1010,12 +1017,20 @@ $ctd2.getObservations = function () {
                         savebutton.removeAttr("disabled");
                         $ctd2.dataReady = true;
                     }, false);
-                    if (file) {
+                    var file_size = file.size;
+                    var file_type = file.type;
+                    if(file_size>$ctd2.UPLOAD_SIZE_LIMIT) { 
+                        $ctd2.showAlertMessage('Size of file '+file.name+' is '+file_size+' bytes and over the allowed limit, so it is ignored.');
+                        $ctd2.observationArray[j * rows + i] = "";
+                        $(c).val("");
+                    } else if (!$ctd2.UPLOAD_TYPES_ALLOWED.includes(file_type)) {
+                        $ctd2.showAlertMessage('Type of file '+file.name+' is "'+file_type+'" and not allowed to be uploaded, so it is ignored.');
+                        $ctd2.observationArray[j * rows + i] = "";
+                        $(c).val("");
+                    } else {
                         $ctd2.dataReady = false;
                         savebutton.attr("disabled", "disabled");
                         reader.readAsDataURL(file);
-                    } else {
-                        console.log("NEVER HAPPEN. TODO: simplify this.");
                     }
                 }
             }
