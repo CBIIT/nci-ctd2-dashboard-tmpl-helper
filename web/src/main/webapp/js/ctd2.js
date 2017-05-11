@@ -3183,7 +3183,7 @@
             "cnkb-result": "showCnkbResult", 
             "gene-cart-help": "showGeneCartHelp",
             "help-navigate": "helpNavigate",
-            "*actions": "home"
+            "*actions": "showTemplateHelper"
         },
 
         home: function(actions) {
