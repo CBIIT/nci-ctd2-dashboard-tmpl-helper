@@ -465,7 +465,11 @@ public class TemplateController {
             }
             for(int j=0; j<evd.length; j++) {
                 cell = row.createCell(subjects.length+j+4);
-                cell.setCellValue( obv[index] );
+                String observationData = obv[index];
+                if(valueType[j].equalsIgnoreCase("file")) {
+                    observationData = observationData.substring(observationData.lastIndexOf(File.separator)+1);
+                }
+                cell.setCellValue( observationData );
                 index++;
             }
         }
