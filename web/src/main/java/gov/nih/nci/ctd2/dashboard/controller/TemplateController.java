@@ -214,7 +214,21 @@ public class TemplateController {
                         if(index<previousObservations.length)observations[index] = previousObservations[index];
                         continue; // prevent later null pointer exception
                     }
-                    String filename = uploadLocation + obv.substring(0, obv.indexOf(":"));
+                    if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing
+                        uploadLocation = uploadLocation + File.separator;
+                    }
+                    Integer centerId = template.getSubmissionCenter().getId();
+                    String directoryName = uploadLocation + centerId + File.separator + templateId;
+                    File directory = new File(directoryName);
+                    boolean okDirectory = directory.isDirectory();
+                    if(!directory.exists()) {
+                        okDirectory = directory.mkdirs();
+                    }
+                    if(!okDirectory) {
+                        return new ResponseEntity<String>("SubmissionTemplate " + templateId 
+                            + " NOT updated because the subdirectory "+directoryName+" cannot be created", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                    String filename = directoryName + File.separator + obv.substring(0, obv.indexOf(":"));
                     FileOutputStream stream = null;
                     try {
                         byte[] bytes = DatatypeConverter.parseBase64Binary(obv.substring( obv.indexOf("base64:")+7 ));

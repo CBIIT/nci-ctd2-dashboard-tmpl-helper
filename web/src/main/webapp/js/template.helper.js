@@ -755,7 +755,9 @@ $ctd2.TempObservationView = Backbone.View.extend({
             var obvContent = obvModel.observations[column];
             var u = '';
             if (obvModel.obvsType == 'file') {
-                if (obvContent === undefined || obvContent == null || obvContent == "undefined") {
+                if (obvContent === undefined || obvContent == null || obvContent == "undefined"
+                    || (obvContent.length>200 && obvContent.includes("base64:"))) {
+                    // don't display if it is the content intead of the filename
                 } else {
                     var i = obvContent.lastIndexOf('\\');
                     if (i < 0) i = obvContent.lastIndexOf('/');
