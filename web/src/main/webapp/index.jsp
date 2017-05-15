@@ -8,7 +8,7 @@
             .getWebApplicationContext(application);
     String dataURL = (String) context.getBean("dataURL");
     Integer maxNumOfObservations = (Integer) context.getBean("maxNumberOfEntities");
-    String dashboardReleaseVersion = (String) context.getBean("dashboardReleaseVersion");
+    String submissionBuilderVersion = (String) context.getBean("submissionBuilderVersion");
 %><!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -171,7 +171,7 @@
         <!-- FOOTER -->
         <footer>
             <div style="font-size:14px; font-weight:bold; margin-bottom:10px;">
-                Dashboard Release <%=dashboardReleaseVersion%>
+                Submission Builder <%=submissionBuilderVersion%>
             </div>
             <div style="font-size:14px; margin-bottom:10px;">
                 The CTD<sup>2</sup> Dashboard was created and developed by the CTD<sup>2</sup> Network Centers at the Broad Institute (Paul A. Clemons, Vlado Dančik, Stuart L. Schreiber),
