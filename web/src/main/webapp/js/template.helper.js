@@ -881,6 +881,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
                     filePath: '', // TODO when needed
                     mimeType: '', // TODO add when needed
                     url: '', // TODO add when needed
+                    numericValue: observations[totalRows * obvIndex + subjectColumns.length + i], // This is put in the Details column in the preview.
                 },
                 id: i, // TODO usage?
                 observedEvidenceRole: {
