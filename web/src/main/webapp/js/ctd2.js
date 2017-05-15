@@ -8,7 +8,7 @@
     var rightSep = ">";
 
     // To make URL constructing more configurable
-    var CORE_API_URL = "./";
+    var CORE_API_URL = "./dashboard/";
 
     // This is for the moustache-like templates
     // prevents collisions with JSP tags <%...%>
@@ -240,7 +240,7 @@
             $('#myCarousel').carousel('pause');
             $("#omni-search-form").submit(function() {
                 var searchTerm = $("#omni-search").val();
-                window.location.hash = "search/" + searchTerm;
+                window.location = "/dashboard/#search/" + searchTerm;
                 return false;
             });
 
@@ -3363,7 +3363,7 @@
 
         $("#omnisearch").submit(function() {
             var searchTerm = $("#omni-input").val();
-            window.location.hash = "search/" + encodeURI(encodeURIComponent(searchTerm));
+            window.location = "/dashboard/#search/" + encodeURI(encodeURIComponent(searchTerm));
             return false;
         });
 

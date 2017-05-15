@@ -104,17 +104,17 @@
             </a>
             <div class="nav-collapse collapse">
               <ul id="nav" class="nav">
-                <li><a id="navlink-dashboard" class="navlink" href="#">CTD<sup>2</sup> Dashboard</a></li>
-                <li><a id="navlink-centers" class="navlink" href="#centers">Centers</a></li>
+                <li><a id="navlink-dashboard" class="navlink" href="/dashboard/#">CTD<sup>2</sup> Dashboard</a></li>
+                <li><a id="navlink-centers" class="navlink" href="/dashboard/#centers">Centers</a></li>
                 <li class="dropdown">
-                      <a class="dropdown-toggle navlink" href="#" data-toggle="dropdown">Resources <b class="caret"></b></a>
+                      <a class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Resources <b class="caret"></b></a>
                       <ul class="dropdown-menu">
                           <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2">CTD<sup>2</sup> Home Page</a></li>
                           <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/publications">Publications</a></li>
                           <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/data-portal">Data Portal - Downloads</a></li>
                           <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/analytical-tools">Analytical Tools</a></li>
                           <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/supported-reagents">Supported Reagents</a></li>
-                          <li class="dropdown-submenu"><a tabindex="-1" href="#">Outside Resources</a>
+                          <li class="dropdown-submenu"><a tabindex="-1" href="/dashboard/#">Outside Resources</a>
                                 <ul class="dropdown-menu">
                                     <li><a target="_blank" href="http://www.lincsproject.org/">LINCS</a></li>
                                 </ul>
@@ -122,19 +122,19 @@
                       </ul>
                   </li>
                   <li class="dropdown">
-                      <a id="navlink-browse" class="dropdown-toggle navlink" href="#" data-toggle="dropdown">Browse <b class="caret"></b></a>
+                      <a id="navlink-browse" class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Browse <b class="caret"></b></a>
                       <ul id="dropdown-menu-browse" class="dropdown-menu">
-                          <li><a href="#stories">Stories</a></li>
-                          <li><a href="#explore/target/Biomarker,Target">Genes (Biomarkers, Targets, etc.)</a></li>
-                          <li><a href="#explore/compound/Perturbagen,Candidate Drug">Compounds and Perturbagens</a></li>
-                          <li><a href="#explore/context/Disease">Disease Contexts</a></li>
+                          <li><a href="/dashboard/#stories">Stories</a></li>
+                          <li><a href="/dashboard/#explore/target/Biomarker,Target">Genes (Biomarkers, Targets, etc.)</a></li>
+                          <li><a href="/dashboard/#explore/compound/Perturbagen,Candidate Drug">Compounds and Perturbagens</a></li>
+                          <li><a href="/dashboard/#explore/context/Disease">Disease Contexts</a></li>
                       </ul>
                   </li>
                   <li class="dropdown">
-                      <a id="navlink-genecart" class="dropdown-toggle navlink" href="#" data-toggle="dropdown">Gene Cart <b class="caret"></b></a>
+                      <a id="navlink-genecart" class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Gene Cart <b class="caret"></b></a>
                       <ul id="dropdown-menu-genecart" class="dropdown-menu">
-                          <li><a href="#genes">Go To Cart</a></li> 
-                          <li><a href="#gene-cart-help">Help</a></li>
+                          <li><a href="/dashboard/#genes">Go To Cart</a></li>
+                          <li><a href="/dashboard/#gene-cart-help">Help</a></li>
                       </ul>
                   </li>
               </ul>
@@ -145,12 +145,11 @@
                           <button type="submit" class="btn search-button">Search</button>
                           <span class="hide" id="search-help-content">
                               <p>Please enter the keyword you would like to search on the website.</p>
-
                               <strong>Examples:</strong>
                               <ul>
-                                <li><em>Gene: </em> <a href="#search/CTNNB1">CTNNB1</a> or <a href="#search/YAP*">YAP*</a></li>
-                                <li><em>Compound: </em> <a href="#search/ABT-737">ABT-737</a></li>
-                                <li><em>Cell Sample: </em> <a href="#search/HPBALL">HPBALL</a></li>
+                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a> or <a href="/dashboard/#search/YAP*">YAP*</a></li>
+                                <li><em>Compound: </em> <a href="/dashboard/#search/ABT-737">ABT-737</a></li>
+                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/HPBALL">HPBALL</a></li>
                               </ul>
                               <br>
                           </span>
@@ -170,28 +169,30 @@
 
     <div class="container footer-container">
         <!-- FOOTER -->
-       <footer>
-        <p><small>Dashboard Release <%=dashboardReleaseVersion%></small></p>
-     	<p>
-            <small>
-                <p>
-                    As the CTD<sup>2</sup> Network continues to refine the Dashboard, input from the research community is highly valued to help improve usability.<br>
-                    <b>Note</b>: Data users must acknowledge CTD<sup>2</sup> Network and visit <a href="http://ocg.cancer.gov/programs/ctd%C2%B2/ctd%C2%B2-publication-guidelines">CTD<sup>2</sup> publication guidelines</a> for more information.<br>
-                    To provide feedback, please send comments to <a href="mailto:ocg@mail.nih.gov?subject=CTD2 Dashboard Feedback">ocg@mail.nih.gov</a>.
-                </p>
-           </small>
-        </p>
-         <p>
-             <a href="http://cancer.gov"><img src="img/logos/footer_logo_nci.jpg" alt="NCI logo" title="NCI logo"></a><a href="http://www.dhhs.gov/"><img src="img/logos/footer_logo_hhs.jpg" title="HHS logo" alt="HHS logo"></a><a href="http://www.nih.gov/"><img src="img/logos/footer_logo_nih.jpg" title="NIH logo" alt="NIH logo"></a><a href="http://www.firstgov.gov/"><img src="img/logos/footer_logo_firstgov.jpg" title="First Gov logo" alt="First Gov logo"></a>
-         </p>
-           <p>
-               <a class="help-navigate" href="#help-navigate">Glossary</a> &middot;
-               <a href="http://www.cancer.gov/global/web/policies" target="_blank">Policies</a> &middot;
-               <a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank">Accessibility</a> &middot;
-               <a href="http://www.cancer.gov/global/web/policies/foia" target="_blank">FOIA</a>
-           </p>
-
-       </footer>
+        <footer>
+            <div style="font-size:14px; font-weight:bold; margin-bottom:10px;">
+                Dashboard Release <%=dashboardReleaseVersion%>
+            </div>
+            <div style="font-size:14px; margin-bottom:10px;">
+                The CTD<sup>2</sup> Dashboard was created and developed by the CTD<sup>2</sup> Network Centers at the Broad Institute (Paul A. Clemons, Vlado Dančik, Stuart L. Schreiber),
+                Cold Spring Harbor Laboratories/Memorial Sloan Kettering Cancer Center (Arman B. Aksoy, Benjamin Gross, Chris Sander), Columbia University
+                (Andrea Califano, Aris Floratos, Zhou Ji, Kenneth Smith), and NCI (Daniela S. Gerhard, Leandro C. Hermida, Subhashini Jagu)
+            </div>
+            <div style="font-size:14px; margin-bottom:10px;">
+                As the CTD<sup>2</sup> Network continues to refine the Dashboard, input from the research community is highly valued to help improve usability.<br>
+                <b>Note</b>: Data users must acknowledge CTD<sup>2</sup> Network and visit <a href="http://ocg.cancer.gov/programs/ctd%C2%B2/ctd%C2%B2-publication-guidelines">CTD<sup>2</sup> publication guidelines</a> for more information.<br>
+                To provide feedback, please send comments to <a href="mailto:ocg@mail.nih.gov?subject=CTD2 Dashboard Feedback">ocg@mail.nih.gov</a>.
+            </div>
+            <div style="font-size:14px; margin-bottom:10px;">
+                <a href="http://cancer.gov"><img src="img/logos/footer_logo_nci.jpg" alt="NCI logo" title="NCI logo"></a><a href="http://www.dhhs.gov/"><img src="img/logos/footer_logo_hhs.jpg" title="HHS logo" alt="HHS logo"></a><a href="http://www.nih.gov/"><img src="img/logos/footer_logo_nih.jpg" title="NIH logo" alt="NIH logo"></a><a href="http://www.firstgov.gov/"><img src="img/logos/footer_logo_firstgov.jpg" title="First Gov logo" alt="First Gov logo"></a>
+            </div>
+            <div style="font-size:14px; margin-bottom:10px;">
+                <a class="help-navigate" href="#help-navigate">Glossary</a> &middot;
+                <a href="http://www.cancer.gov/global/web/policies" target="_blank">Policies</a> &middot;
+                <a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank">Accessibility</a> &middot;
+                <a href="http://www.cancer.gov/global/web/policies/foia" target="_blank">FOIA</a>
+            </div>
+        </footer>
     </div>
      
     <div class="modal hide fade" id="alert-message-modal">  <!-- a hidden div for showing alert message -->          
@@ -1489,7 +1490,7 @@
                     <h3>Sorry, no results found</h3>
                     <p>
                         Would you like to extend your search with a wildcard?
-                        (<i>e.g.</i> <a href="#/search/{{encodeURIComponent(term)}}*">{{decodeURIComponent(term)}}*</a>)
+                        (<i>e.g.</i> <a href="/dashboard/#search/{{encodeURIComponent(term)}}*">{{decodeURIComponent(term)}}*</a>)
                     </p>
                 </div>
             </td>
