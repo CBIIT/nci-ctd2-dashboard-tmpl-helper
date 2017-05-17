@@ -8,14 +8,14 @@ database.password=PASSWORD
 # hibernate
 hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
 hibernate.hbm2ddl.auto=update
-# clean the database before every test
+# clean test database before every test
 hibernate.hbm2ddl.auto.test=create
 hibernate.ejb.naming_strategy=org.hibernate.cfg.ImprovedNamingStrategy
 hibernate.connection.charSet=UTF-8
 
 # lucene
-search.indexDir=/tmp/dashboard-index
-search.test.indexDir=/tmp/dashboard-index-test
+search.indexDir=/tmp/dashboard-tmpl-helper-index
+search.test.indexDir=/tmp/dashboard-tmpl-helper-index-test
 # Set the following to <= 0 to disable the cap
 search.max.number.results=200
 
@@ -32,4 +32,4 @@ list.max.observations=100
 # this is the URL for CNKB query
 cnkb.data.url=http://cagridnode.c2b2.columbia.edu:8080/cknb/InteractionsServlet_new/InteractionsServlet
 
-builder.version=v201705
+submission.builder.version=v201705
