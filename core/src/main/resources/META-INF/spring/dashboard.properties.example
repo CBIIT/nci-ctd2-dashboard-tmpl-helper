@@ -2,6 +2,7 @@
 database.driverClassName=com.mysql.jdbc.Driver
 database.url=jdbc\:mysql\://localhost\:3306/ctd2_dashboard_tmpl_helper
 database.test.url=jdbc\:mysql\://localhost\:3306/ctd2_test
+database.test.name=ctd2_test
 database.username=USER
 database.password=PASSWORD
 
@@ -32,4 +33,4 @@ list.max.observations=100
 # this is the URL for CNKB query
 cnkb.data.url=http://cagridnode.c2b2.columbia.edu:8080/cknb/InteractionsServlet_new/InteractionsServlet
 
-submission.builder.version=v201705
+submission.builder.version=v1.0
