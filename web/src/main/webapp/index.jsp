@@ -2032,8 +2032,8 @@
 
     <script type="text/template" id="template-helper-tmpl">
         <div class="container common-container" id="template-helper-container">
-            <h2>CTD<sup>2</sup> Data Submission Builder</h2>
-
+            <h2>CTD<sup>2</sup> Dashboard Submission Builder</h2>
+            
             <div class="btn-group" role="group" aria-label="...">
             <button type="button" class="btn btn-link" id='menu_home'>Home</button>
             <button type="button" class="btn btn-link" id='menu_manage'>Manage Submission</button>
@@ -2057,7 +2057,7 @@
                 <h3>Submission Builder Home</h3>
                 <table class="table">
                     <tr>
-                        <th>Please choose you CTD<sup>2</sup> group</th>
+                        <th>Please choose your CTD<sup>2</sup> center: </th>
                         <td>
                             <select id="template-submission-centers" class="input-xxlarge">
                                 <option value="">-</option>
