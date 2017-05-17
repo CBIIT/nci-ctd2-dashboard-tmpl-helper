@@ -77,7 +77,7 @@
 
     </dependencies>
     <build>
-        <finalName>ctd2-dashboard-tmpl-helper</finalName>
+        <finalName>submit</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
