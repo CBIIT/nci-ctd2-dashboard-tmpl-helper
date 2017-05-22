@@ -8,7 +8,7 @@
     var rightSep = ">";
 
     // To make URL constructing more configurable
-    var CORE_API_URL = "./dashboard/";
+    var CORE_API_URL = "./";
 
     // This is for the moustache-like templates
     // prevents collisions with JSP tags <%...%>
