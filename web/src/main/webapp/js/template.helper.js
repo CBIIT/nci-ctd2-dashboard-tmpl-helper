@@ -162,6 +162,9 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
         });
 
         $("#download-form").submit(function () {
+            if(!$("#template-id").val() || $("#template-id").val()=="0") {
+                $("#template-id").val($ctd2.currentModel.id);
+            }
             var model = $ctd2.templateModels[$("#template-id").val()];
             $("#filename-input").val(model.toJSON().displayName);
             return true;
