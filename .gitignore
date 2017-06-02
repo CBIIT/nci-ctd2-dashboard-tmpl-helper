@@ -5,11 +5,3 @@ target/
 .hgtags
 core/src/main/resources/META-INF/spring/dashboard.properties
 core/src/main/resources/log4j.properties
-
-bin/
-.vscode
-.settings
-.classpath
-.project
-rerun.bat
-quickie.bat
