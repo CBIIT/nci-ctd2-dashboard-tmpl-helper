@@ -246,7 +246,8 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    observations[index] = new File(filename).getAbsolutePath();
+                    String relativePath = centerId + File.separator + templateId + File.separator + obv.substring(0, obv.indexOf(":"));
+                    observations[index] = relativePath;
                 }
             }
         }
@@ -282,9 +283,15 @@ public class TemplateController {
                     if(obv==null || obv.trim().length()==0) {
                         continue;
                     }
-                    if(!new File(obv).exists()) {
-                        System.out.println(obv+" not existing. evidence#="+i+" observation#="+j+" index="+index);
-                        continue;
+                    if(!new File(obv).exists()) { /* keep the first check so it also works when the absolute path is used*/
+                        if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
+                            uploadLocation = uploadLocation + File.separator;
+                        }
+                        obv = uploadLocation + obv;
+                        if(!new File(obv).exists()) {
+                            System.out.println(obv+" not existing. evidence#="+i+" observation#="+j+" index="+index);
+                            continue;
+                        }
                     }
                     files.add(obv);
                 }
