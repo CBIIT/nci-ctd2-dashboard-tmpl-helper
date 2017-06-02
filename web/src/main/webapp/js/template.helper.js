@@ -1252,6 +1252,9 @@ $ctd2.populateOneTemplate = function () {
             $('#template-table tr').find('td:eq(' + c + '),th:eq(' + c + ')').remove();
         });
     }
+    if(Array.isArray(rowModel.subjectDescriptions) && rowModel.subjectColumns.length==1) {
+        rowModel.subjectDescriptions[0] = rowModel.subjectDescriptions.toString(); // prevent the single element containing commas being treated as an array
+    }
 
     var subjectRows = subjectColumns.length;
     var evidenceRows = evidenceColumns.length;
@@ -1282,6 +1285,9 @@ $ctd2.populateOneTemplate = function () {
     var evidenceTypes = rowModel.evidenceTypes;
     var valueTypes = rowModel.valueTypes;
     var evidenceDescriptions = rowModel.evidenceDescriptions;
+    if(Array.isArray( evidenceDescriptions) && evidenceColumns.length==1) {
+        evidenceDescriptions[0] = evidenceDescriptions.toString(); // prevent the single element containing commas being treated as an array
+    }
     for (var i = 0; i < evidenceColumns.length; i++) {
         var observationsPerRow = new Array(observationNumber);
         for (var column = 0; column < observationNumber; column++) {
