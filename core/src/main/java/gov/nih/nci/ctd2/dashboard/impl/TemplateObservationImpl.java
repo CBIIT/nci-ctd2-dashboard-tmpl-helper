@@ -3,6 +3,7 @@ package gov.nih.nci.ctd2.dashboard.impl;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Column;
 
 import org.hibernate.annotations.Proxy;
 import org.hibernate.search.annotations.Indexed;
@@ -30,6 +31,7 @@ public class TemplateObservationImpl extends DashboardEntityImpl implements Temp
         this.submissionTemplate = submissionTemplate;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getSubjectValues() {
         return subjectValues;
@@ -40,6 +42,7 @@ public class TemplateObservationImpl extends DashboardEntityImpl implements Temp
         subjectValues = subjects;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getEvidenceValues() {
         return evidenceValues;

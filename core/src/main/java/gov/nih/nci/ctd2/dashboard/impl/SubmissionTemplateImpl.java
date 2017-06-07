@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Column;
 
 import org.hibernate.annotations.Proxy;
 import org.hibernate.search.annotations.Indexed;
@@ -126,6 +127,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         this.phone = phone;
     }
 
+    @Column(columnDefinition = "mediumblob")
     @Override
     public String[] getSubjectColumns() {
         return subjectColumns;
@@ -136,6 +138,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         subjectColumns = subjects;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getEvidenceColumns() {
         return evidenceColumns;
@@ -146,6 +149,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         evidenceColumns = evidences;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getSubjectClasses() {
         return subjectClasses;
@@ -156,6 +160,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         subjectClasses = c;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getSubjectRoles() {
         return subjectRoles;
@@ -166,6 +171,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         subjectRoles = r;
     }
 
+    @Column(columnDefinition = "mediumblob")
     @Override
     public String[] getSubjectDescriptions() {
         return subjectDescriptions;
@@ -176,6 +182,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         subjectDescriptions = d;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getEvidenceTypes() {
         return evidenceTypes;
@@ -186,6 +193,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         evidenceTypes = t;
     }
 
+    @Column(columnDefinition = "blob")
     @Override
     public String[] getValueTypes() {
         return valueTypes;
@@ -196,6 +204,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         valueTypes = v;
     }
 
+    @Column(columnDefinition = "mediumblob")
     @Override
     public String[] getEvidenceDescriptions() {
         return evidenceDescriptions;
