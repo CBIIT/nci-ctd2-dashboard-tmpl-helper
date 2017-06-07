@@ -181,6 +181,15 @@ public class TemplateController {
         template.setEmail(email);
         template.setPhone(phone);
 
+        if(subjects.length==1) {
+            String x = join(subjectDescriptions);
+            subjectDescriptions = new String[]{x};
+        }
+        if(evidences.length==1) {
+            String x = join(evidenceDescriptions);
+            evidenceDescriptions = new String[]{x};
+        }
+
         template.setSubjectColumns(subjects);
         template.setSubjectClasses(subjectClasses);
         template.setSubjectRoles(subjectRoles);
@@ -246,7 +255,8 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    observations[index] = new File(filename).getAbsolutePath();
+                    String relativePath = centerId + File.separator + templateId + File.separator + obv.substring(0, obv.indexOf(":"));
+                    observations[index] = relativePath;
                 }
             }
         }
@@ -263,6 +273,15 @@ public class TemplateController {
         dashboardDao.update(template);
 
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " UPDATED", HttpStatus.OK);
+    }
+
+    private static String join(String[] s) { // join is supported Java 8. this is to make it work for Java 7
+        // assume s is not null
+        if(s.length==0) return "";
+        if(s.length==1) return s[0];
+        StringBuffer sb = new StringBuffer(s[0]);
+        for(int i=1; i<s.length; i++) sb.append(",").append(s[i]);
+        return sb.toString();
     }
 
     private String[] uploadedFiles(Integer templateId) {
@@ -282,9 +301,15 @@ public class TemplateController {
                     if(obv==null || obv.trim().length()==0) {
                         continue;
                     }
-                    if(!new File(obv).exists()) {
-                        System.out.println(obv+" not existing. evidence#="+i+" observation#="+j+" index="+index);
-                        continue;
+                    if(!new File(obv).exists()) { /* keep the first check so it also works when the absolute path is used*/
+                        if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
+                            uploadLocation = uploadLocation + File.separator;
+                        }
+                        obv = uploadLocation + obv;
+                        if(!new File(obv).exists()) {
+                            System.out.println(obv+" not existing. evidence#="+i+" observation#="+j+" index="+index);
+                            continue;
+                        }
                     }
                     files.add(obv);
                 }
