@@ -481,7 +481,7 @@ public class TemplateController {
         String[] evidenceDescriptions = template.getEvidenceDescriptions();
         for(int i=0; i<evidenceDescriptions.length; i++) {
             cell = row.createCell(i+4+displayTexts.length);
-            cell.setCellValue(evidenceDescriptions[i].toLowerCase());
+            cell.setCellValue(evidenceDescriptions[i]);
             cell.setCellStyle(yellow);
         }
 
