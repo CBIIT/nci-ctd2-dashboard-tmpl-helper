@@ -198,14 +198,6 @@
         urlRoot: CORE_API_URL + "get/subject"
     });
 
-    var SubjectWithSummaryCollection = Backbone.Collection.extend({
-        url: CORE_API_URL + "explore/",
-
-        initialize: function(attributes) {
-            this.url += attributes.roles;
-        }
-    });
-
     /* Views */
     var HomeView = Backbone.View.extend({
         el: $("#main-container"),
@@ -791,58 +783,6 @@
             return this;
         }
 
-    });
-
-    var CenterListView = Backbone.View.extend({
-        el: $("#main-container"),
-        template: _.template($("#centers-tmpl").html()),
-        render: function() {
-            $(this.el).html(this.template({}));
-
-            var centers = new SubmissionCenters();
-            var thatEl = this.el;
-            var cTable = null;
-            centers.fetch({
-                success: function() {
-                    var tableEl = $(thatEl).find("table");
-
-                    _.each(centers.toJSON(), function(aCenter) {
-                       var centerListRowView
-                           = new CenterListRowView({ el: $(thatEl).find("#centers-tbody"), model: aCenter });
-                        centerListRowView.render();
-
-                        $.ajax("count/submission/?filterBy=" + aCenter.id).done(function(count) {
-                            var cntContent = _.template(
-                                $("#count-submission-tmpl").html(),
-                                { count: count }
-                            );
-
-                            var countCellId = "#submission-count-" + aCenter.id;
-                            $(countCellId).html(cntContent);
-                            tableEl.DataTable().cells(countCellId).invalidate();
-                        });
-
-                        $.ajax("list/observationtemplate/?filterBy=" + aCenter.id).done(function(templates) {
-                            var pis = [];
-                            _.each(templates, function(template) {
-                                pis.push(template.principalInvestigator);
-                            });
-                            var piCellId = "#center-pi-" + aCenter.id;
-                            $(piCellId).html(_.uniq(pis).join(", "));
-                            tableEl.DataTable().cells(piCellId).invalidate();
-                        });
-                    });
-
-                    cTable = tableEl.dataTable({
-                        // might want to increase this number if we have incredible number of centers
-                        "iDisplayLength": 25
-                    });
-
-                    cTable.fnSort( [ [1, 'asc'] ] );
-                }
-            });
-            return this;
-        }
     });
 
     var StoriesListView = Backbone.View.extend({
@@ -2218,163 +2158,6 @@
     		"Protein": "protein",
     };
 
-    var ExploreView = Backbone.View.extend({
-        el: $("#main-container"),
-        template: _.template($("#explore-tmpl").html()),
-
-        render: function() {
-            var exploreLimit = 36;
-
-            var thatModel = this.model;
-            $(this.el).html(this.template(thatModel));
-            var data_url = $("#explore-tmpl").attr("data-url");
-            var subjectWithSummaryCollection = new SubjectWithSummaryCollection(thatModel);
-            subjectWithSummaryCollection.fetch({
-                success: function() {
-                    $("#explore-items").html("");
-
-                    var numberOfEls = subjectWithSummaryCollection.models.length;
-                    var table_data = [];
-                    _.each(subjectWithSummaryCollection.models, function(subjectWithSummary) {
-                            var sModel = subjectWithSummary.toJSON();
-                            var subject = sModel.subject;
-                            if(subject.class == "Compound") {
-                                _.each(subject.xrefs, function(xref) {
-                                    if(xref.databaseName == "IMAGE") {
-                                        subject.imageFile = xref.databaseId;
-                                    }
-                                });
-                            }
-                            var role = sModel.role;
-                            var reformatted = reformattedClassName[subject.class];
-                            if(subject.class == 'Compound') {
-                                reformatted += " <span style='display:inline-block;width:100px'><a href='"+data_url+"compounds/"
-                                    + subject.imageFile +"' target='_blank' class='compound-image' title='Compound: " 
-                                    + subject.displayName + "'><img class='img-polaroid' style='height:25px' src='"+data_url+"compounds/" 
-                                    + subject.imageFile + "' alt='Compound: " + subject.displayName +"'></a></span>";
-                            } else {
-                                reformatted += " <img src='img/"+ subject.class.toLowerCase() + ".png' style='height:25px' alt=''>";
-                            }
-                            var nameLink = "<a href='#/subject/"+subject.id+"/"+role+"'>"+subject.displayName+"</a>";
-                            var n3obv = sModel.numberOfTier3Observations;
-                            var n3ctr = sModel.numberOfTier3SubmissionCenters;
-                            var n3link = ( n3obv==0 ? "" : "<a href='#subject/"+subject.id+"/"+role+"/3'>"+n3obv+"</a>" )
-                                    + ( n3obv>1 ? " ("+n3ctr+" center" + (n3ctr>1?"s":"") +")":"" );
-                            var n2obv = sModel.numberOfTier2Observations;
-                            var n2ctr = sModel.numberOfTier2SubmissionCenters;
-                            var n2link = ( n2obv==0 ? "" : "<a href='#subject/"+subject.id+"/"+role+"/2'>"+n2obv+"</a>" )
-                                    + ( n2obv>1 ? " ("+n2ctr+" center" + (n2ctr>1?"s":"") +")":"" );
-                            var n1obv = sModel.numberOfTier1Observations;
-                            var n1ctr = sModel.numberOfTier1SubmissionCenters;
-                            var n1link = ( n1obv==0 ? "" : "<a href='#subject/"+subject.id+"/"+role+"/1'>"+n1obv+"</a>" )
-                                    + ( n1obv>1 ? " ("+n1ctr+" center" + (n1ctr>1?"s":"") +")":"" );
-                            table_data.push( [reformatted, nameLink, role, n3link, n2link, n1link] );
-                    });
-                    $("#explore-table").dataTable( {
-                        'dom': 'iBfrtlp',
-                        'data': table_data,
-                        "deferRender": true,
-                        "columns": [
-                                    null,
-                                    null,
-                                    null,
-                                    { "type": "observation-count" },
-                                    { "type": "observation-count" },
-                                    { "type": "observation-count" }
-                                ],
-                        "drawCallback": function( settings ) {
-                            $("a.compound-image").fancybox({titlePosition: 'inside'});
-                        },
-                        'buttons': [{
-                            extend: 'excelHtml5',
-                            text: 'Export as Spreadsheet',
-                            className: "extra-margin",
-                        }],
-                    });
-
-                    $(".explore-thumbnail h4").tooltip();
-                    var blurb = $("#text-blurb");
-                    if(blurb.length > 0) {
-                        $("#explore-blurb").append(_.template(blurb.html(), {subject_type: subjectType[thatModel.type], roles: thatModel.roles}));
-                        $("#explore-blurb .blurb-help").click(function(e) {
-                            e.preventDefault();
-                            (new HelpNavigateView()).render();
-                        });
-                    }
-                    $("#reset-ordering").click( function() { $("#explore-table").DataTable().order.neutral().draw(); } );
-                }
-            });
-
-            $("#customize-roles").click(function(e) {
-                e.preventDefault();
-
-                var subjectRoles = new SubjectRoles();
-                subjectRoles.fetch({
-                    success: function() {
-                        $("#customized-roles-tbl tbody").html("");
-
-                        var currentRoles = decodeURIComponent(thatModel.roles.toLowerCase());
-                        _.each(subjectRoles.models, function(role) {
-                            role = role.toJSON();
-                            if(browseRole[thatModel.type].indexOf(role.displayName)==-1) return;
-                            var checked = currentRoles.search(role.displayName.toLowerCase()) > -1;
-                            role["checked"] = checked;
-                            var roleName = role.displayName;
-                            role.displayName = roleName.charAt(0).toUpperCase() + roleName.slice(1);
-                            var customRoleItemView = new CustomRoleItemView({ model: role });
-                            customRoleItemView.render();
-                        });
-
-                        $("#role-modal").modal('show');
-
-                        $("#select-roles-button").click(function(e) {
-                            var newRoles = [];
-                            $("#role-modal input").each(function() {
-                                var aRole = $(this).attr("data-role");
-                                if($(this).attr("checked")) {
-                                    newRoles.push(aRole);
-                                }
-
-                            });
-
-                            $("#role-modal").modal('hide');
-                            window.location.hash = "/explore/" + thatModel.type + "/" + newRoles.join(",");
-                        });
-                    }
-                });
-            });
-
-            return this;
-        }
-    });
-
-	var browseRole = {
-		target: ["background", "biomarker", "candidate master regulator", "interactor", "master regulator", "oncogene", "target"],
-		compound: ["candidate drug", "control compound", "perturbagen"],
-		context: ["disease", "metastasis", "tissue"]
-	};
-
-	var subjectType = {
-			target: "Biomarkers, Targets, Genes & Proteins (genes)",
-			compound: "Compounds and Perturbagens (compounds, shRNA, genes)",
-			context: "Disease Context (tissues)"
-	};
-
-    //customize-roles-item-tmpl
-    var CustomRoleItemView = Backbone.View.extend({
-        el: "#customized-roles-tbl tbody",
-        template: _.template($("#customize-roles-item-tmpl").html()),
-
-        render: function() {
-            if(this.model.checked) {
-                $(this.el).prepend(this.template(this.model));
-            } else {
-                $(this.el).append(this.template(this.model));
-            }
-            return this;
-        }
-    });
-
     //Gene List View
     var GeneListView = Backbone.View.extend({
     	el: $("#main-container"),
@@ -3163,15 +2946,11 @@
     /* Routers */
     AppRouter = Backbone.Router.extend({
         routes: {
-            "centers": "listCenters",
             "stories": "listStories",
-            "explore": "scrollToExplore",
-            "explore/:type/:roles": "explore",
             "center/:id/:project": "showCenterProject",
             "center/:id": "showCenter",
             "submission/:id": "showSubmission",
             "observation/:id": "showObservation",
-            "search/:term": "search",
             "subject/:id": "showSubject",
             "subject/:id/:role": "showSubject",
             "subject/:id/:role/:tier": "showSubject",
@@ -3196,38 +2975,6 @@
             homeView.render();
             var helpNavigateView = new HelpNavigateView();
             helpNavigateView.render();
-        },
-
-        scrollToExplore: function() {
-            var homeView = new HomeView();
-            homeView.render();
-
-            var whereTo = $(".ctd2-boxes").offset().top - 5;
-            $('html, body').animate({
-                scrollTop: whereTo
-            }, 500);
-        },
-
-        search: function(term) {
-            var searchView = new SearchView({
-                model: {
-                    term: decodeURI(term)
-                        .replace(new RegExp("<", "g"), "")
-                        .replace(new RegExp(">", "g"), "")
-                }
-            });
-            searchView.render();
-        },
-
-        explore: function(type, roles) {
-            var exploreView = new ExploreView({
-                model: {
-                    roles: roles.replace(new RegExp("<", "g"), "").replace(new RegExp(">", "g"), ""),
-                    type: type.replace(new RegExp("<", "g"), "").replace(new RegExp(">", "g"), ""),
-                    customized: false
-                }
-            });
-            exploreView.render();
         },
 
         showSubject: function(id, role, tier) {
@@ -3309,11 +3056,6 @@
             });
         },
 
-        listCenters: function() {
-            var centerListView = new CenterListView();
-            centerListView.render();
-        },
-
         listStories: function() {
             var storiesListView = new StoriesListView();
             storiesListView.render();
@@ -3386,14 +3128,4 @@
         });
     });
 
-    var subjectWithSummaryCollection = new SubjectWithSummaryCollection( { 
-        roles: "Perturbagen,Candidate Drug",
-        type: "compound",
-        customized: false
-    });
-    subjectWithSummaryCollection.fetch({
-        success: function() {
-            console.log('long query pre-prepared '+performance.now());
-        }
-    } );
 }(window.jQuery);
