@@ -106,20 +106,6 @@
         }
     });
 
-    var StorySubmissions = Backbone.Collection.extend({
-        url: CORE_API_URL + "stories/?limit=",
-        model: Submission,
-
-        initialize: function(attributes) {
-            if(attributes != undefined && attributes.limit != undefined) {
-                this.url += attributes.limit;
-            } else {
-                this.url += numOfStoriesHomePage;
-            }
-        }
-
-    });
-
     var Observation = Backbone.Model.extend({
         urlRoot: CORE_API_URL + "get/observation"
     });
@@ -199,52 +185,6 @@
     });
 
     /* Views */
-    var HomeView = Backbone.View.extend({
-        el: $("#main-container"),
-        template: _.template($("#home-tmpl").html()),
-        render: function() {
-            // Load the template
-            $(this.el).html(this.template({}));
-
-            // and load the stories
-            var storySubmissions = new StorySubmissions();
-            storySubmissions.fetch({
-                success: function() {
-                    var counter = 1;
-                    _.each(storySubmissions.models, function(aStory) {
-                        var storyView = new StorySubmissionView({
-                            el: $("#story-" + counter),
-                            model: aStory.toJSON()
-                        });
-                        storyView.render();
-                        counter++;
-                    });
-
-                    Holder.run();
-
-                    $('.stories-pagination a.story-link').click(function (e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                    })
-                }
-            });
-
-            $('#myCarousel').carousel('pause');
-            $("#omni-search-form").submit(function() {
-                var searchTerm = $("#omni-search").val();
-                window.location = "/dashboard/#search/" + searchTerm;
-                return false;
-            });
-
-            $("#homepage-help-navigate").click(function(e) {
-                e.preventDefault();
-                (new HelpNavigateView()).render();
-            });
-
-            return this;
-        }
-    });
-
     var HelpNavigateView = Backbone.View.extend({
         template: _.template($("#help-navigate-tmpl").html()),
 
@@ -783,35 +723,6 @@
             return this;
         }
 
-    });
-
-    var StoriesListView = Backbone.View.extend({
-        el: $("#main-container"),
-        template: _.template($("#stories-tmpl").html()),
-
-        render: function() {
-            $(this.el).html(this.template({}));
-
-            // and load the stories
-            var storySubmissions = new StorySubmissions({ limit: -1 });
-            storySubmissions.fetch({
-                success: function() {
-                    var counter = 1;
-                    _.each(storySubmissions.models, function(aStory) {
-                        var storyView = new StoryListItemView({
-                            el: $("#stories-list #stories-tbody"),
-                            model: aStory.toJSON()
-                        });
-                        storyView.render();
-                        counter++;
-                    });
-
-                    Holder.run();
-                }
-            });
-
-            return this;
-        }
     });
 
     var CenterSubmissionRowView = Backbone.View.extend({
@@ -2946,9 +2857,6 @@
     /* Routers */
     AppRouter = Backbone.Router.extend({
         routes: {
-            "stories": "listStories",
-            "center/:id/:project": "showCenterProject",
-            "center/:id": "showCenter",
             "submission/:id": "showSubmission",
             "observation/:id": "showObservation",
             "subject/:id": "showSubject",
@@ -2965,14 +2873,7 @@
             "*actions": "showTemplateHelper"
         },
 
-        home: function(actions) {
-            var homeView = new HomeView();
-            homeView.render();
-        },
-
         helpNavigate: function() {
-            var homeView = new HomeView();
-            homeView.render();
             var helpNavigateView = new HelpNavigateView();
             helpNavigateView.render();
         },
@@ -3012,30 +2913,6 @@
             });
         },
 
-        showCenter: function(id) {
-            var center = new SubmissionCenter({id: id});
-            center.fetch({
-                success: function() {
-                    var centerView = new CenterView({model: center});
-                    centerView.render(null);
-                }
-            });
-        },
-
-        showCenterProject: function(id, project) {
-            var center = new SubmissionCenter({id: id});
-            center.fetch({
-                success: function() {
-                    var centerView = new CenterView({model: center});
-                    project = decodeURI(project)
-                        .replace(new RegExp("<", "g"), "")
-                        .replace(new RegExp(">", "g"), "");
-                    centerView.render(project);
-                }
-            });
-        },
-
-
         showSubmission: function(id) {
             var submission = new Submission({id: id});
             submission.fetch({
@@ -3056,11 +2933,6 @@
             });
         },
 
-        listStories: function() {
-            var storiesListView = new StoriesListView();
-            storiesListView.render();
-        },
-        
         showMraView: function(id) {
         	  var observedEvidence = new ObservedEvidence({id: id});
         	  observedEvidence.fetch({
