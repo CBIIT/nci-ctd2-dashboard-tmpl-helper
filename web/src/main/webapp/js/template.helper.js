@@ -131,12 +131,10 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
         });
         $("#save-summary").click(function () {
             console.log("saving the summary ...");
-            $ctd2.updateModel_3();
-            $ctd2.updateTemplate($(this)); // TODO add lock
+            $ctd2.updateModel_3($(this)); // TODO add lock
         });
         $("#continue-from-summary").click(function () {
-            $ctd2.updateModel_3();
-            $ctd2.updateTemplate($(this));
+            $ctd2.updateModel_3($(this));
             if ($ctd2.saveSuccess) {
                 $("#step5").fadeOut();
                 $("#step6").slideDown();
@@ -264,11 +262,19 @@ $ctd2.updateModel_2 = function (triggeringButton) {
     $ctd2.updateTemplate(triggeringButton);
 };
 
-$ctd2.updateModel_3 = function () {
+// update model from the observation summary page
+$ctd2.updateModel_3 = function (triggerButton) {
     var summary = $("#template-obs-summary").val();
+    if (summary.length > 1024) {
+        $ctd2.showAlertMessage("<ul>The summary that you entered has "+summary.length+" characters. 1024 characters is the designed limit of this field. Please modify it before trying to save again.</ul>");
+        $ctd2.saveSuccess = false;
+        return;
+    }
+
     $ctd2.currentModel.set({
         summary: summary,
     });
+    $ctd2.updateTemplate(triggerButton);
 };
 
 $ctd2.Subject = Backbone.Model.extend({
