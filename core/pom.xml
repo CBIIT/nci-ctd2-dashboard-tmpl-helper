@@ -4,12 +4,12 @@
 
     <parent>
         <groupId>gov.nih.nci.ctd2.dashboard</groupId>
-        <artifactId>dashboard</artifactId>
+        <artifactId>template-helper</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>gov.nih.nci.ctd2.dashboard</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>template-helper-core</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
