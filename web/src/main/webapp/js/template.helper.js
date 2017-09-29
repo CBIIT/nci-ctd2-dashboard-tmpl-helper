@@ -1091,7 +1091,10 @@ $ctd2.updateTemplate = function (triggeringButton) {
         error: function (response, status) {
             triggeringButton.removeAttr("disabled");
             // response.responseText is an HTML page
-            $ctd2.showInvalidMessage(status + ": " + response.responseText);
+            console.log(status + ": " + response.responseText);
+            $ctd2.showInvalidMessage("The template data was NOT saved to the server for some unexpected error. "
+            +"Please contact the administrator of this application to help finding out the specific cause and fixing it. "
+            +"Sorry for the inconvenience.");
         }
     });
 };
