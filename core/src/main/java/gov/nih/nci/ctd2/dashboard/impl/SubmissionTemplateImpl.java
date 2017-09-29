@@ -237,6 +237,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         observations = d;
     }
 
+    @Column(length = 1024)
     @Override
     public String getSummary() {
         return summary;
