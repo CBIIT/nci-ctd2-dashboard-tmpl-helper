@@ -255,8 +255,8 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    String relativePath = centerId + File.separator + templateId + File.separator + obv.substring(0, obv.indexOf(":"));
-                    observations[index] = relativePath;
+                    String relativePathAndMimeType = centerId + File.separator + templateId + File.separator + obv.substring(0, obv.indexOf(";base64"));
+                    observations[index] = relativePathAndMimeType;
                 }
             }
         }
@@ -300,6 +300,10 @@ public class TemplateController {
                     String obv = observations[index];
                     if(obv==null || obv.trim().length()==0) {
                         continue;
+                    }
+                    int mimeMark = obv.indexOf("::");
+                    if(mimeMark>=0) {
+                        obv = obv.substring(0, mimeMark);
                     }
                     if(!new File(obv).exists()) { /* keep the first check so it also works when the absolute path is used*/
                         if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
@@ -455,10 +459,10 @@ public class TemplateController {
             cell.setCellStyle(yellow);
         }
 
-        row = sheet.createRow((short)4);
-        row.setRowStyle(yellow);
-        cell = row.createCell(0);
-        cell.setCellValue("mime_types");
+        HSSFRow mimeTypeRow = sheet.createRow((short)4);
+        mimeTypeRow.setRowStyle(yellow);
+        cell = mimeTypeRow.createCell(0);
+        cell.setCellValue("mime_type");
         cell.setCellStyle(yellow);
 
         row = sheet.createRow((short)5);
@@ -506,7 +510,17 @@ public class TemplateController {
                 cell = row.createCell(subjects.length+j+4);
                 String observationData = obv[index];
                 if(valueType[j].equalsIgnoreCase("file")) {
-                    observationData = observationData.substring(observationData.lastIndexOf(File.separator)+1);
+                    int mimeMark = observationData.indexOf("::data:");
+                    String filename = "";
+                    if(mimeMark>0) {
+                        Cell mimeTypeRowCell = mimeTypeRow.createCell(subjects.length+j+4);
+                        mimeTypeRowCell.setCellStyle(yellow);
+                        mimeTypeRowCell.setCellValue( observationData.substring(mimeMark+7) );
+                        filename = observationData.substring( observationData.lastIndexOf(File.separator)+1, mimeMark );
+                    } else { /* this is to support old data without mime type */
+                        filename = observationData.substring(observationData.lastIndexOf(File.separator)+1);
+                    }
+                    observationData = filename;
                 }
                 cell.setCellValue( observationData );
                 index++;
