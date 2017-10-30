@@ -9,7 +9,6 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Indexed;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
@@ -17,7 +16,6 @@ import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 @Entity
 @Proxy(proxyClass = SubmissionTemplate.class)
 @Table(name = "submission_template")
-@Indexed
 public class SubmissionTemplateImpl extends DashboardEntityImpl implements SubmissionTemplate {
     private static final long serialVersionUID = -4224162359280232544L;
 

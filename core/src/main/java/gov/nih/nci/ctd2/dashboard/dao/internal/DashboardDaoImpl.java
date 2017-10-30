@@ -5,19 +5,10 @@ import gov.nih.nci.ctd2.dashboard.impl.*;
 import gov.nih.nci.ctd2.dashboard.model.*;
 import gov.nih.nci.ctd2.dashboard.util.DashboardEntityWithCounts;
 import gov.nih.nci.ctd2.dashboard.util.SubjectWithSummaries;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.util.Version;
 import org.hibernate.*;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.search.FullTextQuery;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -51,16 +42,6 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
 
     public void setDashboardFactory(DashboardFactory dashboardFactory) {
         this.dashboardFactory = dashboardFactory;
-    }
-
-    private Integer maxNumberOfSearchResults = 100;
-
-    public Integer getMaxNumberOfSearchResults() {
-        return maxNumberOfSearchResults;
-    }
-
-    public void setMaxNumberOfSearchResults(Integer maxNumberOfSearchResults) {
-        this.maxNumberOfSearchResults = maxNumberOfSearchResults;
     }
 
     @Override
@@ -586,139 +567,6 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
         }
 
         return list;
-    }
-
-    @Override
-    public void createIndex(int batchSize) {
-        FullTextSession fullTextSession = Search.getFullTextSession(getSession());
-        fullTextSession.setFlushMode(FlushMode.MANUAL);
-        for (Class searchableClass : searchableClasses) {
-            createIndexForClass(fullTextSession, searchableClass, batchSize);
-        }
-        fullTextSession.flushToIndexes();
-        fullTextSession.clear();
-        fullTextSession.close();
-    }
-
-    private void createIndexForClass(FullTextSession fullTextSession, Class<DashboardEntity> clazz, int batchSize) {
-        ScrollableResults scrollableResults
-                = fullTextSession.createCriteria(clazz).scroll(ScrollMode.FORWARD_ONLY);
-        int cnt = 0;
-        while(scrollableResults.next()) {
-            DashboardEntity entity = (DashboardEntity) scrollableResults.get(0);
-            fullTextSession.purge(DashboardEntityImpl.class, entity);
-            fullTextSession.index(entity);
-
-            if(++cnt % batchSize == 0) {
-                fullTextSession.flushToIndexes();
-                fullTextSession.clear();
-            }
-        }
-    }
-
-    @Override
-    @Cacheable(value = "searchCache")
-    public ArrayList<DashboardEntityWithCounts> search(String keyword) {
-        ArrayList<DashboardEntity> entities = new ArrayList<DashboardEntity>();
-        HashSet<DashboardEntity> entitiesUnique = new HashSet<DashboardEntity>();
-
-        FullTextSession fullTextSession = Search.getFullTextSession(getSession());
-        Analyzer[] analyzers = {
-        //        new StandardAnalyzer(Version.LUCENE_31), // Ignore this one for now, it probably doesn't help
-                new WhitespaceAnalyzer(Version.LUCENE_31)
-        };
-        for (Analyzer analyzer : analyzers) {
-            MultiFieldQueryParser multiFieldQueryParser = new MultiFieldQueryParser(
-                    Version.LUCENE_31,
-                    defaultSearchFields,
-                    analyzer
-            );
-            Query luceneQuery = null;
-            try {
-                luceneQuery = multiFieldQueryParser.parse(keyword);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            Class[] classes = searchableClasses;
-            FullTextQuery fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery, classes);
-            fullTextQuery.setReadOnly(true);
-
-            Integer numberOfSearchResults = getMaxNumberOfSearchResults();
-            if(numberOfSearchResults > 0) { // if lte 0, don't set this.
-                fullTextQuery.setMaxResults(numberOfSearchResults);
-            }
-
-            List list = fullTextQuery.list();
-            for (Object o : list) {
-                assert o instanceof DashboardEntity;
-
-                /* Skip it // we don't expect this anymore (see searchableClasses)
-                if(o instanceof Synonym) {
-                    // Second: find subjects with the synonym
-                    List subjectList = getHibernateTemplate()
-                            .find("select o from SubjectImpl as o where ? member of o.synonyms", (Synonym) o);
-                    for (Object o2 : subjectList) {
-                        assert o2 instanceof Subject;
-                        if(!entitiesUnique.contains(o2)) entities.add((Subject) o2);
-                    }
-                */
-
-                if(o instanceof ObservationTemplate) {
-                    // Second: find subjects with the synonym
-                    List submissionList = getHibernateTemplate()
-                            .find("select o from SubmissionImpl as o where o.observationTemplate = ?", (ObservationTemplate) o);
-                    for (Object o2 : submissionList) {
-                        assert o2 instanceof Submission;
-                        if(!entitiesUnique.contains(o2)) entities.add((Submission) o2);
-                    }
-
-                } else {
-                    // Some objects came in as proxies, get the actual implementations for them when necessary
-                    if(o instanceof HibernateProxy) {
-                        o = ((HibernateProxy) o).getHibernateLazyInitializer().getImplementation();
-                    }
-
-                    if(!entitiesUnique.contains(o)) {
-                        entities.add((DashboardEntity) o);
-                    }
-                }
-
-                entitiesUnique.addAll(entities);
-            }
-
-        }
-
-        ArrayList<DashboardEntityWithCounts> entitiesWithCounts = new ArrayList<DashboardEntityWithCounts>();
-        for (DashboardEntity entity : entities) {
-            DashboardEntityWithCounts entityWithCounts = new DashboardEntityWithCounts();
-            entityWithCounts.setDashboardEntity(entity);
-            if(entity instanceof Subject) {
-                ArrayList<Observation> observations = new ArrayList<Observation>();
-                int maxTier = 0;
-                HashSet<SubmissionCenter> submissionCenters = new HashSet<SubmissionCenter>();
-                HashSet<String> roles = new HashSet<String>();
-                for (ObservedSubject observedSubject : findObservedSubjectBySubject((Subject) entity)) {
-                    observations.add(observedSubject.getObservation());
-                    ObservationTemplate observationTemplate = observedSubject.getObservation().getSubmission().getObservationTemplate();
-                    maxTier = Math.max(maxTier, observationTemplate.getTier());
-                    submissionCenters.add(observationTemplate.getSubmissionCenter());
-                    roles.add(observedSubject.getObservedSubjectRole().getSubjectRole().getDisplayName());
-                }
-                entityWithCounts.setObservationCount(observations.size());
-                entityWithCounts.setMaxTier(maxTier);
-                entityWithCounts.setRoles(roles);
-                entityWithCounts.setCenterCount(submissionCenters.size());
-            } else if(entity instanceof Submission) {
-                entityWithCounts.setObservationCount(findObservationsBySubmission((Submission) entity).size());
-                entityWithCounts.setMaxTier(((Submission) entity).getObservationTemplate().getTier());
-                entityWithCounts.setCenterCount(1);
-            }
-
-            entitiesWithCounts.add(entityWithCounts);
-        }
-
-        return entitiesWithCounts;
     }
 
     @Override

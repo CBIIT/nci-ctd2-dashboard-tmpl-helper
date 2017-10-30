@@ -19,7 +19,6 @@
     <bean class="gov.nih.nci.ctd2.dashboard.dao.internal.DashboardDaoImpl" id="dashboardDao">
         <property name="sessionFactory" ref="sessionFactory"/>
         <property name="dashboardFactory" ref="dashboardFactory"/>
-        <property name="maxNumberOfSearchResults" value="${search.max.number.results}"/>
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -30,7 +29,6 @@
                 <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
                 <prop key="hibernate.ejb.naming_strategy">${hibernate.ejb.naming_strategy}</prop>
                 <prop key="hibernate.connection.charSet">${hibernate.connection.charSet}</prop>
-                <prop key="hibernate.search.default.indexBase">${search.indexDir}</prop>
             </props>
         </property>
 

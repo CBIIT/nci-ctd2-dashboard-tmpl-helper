@@ -48,8 +48,6 @@ public interface DashboardDao {
     List<ObservedSubject> findObservedSubjectByObservation(Observation observation);
     List<ObservedEvidence> findObservedEvidenceByObservation(Observation observation);
     void batchSave(Collection<? extends DashboardEntity> entities, int batchSize);
-    void createIndex(int batchSize);
-    ArrayList<DashboardEntityWithCounts> search(String keyword);
     List<Submission> findSubmissionByIsStory(boolean isSubmissionStory, boolean sortByPriority);
     List<Submission> findSubmissionByObservationTemplate(ObservationTemplate observationTemplate);
     Submission findSubmissionByName(String submissionName);

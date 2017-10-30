@@ -6,10 +6,6 @@ import gov.nih.nci.ctd2.dashboard.model.Xref;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -18,7 +14,6 @@ import java.util.Set;
 @Entity
 @Proxy(proxyClass = Subject.class)
 @Table(name = "subject")
-@Indexed
 public class SubjectImpl extends DashboardEntityImpl implements Subject {
     public final static String FIELD_SYNONYM = "synonym";
     public final static String FIELD_SYNONYM_UT = "synonymUT";
@@ -38,10 +33,6 @@ public class SubjectImpl extends DashboardEntityImpl implements Subject {
         this.synonyms = synonyms;
     }
 
-    @Fields({
-            @Field(name = FIELD_SYNONYM, index = org.hibernate.search.annotations.Index.TOKENIZED, store = Store.YES),
-            @Field(name = FIELD_SYNONYM_UT, index = org.hibernate.search.annotations.Index.UN_TOKENIZED)
-    })
     @Transient
     public String getSynoynmStrings() {
         StringBuilder builder = new StringBuilder();

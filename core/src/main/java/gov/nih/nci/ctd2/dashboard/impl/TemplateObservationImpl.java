@@ -6,7 +6,6 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Indexed;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 import gov.nih.nci.ctd2.dashboard.model.TemplateObservation;
@@ -14,7 +13,6 @@ import gov.nih.nci.ctd2.dashboard.model.TemplateObservation;
 @Entity
 @Proxy(proxyClass = TemplateObservation.class)
 @Table(name = "template_observation")
-@Indexed
 public class TemplateObservationImpl extends DashboardEntityImpl implements TemplateObservation {
     private SubmissionTemplate submissionTemplate;
     private String[] subjectValues;

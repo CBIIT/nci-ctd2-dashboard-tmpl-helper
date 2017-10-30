@@ -2,17 +2,12 @@ package gov.nih.nci.ctd2.dashboard.impl;
 
 import gov.nih.nci.ctd2.dashboard.model.*;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
 
 import javax.persistence.*;
 
 @Entity
 @Proxy(proxyClass= ObservationTemplate.class)
 @Table(name = "observation_template")
-@Indexed
 public class ObservationTemplateImpl extends DashboardEntityImpl implements ObservationTemplate {
     public final static String FIELD_DESCRIPTION = "description";
     public final static String FIELD_SUBMISSIONDESC = "submissionDesc";
@@ -30,7 +25,6 @@ public class ObservationTemplateImpl extends DashboardEntityImpl implements Obse
     private SubmissionCenter submissionCenter;
     private String principalInvestigator;
 
-    @Field(name=FIELD_DESCRIPTION, index = Index.TOKENIZED)
     @Column(length = 1024)
     public String getDescription() {
         return description;
@@ -57,7 +51,6 @@ public class ObservationTemplateImpl extends DashboardEntityImpl implements Obse
         this.tier = tier;
     }
 
-    @Field(name=FIELD_SUBMISSIONNAME, index = Index.TOKENIZED)
     @Column(length = 128)
     public String getSubmissionName() {
         return submissionName;
@@ -67,7 +60,6 @@ public class ObservationTemplateImpl extends DashboardEntityImpl implements Obse
         this.submissionName = submissionName;
     }
 
-    @Field(name=FIELD_SUBMISSIONDESC, index = Index.TOKENIZED)
     @Column(length = 1024)
     public String getSubmissionDescription() {
         return submissionDescription;
@@ -77,7 +69,6 @@ public class ObservationTemplateImpl extends DashboardEntityImpl implements Obse
         this.submissionDescription = submissionDescription;
     }
     
-    @Field(name=FIELD_PROJECT, index = Index.TOKENIZED)
     @Column(length = 1024)
     public String getProject() {
         return project;

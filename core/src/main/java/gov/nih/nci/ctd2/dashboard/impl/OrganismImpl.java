@@ -3,8 +3,6 @@ package gov.nih.nci.ctd2.dashboard.impl;
 import gov.nih.nci.ctd2.dashboard.model.Gene;
 import gov.nih.nci.ctd2.dashboard.model.Organism;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
 
 import javax.persistence.*;
 
@@ -16,7 +14,6 @@ public class OrganismImpl extends DashboardEntityImpl implements Organism {
 
     private String taxonomyId;
 
-    @Field(name=FIELD_TAXID, index = Index.TOKENIZED)
     @Column(length = 32, nullable = false)
     public String getTaxonomyId() {
         return taxonomyId;

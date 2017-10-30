@@ -4,7 +4,6 @@ import gov.nih.nci.ctd2.dashboard.model.ShRna;
 import gov.nih.nci.ctd2.dashboard.model.Transcript;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +13,6 @@ import javax.persistence.Table;
 @Entity
 @Proxy(proxyClass = ShRna.class)
 @Table(name = "shrna")
-@Indexed
 public class ShRnaImpl extends SubjectWithOrganismImpl implements ShRna {
     private String targetSequence;
     private Transcript transcript;
