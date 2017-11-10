@@ -17,6 +17,9 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -43,6 +46,8 @@ import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 @Controller
 @RequestMapping("/template")
 public class TemplateController {
+    private static final Log log = LogFactory.getLog(TemplateController.class);
+
     @Autowired
     private DashboardDao dashboardDao;
 
@@ -87,6 +92,9 @@ public class TemplateController {
         template.setEvidenceTypes(new String[]{""});
         template.setValueTypes(new String[]{""});
         template.setEvidenceDescriptions(new String[]{""});
+
+        template.setObservationNumber(0);
+        template.setObservations("");
 
         dashboardDao.save(template);
 
@@ -286,6 +294,7 @@ public class TemplateController {
 
     private String[] uploadedFiles(Integer templateId) {
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
+        if(template.getObservations()==null) return new String[0]; // should not happen for correct data
         String[] valueTypes = template.getValueTypes();
         Integer observationNumber = template.getObservationNumber();
         int subjectColumnCount = template.getSubjectColumns().length;
@@ -491,9 +500,17 @@ public class TemplateController {
 
         Date date = template.getDateLastModified();
 
-        String[] obv = template.getObservations().split(",", -1);
+        String observations = template.getObservations();
+        if(observations==null) { // this should never happen for correct data
+            log.error("observtions field is null for template ID "+template.getId());
+            return;
+            /* At this point, the spreadsheet is not completely populated or formatted, still available nonetheless.*/
+        }
+        Integer observationNumber = template.getObservationNumber();
+        if(observationNumber==null) observationNumber = 0; // this should never happen for correct data
+        String[] obv = observations.split(",", -1);
         int index = 0;
-        for(int i=0; i<template.getObservationNumber(); i++) {
+        for(int i=0; i<observationNumber; i++) {
             row = sheet.createRow((short)(7+i));
             cell = row.createCell(1);
             cell.setCellValue(new SimpleDateFormat("yyyyMMdd-").format(date)+templateName);
@@ -574,6 +591,8 @@ public class TemplateController {
 
             zipOutputStream.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
