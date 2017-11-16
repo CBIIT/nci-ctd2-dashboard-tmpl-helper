@@ -533,7 +533,12 @@ public class TemplateController {
                         Cell mimeTypeRowCell = mimeTypeRow.createCell(subjects.length+j+4);
                         mimeTypeRowCell.setCellStyle(yellow);
                         mimeTypeRowCell.setCellValue( observationData.substring(mimeMark+7) );
-                        filename = observationData.substring( observationData.lastIndexOf(File.separator)+1, mimeMark );
+                        int lastPathSeparator = observationData.lastIndexOf(File.separator, mimeMark);
+                        if(lastPathSeparator<0 || lastPathSeparator+1>mimeMark) {
+                            log.error("invalid substring position ");
+                        } else {
+                            filename = observationData.substring( lastPathSeparator+1, mimeMark );
+                        }
                     } else { /* this is to support old data without mime type */
                         filename = observationData.substring(observationData.lastIndexOf(File.separator)+1);
                     }
@@ -560,8 +565,12 @@ public class TemplateController {
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
         HSSFWorkbook workbook = new HSSFWorkbook();
-        createMetaDataSheet(workbook, template);
-        createDataSheet(workbook, template);
+        try {
+            createMetaDataSheet(workbook, template);
+            createDataSheet(workbook, template);
+        } catch (Exception e) { /* safeguard data-caused exception */
+            e.printStackTrace();
+        }
 
         response.setContentType("application/zip");
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + ".zip\"");
