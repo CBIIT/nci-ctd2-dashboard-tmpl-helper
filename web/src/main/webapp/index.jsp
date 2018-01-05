@@ -723,7 +723,7 @@
                 <div class="alert alert-warning alert-block">
                   <a href="#" class="close" data-dismiss="alert">&times;</a>
                   <p>
-                    <strong>Welcome to the submission template helper!</strong><br>
+                    <strong>Welcome to the Submission Builder</strong><br>
                     This tool will help create a basic Dashboard submission template from scratch.
                     Once a basic template is prepared, the template can be downloaded for local use and preparation of a Dashboard submission.
                   </p>
