@@ -771,6 +771,11 @@ $ctd2.TempObservationView = Backbone.View.extend({
                     var i = obvContent.lastIndexOf('\\');
                     if (i < 0) i = obvContent.lastIndexOf('/');
                     if (i > 0) u = obvContent.substring(i + 1);
+                    // remove meme-type string
+                    var mime_index = u.indexOf("::");
+                    if(mime_index>0) {
+                        u = u.substring(0, mime_index);
+                    }
                 }
             }
             var cellModel = {
@@ -1031,11 +1036,12 @@ $ctd2.getObservations = function () {
                     }, false);
                     var file_size = file.size;
                     var file_type = file.type;
+                    var isSifFile = file_type=="" && file.name.toLowerCase().endsWith(".sif");
                     if(file_size>$ctd2.UPLOAD_SIZE_LIMIT) { 
                         $ctd2.showAlertMessage('Size of file '+file.name+' is '+file_size+' bytes and over the allowed limit, so it is ignored.');
                         $ctd2.observationArray[j * rows + i] = "";
                         $(c).val("");
-                    } else if (!$ctd2.UPLOAD_TYPES_ALLOWED.includes(file_type)) {
+                    } else if ( !($ctd2.UPLOAD_TYPES_ALLOWED.includes(file_type) || isSifFile) ) {
                         $ctd2.showAlertMessage('Type of file '+file.name+' is "'+file_type+'" and not allowed to be uploaded, so it is ignored.');
                         $ctd2.observationArray[j * rows + i] = "";
                         $(c).val("");
