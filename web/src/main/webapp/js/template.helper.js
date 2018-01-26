@@ -887,18 +887,24 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
         }
         var observedEvidences = [];
         for (var i = 0; i < obj.evidenceColumns.length; i++) {
+            var numericValue = observations[totalRows * obvIndex + subjectColumns.length + i];
+            if(obj.valueTypes[i]=='numeric' || obj.valueTypes[i]=='label')
+                evidenceValue = numericValue
+            else
+                evidenceValue = ""; // do not display for other value types
             observedEvidences.push({
                 evidence: {
                     id: 0, // TODO usage?
                     class: obj.valueTypes[i],
-                    displayName: 'EVIDENCE_NAME',// TODO this is required by the tempalte, but what is this for?
+                    displayName: evidenceValue, // this is needed in preview of observation summry
                     filePath: '', // TODO when needed
                     mimeType: '', // TODO add when needed
                     url: '', // TODO add when needed
-                    numericValue: observations[totalRows * obvIndex + subjectColumns.length + i], // This is put in the Details column in the preview.
+                    numericValue: numericValue, // This is put in the Details column in the preview.
                 },
                 id: i, // TODO usage?
                 observedEvidenceRole: {
+                    columnName: evidenceColumns[i],
                     evidenceRole: {
                         displayName: obj.evidenceTypes[i],
                     },
