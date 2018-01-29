@@ -499,6 +499,7 @@ public class TemplateController {
         }
 
         Date date = template.getDateLastModified();
+        String submissionName = getSubmissionName(template);
 
         String observations = template.getObservations();
         if(observations==null) { // this should never happen for correct data
@@ -513,7 +514,7 @@ public class TemplateController {
         for(int i=0; i<observationNumber; i++) {
             row = sheet.createRow((short)(7+i));
             cell = row.createCell(1);
-            cell.setCellValue(new SimpleDateFormat("yyyyMMdd-").format(date)+templateName);
+            cell.setCellValue(submissionName);
             cell = row.createCell(2);
             cell.setCellValue(new SimpleDateFormat("yyyy.MM.dd").format(date));
             cell = row.createCell(3);
@@ -542,7 +543,7 @@ public class TemplateController {
                     } else { /* this is to support old data without mime type */
                         filename = observationData.substring(observationData.lastIndexOf(File.separator)+1);
                     }
-                    observationData = filename;
+                    observationData = "./" + getZippedPath(filename, submissionName);
                 }
                 cell.setCellValue( observationData );
                 index++;
@@ -576,6 +577,8 @@ public class TemplateController {
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + ".zip\"");
         response.addHeader("Content-Transfer-Encoding", "binary");
 
+        String submissionName = getSubmissionName(template);
+
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             workbook.write(outputStream);
@@ -590,10 +593,11 @@ public class TemplateController {
             for(String f : files) {
                 Path path = Paths.get(f);
                 if(!path.toFile().exists()) { // this should not happen, but be cautious anyway
-                    System.out.println("ERROR: uploaded file "+path.toFile()+" not found");
+                    log.error("ERROR: uploaded file "+path.toFile()+" not found");
                     continue; 
                 }
-                zipOutputStream.putNextEntry(new ZipEntry( path.toFile().getName() ));
+                String zippedFileName = path.toFile().getName();
+                zipOutputStream.putNextEntry(new ZipEntry( getZippedPath(zippedFileName, submissionName) ));
                 zipOutputStream.write(Files.readAllBytes( path ));
                 zipOutputStream.closeEntry();
             }
@@ -604,5 +608,24 @@ public class TemplateController {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    static private String getZippedPath(String zippedFileName, String submissionName) {
+        String pathZipped = "submissions/"+submissionName+"/";
+        String lowercase = zippedFileName.toLowerCase();
+        boolean hasImageFileExtension = false;
+        if(lowercase.endsWith("png") || lowercase.endsWith("jpeg") || lowercase.endsWith("jpg")) {
+            hasImageFileExtension = true;
+        }
+        if(hasImageFileExtension) {
+            pathZipped += "images/";
+        }
+        return pathZipped + zippedFileName;
+    }
+
+    static private String getSubmissionName(SubmissionTemplate template) {
+        String templateName = template.getDisplayName();
+        Date date = template.getDateLastModified();
+        return new SimpleDateFormat("yyyyMMdd-").format(date)+templateName;
     }
 }
