@@ -543,7 +543,11 @@ public class TemplateController {
                     } else { /* this is to support old data without mime type */
                         filename = observationData.substring(observationData.lastIndexOf(File.separator)+1);
                     }
-                    observationData = "./" + getZippedPath(filename, submissionName);
+                    if(filename.length()>0) {
+                        observationData = "./" + getZippedPath(filename, submissionName);
+                    } else {
+                        observationData = "";
+                    }
                 }
                 cell.setCellValue( observationData );
                 index++;
