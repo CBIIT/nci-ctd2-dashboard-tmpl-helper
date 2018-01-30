@@ -306,25 +306,21 @@ public class TemplateController {
             if(valueTypes[i].equals("file")) {
                 for(int j=0; j<observationNumber; j++) {
                     int index = columnTagCount*j + subjectColumnCount + i;
-                    String obv = observations[index];
-                    if(obv==null || obv.trim().length()==0) {
+                    String fileInfo = observations[index];
+                    if(fileInfo==null || fileInfo.trim().length()==0) {
                         continue;
                     }
-                    int mimeMark = obv.indexOf("::");
+                    // remove mime type
+                    int mimeMark = fileInfo.indexOf("::");
                     if(mimeMark>=0) {
-                        obv = obv.substring(0, mimeMark);
+                        fileInfo = fileInfo.substring(0, mimeMark);
                     }
-                    if(!new File(obv).exists()) { /* keep the first check so it also works when the absolute path is used*/
-                        if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
-                            uploadLocation = uploadLocation + File.separator;
-                        }
-                        obv = uploadLocation + obv;
-                        if(!new File(obv).exists()) {
-                            System.out.println(obv+" not existing. evidence#="+i+" observation#="+j+" index="+index);
-                            continue;
-                        }
-                    }
-                    files.add(obv);
+                    // ignore possible subdirectory names
+                    int sep = fileInfo.lastIndexOf('/');
+                    if(sep>=0) fileInfo = fileInfo.substring(sep+1);
+                    sep = fileInfo.lastIndexOf('\\');
+                    if(sep>0) fileInfo = fileInfo.substring(sep+1);
+                    files.add(fileInfo);
                 }
             }
         }
@@ -593,16 +589,20 @@ public class TemplateController {
             zipOutputStream.write(outputStream.toByteArray());
             zipOutputStream.closeEntry();
 
+            Integer centerId = template.getSubmissionCenter().getId();
             String[] files = uploadedFiles(templateId);
-            for(String f : files) {
-                Path path = Paths.get(f);
-                if(!path.toFile().exists()) { // this should not happen, but be cautious anyway
-                    log.error("ERROR: uploaded file "+path.toFile()+" not found");
+            for(String fname : files) {
+                if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
+                    uploadLocation = uploadLocation + File.separator;
+                }
+                String fullpath = uploadLocation + centerId + File.separator + templateId + File.separator + fname;
+                Path savedPath = Paths.get(fullpath);
+                if(!savedPath.toFile().exists()) { // this should not happen, but be cautious anyway
+                    log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
                     continue; 
                 }
-                String zippedFileName = path.toFile().getName();
-                zipOutputStream.putNextEntry(new ZipEntry( getZippedPath(zippedFileName, submissionName) ));
-                zipOutputStream.write(Files.readAllBytes( path ));
+                zipOutputStream.putNextEntry(new ZipEntry( getZippedPath(fname, submissionName) ));
+                zipOutputStream.write(Files.readAllBytes( savedPath ));
                 zipOutputStream.closeEntry();
             }
 
