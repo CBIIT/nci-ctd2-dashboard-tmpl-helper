@@ -768,14 +768,17 @@ $ctd2.TempObservationView = Backbone.View.extend({
                     || (obvContent.length>200 && obvContent.includes("base64:"))) {
                     // don't display if it is the content intead of the filename
                 } else {
-                    var i = obvContent.lastIndexOf('\\');
-                    if (i < 0) i = obvContent.lastIndexOf('/');
-                    if (i > 0) u = obvContent.substring(i + 1);
                     // remove meme-type string
-                    var mime_index = u.indexOf("::");
+                    var mime_index = obvContent.indexOf("::");
                     if(mime_index>0) {
-                        u = u.substring(0, mime_index);
+                        u = obvContent.substring(0, mime_index);
+                    } else {
+                        u = obvContent;
                     }
+                    var i = u.lastIndexOf('\\');
+                    if (i >= 0) u = u.substring(i+1);
+                    i = u.lastIndexOf('/');
+                    if (i >= 0) u = u.substring(i+1);
                 }
             }
             var cellModel = {
@@ -889,7 +892,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
         for (var i = 0; i < obj.evidenceColumns.length; i++) {
             var numericValue = observations[totalRows * obvIndex + subjectColumns.length + i];
             if(obj.valueTypes[i]=='numeric' || obj.valueTypes[i]=='label')
-                evidenceValue = numericValue
+                evidenceValue = numericValue;
             else
                 evidenceValue = ""; // do not display for other value types
             observedEvidences.push({

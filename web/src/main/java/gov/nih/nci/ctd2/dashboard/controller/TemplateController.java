@@ -214,6 +214,8 @@ public class TemplateController {
         if(p!=null)
             previousObservations = p.split(",", -1);
 
+        String fileLocation = getFileLocationPerTemplate(template);
+
         int subjectColumnCount = subjects.length;
         int evidenceColumnCount = evidences.length;
         int columnTagCount = subjectColumnCount + evidenceColumnCount;
@@ -231,21 +233,16 @@ public class TemplateController {
                         if(index<previousObservations.length)observations[index] = previousObservations[index];
                         continue; // prevent later null pointer exception
                     }
-                    if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing
-                        uploadLocation = uploadLocation + File.separator;
-                    }
-                    Integer centerId = template.getSubmissionCenter().getId();
-                    String directoryName = uploadLocation + centerId + File.separator + templateId;
-                    File directory = new File(directoryName);
+                    File directory = new File(fileLocation);
                     boolean okDirectory = directory.isDirectory();
                     if(!directory.exists()) {
                         okDirectory = directory.mkdirs();
                     }
                     if(!okDirectory) {
                         return new ResponseEntity<String>("SubmissionTemplate " + templateId 
-                            + " NOT updated because the subdirectory "+directoryName+" cannot be created", HttpStatus.INTERNAL_SERVER_ERROR);
+                            + " NOT updated because the subdirectory "+fileLocation+" cannot be created", HttpStatus.INTERNAL_SERVER_ERROR);
                     }
-                    String filename = directoryName + File.separator + obv.substring(0, obv.indexOf(":"));
+                    String filename = fileLocation + obv.substring(0, obv.indexOf(":"));
                     FileOutputStream stream = null;
                     try {
                         byte[] bytes = DatatypeConverter.parseBase64Binary(obv.substring( obv.indexOf("base64:")+7 ));
@@ -263,7 +260,7 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    String relativePathAndMimeType = centerId + File.separator + templateId + File.separator + obv.substring(0, obv.indexOf(";base64"));
+                    String relativePathAndMimeType = obv.substring(0, obv.indexOf(";base64"));
                     observations[index] = relativePathAndMimeType;
                 }
             }
@@ -532,7 +529,7 @@ public class TemplateController {
                         mimeTypeRowCell.setCellValue( observationData.substring(mimeMark+7) );
                         int lastPathSeparator = observationData.lastIndexOf(File.separator, mimeMark);
                         if(lastPathSeparator<0 || lastPathSeparator+1>mimeMark) {
-                            log.error("invalid substring position ");
+                            filename = observationData.substring( 0, mimeMark ); // the new code only stores the filname without directories
                         } else {
                             filename = observationData.substring( lastPathSeparator+1, mimeMark );
                         }
@@ -589,14 +586,10 @@ public class TemplateController {
             zipOutputStream.write(outputStream.toByteArray());
             zipOutputStream.closeEntry();
 
-            Integer centerId = template.getSubmissionCenter().getId();
+            String fileLocation = getFileLocationPerTemplate(template);
             String[] files = uploadedFiles(templateId);
             for(String fname : files) {
-                if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
-                    uploadLocation = uploadLocation + File.separator;
-                }
-                String fullpath = uploadLocation + centerId + File.separator + templateId + File.separator + fname;
-                Path savedPath = Paths.get(fullpath);
+                Path savedPath = Paths.get(fileLocation + fname);
                 if(!savedPath.toFile().exists()) { // this should not happen, but be cautious anyway
                     log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
                     continue; 
@@ -631,5 +624,12 @@ public class TemplateController {
         String templateName = template.getDisplayName();
         Date date = template.getDateLastModified();
         return new SimpleDateFormat("yyyyMMdd-").format(date)+templateName;
+    }
+
+    private String getFileLocationPerTemplate(SubmissionTemplate template) {
+        if(!uploadLocation.endsWith(File.separator)) { // safe-guard the possible missing separator
+            uploadLocation = uploadLocation + File.separator;
+        }
+        return uploadLocation + template.getSubmissionCenter().getId() + File.separator + template.getId() + File.separator;
     }
 }
