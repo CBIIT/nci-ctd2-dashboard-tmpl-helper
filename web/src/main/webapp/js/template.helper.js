@@ -202,7 +202,8 @@ $ctd2.updateModel_2 = function (triggeringButton) {
 
     $ctd2.validate = function () {
         var message = '';
-        for (var i = 0; i < subjects.length; i++) {
+        var i = 0;
+        for (i = 0; i < subjects.length; i++) {
             if (subjects[i] == null || subjects[i] == "") {
                 subjects[i] = "MISSING_TAG"; // double safe-guard the list itself not be mis-interpreted as empty
                 message += "<li>subject column tag cannot be empty";
@@ -211,7 +212,7 @@ $ctd2.updateModel_2 = function (triggeringButton) {
         if ($ctd2.hasDuplicate(subjects)) {
             message += "<li>There is duplicate in subject column tags. This is not allowed.";
         }
-        for (var i = 0; i < evidences.length; i++) {
+        for (i = 0; i < evidences.length; i++) {
             if (evidences[i] == null || evidences[i] == "") {
                 evidences[i] = "MISSING_TAG"; // double safe-guard the list itself not be mis-interpreted as empty
                 message += "<li>evidence column tag cannot be empty";
@@ -221,7 +222,7 @@ $ctd2.updateModel_2 = function (triggeringButton) {
             message += "<li>There is duplicate in evidence column tags. This is not allowed.";
         }
         return message;
-    }
+    };
 
     var subjects = $ctd2.getArray('#template-table-subject input.subject-columntag');
     var subjectClasses = $ctd2.getArray('#template-table-subject select.subject-classes');
@@ -315,7 +316,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
                         compound = compound.toJSON();
                         _.each(compound.xrefs, function (xref) {
                             if (xref.databaseName == "IMAGE") {
-                                compound["imageFile"] = xref.databaseId;
+                                compound.imageFile = xref.databaseId;
                             }
                         });
 
@@ -412,7 +413,7 @@ $ctd2.ObservedSubjectSummaryRowView = Backbone.View.extend({
         var result = this.model;
         if (result.subject == null) return;
         if (result.subject.type == undefined) {
-            result.subject["type"] = result.subject.class;
+            result.subject.type = result.subject.class;
         }
 
         if (result.subject.class != "Gene") {
@@ -421,7 +422,7 @@ $ctd2.ObservedSubjectSummaryRowView = Backbone.View.extend({
         } else {
             this.template = _.template($("#observedsubject-gene-summary-row-tmpl").html());
             $(this.el).append(this.template(result));
-            var currentGene = result.subject["displayName"];
+            var currentGene = result.subject.displayName;
 
             $(".addGene-" + currentGene).click(function (e) {
                 e.preventDefault();
@@ -439,7 +440,7 @@ $ctd2.ObservedEvidenceRowView = Backbone.View.extend({
     render: function () {
         var result = this.model;
         var type = result.evidence.class;
-        result.evidence["type"] = type;
+        result.evidence.type = type;
 
         if (result.observedEvidenceRole == null) {
             result.observedEvidenceRole = {
@@ -587,7 +588,7 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     break;
                 default: /* this should never happen */
                     alert('template #' + templateId + ': action ' + action + ' clicked');
-            };
+            }
             $(this).val('');
         });
         return this;
@@ -598,12 +599,12 @@ $ctd2.popupLargeTextfield = function() {
     $("#invoker-id").text( $(this).attr('id') );
     $("#temporary-text").val( $(this).val() );
     $("#popup-textarea-modal").modal('show');
-}
+};
 
 $ctd2.closeLargeTextfield = function() {
     var invoker_id = $("#invoker-id").text();
     $('#'+invoker_id).val( $("#temporary-text").val() );
-}
+};
 
 $ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
     template: _.template($("#template-subject-data-row-tmpl").html()),
@@ -627,7 +628,7 @@ $ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
                 console.log("error: roleOption is undefined for subject class " + sc);
                 // because this happens for previous stored data, let's allow this
                 //return;
-                roleOptions = $ctd2.subjectRoles['gene'];
+                roleOptions = $ctd2.subjectRoles.gene;
             }
             $('#role-dropdown-' + columnTagId).empty();
             for (var i = 0; i < roleOptions.length; i++) {
@@ -685,7 +686,7 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
             if (evidenceTypeOptions === undefined) { // exceptional case
                 console.log('incorrect value type: ' + vt);
                 //return;
-                evidenceTypeOptions = $ctd2.evidenceTypes['numeric'];
+                evidenceTypeOptions = $ctd2.evidenceTypes.numeric;
             }
             $('#evidence-type-' + columnTagId).empty();
             for (var i = 0; i < evidenceTypeOptions.length; i++) {
@@ -696,9 +697,6 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
             }
         };
         resetEvidenceTypeDropdown(this.model.valueType, this.model.evidenceType);
-        $('#value-type-' + columnTagId).change(function () {
-            resetEvidenceTypeDropdown($(this).val(), null);
-        });
 
         // render observation cells for one row (evidence column tag)
         var tableRow = $('#template-evidence-row-columntag-' + columnTagId);
@@ -717,8 +715,11 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
             var prev_type = fields[0].type;
             var new_type = $(this).val();
             if (new_type != prev_type) {
+                resetEvidenceTypeDropdown(new_type, null);
                 for (var i = 0; i < fields.length; i++) {
                     fields[i].type = new_type;
+                    $(fields[i]).val('');
+                    $(fields[i]).parent().find(".uploaded").empty();
                 }
             }
         });
@@ -764,8 +765,8 @@ $ctd2.TempObservationView = Backbone.View.extend({
             var obvContent = obvModel.observations[column];
             var u = '';
             if (obvModel.obvsType == 'file') {
-                if (obvContent === undefined || obvContent == null || obvContent == "undefined"
-                    || (obvContent.length>200 && obvContent.includes("base64:"))) {
+                if (obvContent === undefined || obvContent == null || obvContent == "undefined" ||
+                    (obvContent.length>200 && obvContent.includes("base64:"))) {
                     // don't display if it is the content intead of the filename
                 } else {
                     // remove meme-type string
@@ -790,9 +791,8 @@ $ctd2.TempObservationView = Backbone.View.extend({
             };
             var obvTemp = this.template(cellModel);
             $(this.el).append(obvTemp);
-            var uploaded = $(this.el).find(".uploaded");
             $(this.el).find("input").change(function() {
-                $(uploaded).text("");
+                $(this).parent().find(".uploaded").empty();
             } );
         }
 
@@ -871,7 +871,8 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
         var totalRows = subjectColumns.length + evidenceColumns.length;
 
         var observedSubjects = [];
-        for (var i = 0; i < subjectColumns.length; i++) {
+        var i = 0;
+        for (i = 0; i < subjectColumns.length; i++) {
             observedSubjects.push({
                 subject: {
                     id: 0, // TODO proper value needed for the correct image? 
@@ -889,7 +890,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
             });
         }
         var observedEvidences = [];
-        for (var i = 0; i < obj.evidenceColumns.length; i++) {
+        for (i = 0; i < obj.evidenceColumns.length; i++) {
             var numericValue = observations[totalRows * obvIndex + subjectColumns.length + i];
             if(obj.valueTypes[i]=='numeric' || obj.valueTypes[i]=='label')
                 evidenceValue = numericValue;
@@ -1069,7 +1070,7 @@ $ctd2.dataReady = true;
 $ctd2.updateModel_2_sync = function (triggeringButton) {
     $ctd2.getObservations(); // this set $ctd2.dataReady to be false until the data is ready
     $ctd2.processObservationArray(triggeringButton);
-}
+};
 
 $ctd2.processObservationArray = function (triggeringButton) {
     if ($ctd2.dataReady === true) {
@@ -1077,7 +1078,7 @@ $ctd2.processObservationArray = function (triggeringButton) {
         return;
     }
     setTimeout($ctd2.processObservationArray, 1000, triggeringButton);
-}
+};
 
 $ctd2.hasDuplicate = function (a) {
     if (!Array.isArray(a)) {
@@ -1093,7 +1094,7 @@ $ctd2.hasDuplicate = function (a) {
         tmp.push(a[i]);
     }
     return false;
-}
+};
 
 $ctd2.updateTemplate = function (triggeringButton) {
 
@@ -1113,9 +1114,9 @@ $ctd2.updateTemplate = function (triggeringButton) {
             triggeringButton.removeAttr("disabled");
             // response.responseText is an HTML page
             console.log(status + ": " + response.responseText);
-            $ctd2.showInvalidMessage("The template data was NOT saved to the server for some unexpected error. "
-            +"Please contact the administrator of this application to help finding out the specific cause and fixing it. "
-            +"Sorry for the inconvenience.");
+            $ctd2.showInvalidMessage("The template data was NOT saved to the server for some unexpected error. " +
+                "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+                "Sorry for the inconvenience.");
         }
     });
 };
@@ -1137,8 +1138,8 @@ $ctd2.saveNewTemplate = function (sync) {
     var isStory = $("#template-is-story").is(':checked');
     var storyTitle = $('#story-title').val();
 
-    if (firstName.length == 0 || lastName.length == 0
-        || submissionName.length == 0) {
+    if (firstName.length == 0 || lastName.length == 0 ||
+            submissionName.length == 0) {
         console.log("not saved due to incomplete information");
         $("#save-name-description").removeAttr("disabled");
         $ctd2.showAlertMessage("new template cannot be created withnot required information: first name, last name, and a submission name");
@@ -1213,7 +1214,7 @@ $ctd2.clone = function (templateId) {
             $("#template-table-row-" + tmpltModel.id).removeAttr("disabled");
         }
     });
-}
+};
 
 $ctd2.addNewSubject = function (tag) {
     var tagid = $("#template-table-subject tr").length - 1;
@@ -1265,9 +1266,10 @@ $ctd2.populateOneTemplate = function () {
     var observationNumber = rowModel.observationNumber;
     var evidenceColumns = rowModel.evidenceColumns;
 
+    var column = 0;
     // make headers for observation part
     $("th.observation-header").remove();
-    for (var column = 1; column <= observationNumber; column++) {
+    for (column = 1; column <= observationNumber; column++) {
         var deleteButton = "delete-column-" + column;
         $("#template-table tr#subject-header").append("<th class=observation-header>Observation " + column + "<br>(<button class='btn btn-link' id='" + deleteButton + "'>delete</button>)</th>");
         $("#template-table tr#evidence-header").append("<th class=observation-header>Observation " + column + "</th>");
@@ -1280,14 +1282,15 @@ $ctd2.populateOneTemplate = function () {
         rowModel.subjectDescriptions[0] = rowModel.subjectDescriptions.toString(); // prevent the single element containing commas being treated as an array
     }
 
+    var i = 0;
     var subjectRows = subjectColumns.length;
     var evidenceRows = evidenceColumns.length;
     var totalRows = subjectRows + evidenceRows;
-    for (var i = 0; i < subjectColumns.length; i++) {
-        var observationsPerRow = new Array(observationNumber);
-        for (var column = 0; column < observationNumber; column++) {
-            observationsPerRow[column] = observations[totalRows * column + i];
-        };
+    for (i = 0; i < subjectColumns.length; i++) {
+        var observationsPerSubject = new Array(observationNumber);
+        for (column = 0; column < observationNumber; column++) {
+            observationsPerSubject[column] = observations[totalRows * column + i];
+        }
 
         (new $ctd2.TemplateSubjectDataRowView({
             model: {
@@ -1298,7 +1301,7 @@ $ctd2.populateOneTemplate = function () {
                 subjectDescription: rowModel.subjectDescriptions[i],
                 totalRows: totalRows, row: i,
                 observationNumber: observationNumber,
-                observations: observationsPerRow
+                observations: observationsPerSubject
             },
             el: $("#template-table-subject")
         })).render();
@@ -1312,11 +1315,11 @@ $ctd2.populateOneTemplate = function () {
     if(Array.isArray( evidenceDescriptions) && evidenceColumns.length==1) {
         evidenceDescriptions[0] = evidenceDescriptions.toString(); // prevent the single element containing commas being treated as an array
     }
-    for (var i = 0; i < evidenceColumns.length; i++) {
-        var observationsPerRow = new Array(observationNumber);
-        for (var column = 0; column < observationNumber; column++) {
-            observationsPerRow[column] = observations[totalRows * column + i + subjectRows];
-        };
+    for (i = 0; i < evidenceColumns.length; i++) {
+        var observationsPerEvidence = new Array(observationNumber);
+        for (column = 0; column < observationNumber; column++) {
+            observationsPerEvidence[column] = observations[totalRows * column + i + subjectRows];
+        }
         (new $ctd2.TemplateEvidenceDataRowView({
             model: {
                 columnTagId: i,
@@ -1326,7 +1329,7 @@ $ctd2.populateOneTemplate = function () {
                 evidenceDescription: evidenceDescriptions[i],
                 totalRows: totalRows, row: i + subjectRows,
                 observationNumber: observationNumber,
-                observations: observationsPerRow
+                observations: observationsPerEvidence
             },
             el: $("#template-table-evidence")
         })).render();
@@ -1335,7 +1338,7 @@ $ctd2.populateOneTemplate = function () {
 
     $("#template-obs-summary").val(rowModel.summary);
     $ctd2.updatePreview();
-}
+};
 
 $ctd2.updatePreview = function () { // this should be called when the template data (model) changes
     $("#preview-select").empty();
@@ -1414,9 +1417,10 @@ $ctd2.showAlertMessage = function(message) {
     $("#alertMessage").html(message);
     $("#alertMessage").css('color', '#5a5a5a');   
     $("#alert-message-modal").modal('show');
-}
+};
+
 $ctd2.showInvalidMessage = function(message) {
     $("#alertMessage").text(message);
     $("#alertMessage").css('color', 'red');
     $("#alert-message-modal").modal('show');
-}
+};
