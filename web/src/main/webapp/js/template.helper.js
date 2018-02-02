@@ -109,12 +109,10 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
 
         $("#save-template-submission-data").click(function () {
             console.log("saving the submission data ...");
-            $ctd2.updateModel_2_sync($(this));
-            //$ctd2.updateTemplate($(this));
+            $ctd2.update_model_from_submission_data_page($(this));
         });
         $("#apply-template-submission-data").click(function () {
-            $ctd2.updateModel_2_sync($(this));
-            //$ctd2.updateTemplate($(this));
+            $ctd2.update_model_from_submission_data_page($(this));
             if ($ctd2.saveSuccess) {
                 $("#step4").fadeOut();
                 $ctd2.populateTagList();
@@ -198,7 +196,8 @@ $ctd2.updateModel_1 = function () {
     });
 };
 
-$ctd2.updateModel_2 = function (triggeringButton) {
+/* this is the last step on the 'Submission Data' page after possible background reading is done */
+$ctd2.update_after_all_data_ready = function (triggeringButton) {
 
     $ctd2.validate = function () {
         var message = '';
@@ -1019,62 +1018,84 @@ $ctd2.UPLOAD_SIZE_LIMIT = 10485760; // 10 MB
 $ctd2.UPLOAD_TYPES_ALLOWED = ['image/png', 'image/jpeg', 'application/pdf', 'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 $ctd2.observationArray = [];
+$ctd2.file_number = 0;
+$ctd2.finished_file_number = 0;
 $ctd2.getObservations = function () {
     var columns = $(".observation-header").length / 2;
     var rows = $("#template-table tr").length - 4; // two rows for subject/evidence headers, two rows for the headers of each section
     $ctd2.observationArray = new Array(rows * columns);
+
+    $ctd2.file_number = 0;
+    $ctd2.finished_file_number = 0;
+
     $("#template-table tr.template-data-row").each(function (i, row) {
         $(row).find("[id^=observation]").each(function (j, c) {
-            $ctd2.observationArray[j * rows + i] = $(c).val();
+            var reader;
 
-            var id = $(c).attr('id');
-            var index = id.indexOf('-', 12); // skip the first dash
-            var columntag = $(c).attr('id').substring(index + 1);
+            var cell_id = $(c).attr('id');
+            var columntag = cell_id.substring( cell_id.indexOf('-', 12) + 1 ); // skip the first dash
             var valuetype = $("#value-type-" + columntag).val();
-            if (valuetype == 'file') {
+            if (valuetype != 'file') {
+                $ctd2.observationArray[j * rows + i] = $(c).val();
+            } else { // if the value type is 'file', a reading thread would be started
                 var p = $(c).prop('files');
                 if (p != null && p.length > 0) {
                     var file = p[0];
-                    $ctd2.dataReady = true;
-                    var reader = new FileReader();
-                    var savebutton = $("#save-template-submission-data");
-                    reader.addEventListener("load", function () {
-                        var filecontent = reader.result.replace("base64,", "base64:"); // comma breaks later processing
-                        $ctd2.observationArray[j * rows + i] = file.name + "::" + filecontent;
-                        savebutton.removeAttr("disabled");
-                        $ctd2.dataReady = true;
-                    }, false);
-                    var file_size = file.size;
-                    var file_type = file.type;
-                    var isSifFile = file_type=="" && file.name.toLowerCase().endsWith(".sif");
-                    if(file_size>$ctd2.UPLOAD_SIZE_LIMIT) { 
-                        $ctd2.showAlertMessage('Size of file '+file.name+' is '+file_size+' bytes and over the allowed limit, so it is ignored.');
+
+                    var isSifFile = file.type=="" && file.name.toLowerCase().endsWith(".sif");
+                    if(file.size>$ctd2.UPLOAD_SIZE_LIMIT) { 
+                        $ctd2.showAlertMessage('Size of file '+file.name+' is '+file.size+' bytes and over the allowed limit, so it is ignored.');
                         $ctd2.observationArray[j * rows + i] = "";
                         $(c).val("");
-                    } else if ( !($ctd2.UPLOAD_TYPES_ALLOWED.includes(file_type) || isSifFile) ) {
-                        $ctd2.showAlertMessage('Type of file '+file.name+' is "'+file_type+'" and not allowed to be uploaded, so it is ignored.');
+                    } else if ( !($ctd2.UPLOAD_TYPES_ALLOWED.includes(file.type) || isSifFile) ) {
+                        $ctd2.showAlertMessage('Type of file '+file.name+' is "'+file.type+'" and not allowed to be uploaded, so it is ignored.');
                         $ctd2.observationArray[j * rows + i] = "";
                         $(c).val("");
                     } else {
-                        $ctd2.dataReady = false;
-                        savebutton.attr("disabled", "disabled");
+                        reader = new FileReader();
+                        reader.addEventListener("load", function () {
+                                var filecontent = reader.result.replace("base64,", "base64:"); // comma breaks later processing
+                                $ctd2.observationArray[j * rows + i] = file.name + "::" + filecontent;
+                                $ctd2.finished_file_number++;
+                            }, false);
                         reader.readAsDataURL(file);
+
+                        $ctd2.file_number++;
                     }
+                } else {
+                    $ctd2.observationArray[j * rows + i] = "";
                 }
             }
         });
     });
+    // when this function returns here, there are possibly multiple background threads started by this function that are reading files
 };
 
-$ctd2.dataReady = true;
-$ctd2.updateModel_2_sync = function (triggeringButton) {
-    $ctd2.getObservations(); // this set $ctd2.dataReady to be false until the data is ready
+// on 'Submission Data' page
+$ctd2.disable_saving_buttons = function() {
+    $("#save-template-submission-data").attr("disabled", "disabled");
+    $("#apply-template-submission-data").attr("disabled", "disabled");
+};
+
+// on 'Submission Data' page
+$ctd2.enable_saving_buttons = function() {
+    $("#save-template-submission-data").removeAttr("disabled");
+    $("#apply-template-submission-data").removeAttr("disabled");
+};
+
+$ctd2.update_model_from_submission_data_page = function (triggeringButton) {
+    $ctd2.disable_saving_buttons();
+    $ctd2.getObservations(); // this may have started multiple threads reading the evidence files
     $ctd2.processObservationArray(triggeringButton);
 };
 
+/* this function's purpose is to keep checking the threads started by $ctd2.getObservations()
+    if finished, it continues to call $ctd2.updateModelAfterAllDataAreReady(...)
+    if not, wait 1 second and check again. */
 $ctd2.processObservationArray = function (triggeringButton) {
-    if ($ctd2.dataReady === true) {
-        $ctd2.updateModel_2(triggeringButton);
+    if ($ctd2.file_number === $ctd2.finished_file_number) {
+        $ctd2.update_after_all_data_ready(triggeringButton);
+        $ctd2.enable_saving_buttons(); //re-enable the save button when all reading is done
         return;
     }
     setTimeout($ctd2.processObservationArray, 1000, triggeringButton);
