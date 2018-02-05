@@ -81,54 +81,59 @@ public class SpreadsheetCreator {
             c.setCellStyle(headerStyle);
         }
 
-        String templateName = template.getDisplayName();
-        Date date = template.getDateLastModified();
+        HSSFFont infoFont = (HSSFFont) workbook.createFont();
+        infoFont.setFontName("Courier New");
+        HSSFCellStyle infoStyle = workbook.createCellStyle();
+        infoStyle.setFont(infoFont);
 
+        String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(), "",
+                submissionName, template.getDescription(), template.getProject(), template.getIsStory().toString(), "0",
+                template.getSubmissionCenter().getDisplayName(), "" };
         HSSFRow row0 = sheet.createRow((short) 1);
-        row0.createCell(0).setCellValue(template.getTier());
-        row0.createCell(1).setCellValue(templateName);
-        row0.createCell(2).setCellValue(template.getSummary());
-        row0.createCell(3).setCellValue("");
-        row0.createCell(4).setCellValue(new SimpleDateFormat("yyyyMMdd-").format(date) + templateName);
-        row0.createCell(5).setCellValue(template.getDescription());
-        row0.createCell(6).setCellValue(template.getProject());
-        row0.createCell(7).setCellValue(template.getIsStory());
-        row0.createCell(8).setCellValue(0);
-        row0.createCell(9).setCellValue(template.getSubmissionCenter().getDisplayName());
-        row0.createCell(10).setCellValue("");
+        for (int i = 0; i < templateInfo.length; i++) {
+            Cell c = row0.createCell(i);
+            c.setCellValue(templateInfo[i]);
+            c.setCellStyle(infoStyle);
+        }
 
         for (int i = 0; i < 11; i++) {
             sheet.autoSizeColumn(i);
         }
-
-        HSSFFont font2 = (HSSFFont) workbook.createFont();
-        font2.setFontName("Courier New");
-        HSSFCellStyle style2 = workbook.createCellStyle();
-        style2.setFont(font2);
-        row0.setRowStyle(style2);
     }
 
     private void createDataSheet(HSSFWorkbook workbook) {
         String templateName = template.getDisplayName();
         HSSFSheet sheet = workbook.createSheet(templateName);
 
+        HSSFFont calibri = (HSSFFont) workbook.createFont();
+        calibri.setFontName("Calibri");
+        calibri.setFontHeightInPoints((short)11);
+        HSSFFont calibriBold = (HSSFFont) workbook.createFont();
+        calibriBold.setFontName("Calibri");
+        calibriBold.setBold(true);
+        calibriBold.setFontHeightInPoints((short)11);
+
         CellStyle header = workbook.createCellStyle();
         header.setBorderBottom(BorderStyle.THIN);
+        header.setFont(calibri);
 
         CellStyle blue = workbook.createCellStyle();
         blue.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);
         blue.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         blue.setBorderBottom(BorderStyle.HAIR);
+        blue.setFont(calibriBold);
 
         CellStyle green = workbook.createCellStyle();
         green.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
         green.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         green.setBorderBottom(BorderStyle.HAIR);
+        green.setFont(calibriBold);
 
         CellStyle yellow = workbook.createCellStyle();
         yellow.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
         yellow.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         yellow.setBorderBottom(BorderStyle.HAIR);
+        yellow.setFont(calibriBold);
 
         HSSFRow rowhead = sheet.createRow((short) 0);
         rowhead.setRowStyle(header);
@@ -228,6 +233,11 @@ public class SpreadsheetCreator {
 
         Date date = template.getDateLastModified();
 
+        HSSFFont infoFont = (HSSFFont) workbook.createFont();
+        infoFont.setFontName("Courier New");
+        HSSFCellStyle infoStyle = workbook.createCellStyle();
+        infoStyle.setFont(infoFont);
+
         String observations = template.getObservations();
         if (observations == null) { // this should never happen for correct data
             log.error("observtions field is null for template ID " + template.getId());
@@ -244,13 +254,17 @@ public class SpreadsheetCreator {
             row = sheet.createRow((short) (7 + i));
             cell = row.createCell(1);
             cell.setCellValue(submissionName);
+            cell.setCellStyle(infoStyle);
             cell = row.createCell(2);
             cell.setCellValue(new SimpleDateFormat("yyyy.MM.dd").format(date));
+            cell.setCellStyle(infoStyle);
             cell = row.createCell(3);
             cell.setCellValue(templateName);
+            cell.setCellStyle(infoStyle);
             for (int j = 0; j < subjects.length; j++) {
                 cell = row.createCell(j + 4);
                 cell.setCellValue(obv[index]);
+                cell.setCellStyle(infoStyle);
                 index++;
             }
             for (int j = 0; j < evd.length; j++) {
@@ -284,6 +298,7 @@ public class SpreadsheetCreator {
                     }
                 }
                 cell.setCellValue(observationData);
+                cell.setCellStyle(infoStyle);
                 index++;
             }
         }
