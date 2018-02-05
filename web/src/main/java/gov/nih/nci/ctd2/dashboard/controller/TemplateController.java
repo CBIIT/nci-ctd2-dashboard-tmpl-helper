@@ -1,15 +1,12 @@
 package gov.nih.nci.ctd2.dashboard.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -19,7 +16,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -34,7 +30,7 @@ import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
-import gov.nih.nci.ctd2.dashboard.util.SpreadsheetUtil;
+import gov.nih.nci.ctd2.dashboard.util.SpreadsheetCreator;
 
 @Controller
 @RequestMapping("/template")
@@ -282,41 +278,6 @@ public class TemplateController {
         return sb.toString();
     }
 
-    private String[] uploadedFiles(Integer templateId) {
-        SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
-        if(template.getObservations()==null) return new String[0]; // should not happen for correct data
-        String[] valueTypes = template.getValueTypes();
-        Integer observationNumber = template.getObservationNumber();
-        int subjectColumnCount = template.getSubjectColumns().length;
-        int evidenceColumnCount = template.getEvidenceColumns().length;
-        int columnTagCount = subjectColumnCount + evidenceColumnCount;
-        String[] observations = template.getObservations().split(",", -1);
-        Set<String> files = new HashSet<String>(); // duplicate entry not allowed in ZIP
-        for(int i=0; i<valueTypes.length; i++) {
-            if(valueTypes[i].equals("file")) {
-                for(int j=0; j<observationNumber; j++) {
-                    int index = columnTagCount*j + subjectColumnCount + i;
-                    String fileInfo = observations[index];
-                    if(fileInfo==null || fileInfo.trim().length()==0) {
-                        continue;
-                    }
-                    // remove mime type
-                    int mimeMark = fileInfo.indexOf("::");
-                    if(mimeMark>=0) {
-                        fileInfo = fileInfo.substring(0, mimeMark);
-                    }
-                    // ignore possible subdirectory names
-                    int sep = fileInfo.lastIndexOf('/');
-                    if(sep>=0) fileInfo = fileInfo.substring(sep+1);
-                    sep = fileInfo.lastIndexOf('\\');
-                    if(sep>0) fileInfo = fileInfo.substring(sep+1);
-                    files.add(fileInfo);
-                }
-            }
-        }
-        return files.toArray(new String[0]);
-    }
-
     @Transactional
     @RequestMapping(value="delete", method = {RequestMethod.POST}, headers = "Accept=application/text")
     public 
@@ -341,39 +302,25 @@ public class TemplateController {
     {
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        try {
-            SpreadsheetUtil.createMetaDataSheet(workbook, template);
-            SpreadsheetUtil.createDataSheet(workbook, template);
-        } catch (Exception e) { /* safeguard data-caused exception */
-            e.printStackTrace();
-        }
+        String fileLocation = getFileLocationPerTemplate(template);
+        SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);
 
         response.setContentType("application/zip");
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + ".zip\"");
         response.addHeader("Content-Transfer-Encoding", "binary");
 
-        String submissionName = SpreadsheetUtil.getSubmissionName(template);
-
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            workbook.write(outputStream);
-            workbook.close();
+            byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
 
             ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
             zipOutputStream.putNextEntry(new ZipEntry("template"+templateId+".xls"));
-            zipOutputStream.write(outputStream.toByteArray());
+            zipOutputStream.write(workbookAsByteArray);
             zipOutputStream.closeEntry();
 
-            String fileLocation = getFileLocationPerTemplate(template);
-            String[] files = uploadedFiles(templateId);
-            for(String fname : files) {
-                Path savedPath = Paths.get(fileLocation + fname);
-                if(!savedPath.toFile().exists()) { // this should not happen, but be cautious anyway
-                    log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
-                    continue; 
-                }
-                zipOutputStream.putNextEntry(new ZipEntry( SpreadsheetUtil.getZippedPath(fname, submissionName) ));
+            Map<String, Path> files = creator.getUploadedFiles();
+            for(String fname : files.keySet()) {
+                Path savedPath = files.get(fname);
+                zipOutputStream.putNextEntry(new ZipEntry( fname ));
                 zipOutputStream.write(Files.readAllBytes( savedPath ));
                 zipOutputStream.closeEntry();
             }

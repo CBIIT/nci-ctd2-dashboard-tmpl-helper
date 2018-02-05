@@ -1,9 +1,13 @@
 package gov.nih.nci.ctd2.dashboard.util;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,10 +24,43 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 
-public class SpreadsheetUtil {
-    private static final Log log = LogFactory.getLog(SpreadsheetUtil.class);
+public class SpreadsheetCreator {
+    private static final Log log = LogFactory.getLog(SpreadsheetCreator.class);
 
-    static public void createMetaDataSheet(HSSFWorkbook workbook, SubmissionTemplate template) {
+    private final SubmissionTemplate template;
+    private final String submissionName;
+    private final String fileLocation;
+
+    public SpreadsheetCreator(final SubmissionTemplate template, String fileLocation) {
+        this.template = template;
+
+        String templateName = template.getDisplayName();
+        Date date = template.getDateLastModified();
+        submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
+
+        this.fileLocation = fileLocation;
+    }
+
+    public byte[] createWorkbookAsByteArray() throws IOException {
+        HSSFWorkbook workbook = createWorkbook();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return outputStream.toByteArray();
+    }
+
+    private HSSFWorkbook createWorkbook() {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        try {
+            this.createMetaDataSheet(workbook);
+            this.createDataSheet(workbook);
+        } catch (Exception e) { /* safeguard data-caused exception */
+            e.printStackTrace();
+        }
+        return workbook;
+    }
+
+    private void createMetaDataSheet(HSSFWorkbook workbook) {
 
         HSSFFont headerFont = (HSSFFont) workbook.createFont();
         headerFont.setBold(true);
@@ -71,7 +108,7 @@ public class SpreadsheetUtil {
         row0.setRowStyle(style2);
     }
 
-    static public void createDataSheet(HSSFWorkbook workbook, SubmissionTemplate template) {
+    private void createDataSheet(HSSFWorkbook workbook) {
         String templateName = template.getDisplayName();
         HSSFSheet sheet = workbook.createSheet(templateName);
 
@@ -190,7 +227,6 @@ public class SpreadsheetUtil {
         }
 
         Date date = template.getDateLastModified();
-        String submissionName = getSubmissionName(template);
 
         String observations = template.getObservations();
         if (observations == null) { // this should never happen for correct data
@@ -203,6 +239,7 @@ public class SpreadsheetUtil {
             observationNumber = 0; // this should never happen for correct data
         String[] obv = observations.split(",", -1);
         int index = 0;
+        files.clear(); // this is used by the zipping process
         for (int i = 0; i < observationNumber; i++) {
             row = sheet.createRow((short) (7 + i));
             cell = row.createCell(1);
@@ -221,24 +258,29 @@ public class SpreadsheetUtil {
                 String observationData = obv[index];
                 if (valueType[j].equalsIgnoreCase("file")) {
                     int mimeMark = observationData.indexOf("::data:");
-                    String filename = "";
+                    String filename = observationData;
                     if (mimeMark > 0) {
                         Cell mimeTypeRowCell = mimeTypeRow.createCell(subjects.length + j + 4);
                         mimeTypeRowCell.setCellStyle(yellow);
                         mimeTypeRowCell.setCellValue(observationData.substring(mimeMark + 7));
-                        int lastPathSeparator = observationData.lastIndexOf(File.separator, mimeMark);
-                        if (lastPathSeparator < 0 || lastPathSeparator + 1 > mimeMark) {
-                            filename = observationData.substring(0, mimeMark); // the new code only stores the filname without directories
-                        } else {
-                            filename = observationData.substring(lastPathSeparator + 1, mimeMark);
-                        }
-                    } else { /* this is to support old data without mime type */
-                        filename = observationData.substring(observationData.lastIndexOf(File.separator) + 1);
+
+                        filename = observationData.substring(0, mimeMark); // the new code only stores the filname without directories
                     }
-                    if (filename.length() > 0) {
-                        observationData = "./" + getZippedPath(filename, submissionName);
-                    } else {
+
+                    // ignore possible subdirectory names
+                    int sep = filename.lastIndexOf('/');
+                    if(sep>=0) filename = filename.substring(sep+1);
+                    sep = filename.lastIndexOf('\\');
+                    if(sep>=0) filename = filename.substring(sep+1);
+
+                    Path savedPath = Paths.get(fileLocation + filename);
+                    if(!savedPath.toFile().exists()) { // this should not happen, but be cautious anyway
+                        log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
                         observationData = "";
+                    } else {
+                        String zippedPath = getZippedPath(filename);
+                        files.put(zippedPath, savedPath);
+                        observationData = "./" + zippedPath;
                     }
                 }
                 cell.setCellValue(observationData);
@@ -252,7 +294,13 @@ public class SpreadsheetUtil {
         }
     }
 
-    static public String getZippedPath(String zippedFileName, String submissionName) {
+    private Map<String, Path> files = new HashMap<String, Path>(); // duplicate entry not allowed in ZIP
+
+    public Map<String, Path> getUploadedFiles() {
+        return files;
+    }
+
+    private String getZippedPath(String zippedFileName) {
         String pathZipped = "submissions/" + submissionName + "/";
         String lowercase = zippedFileName.toLowerCase();
         boolean hasImageFileExtension = false;
@@ -263,11 +311,5 @@ public class SpreadsheetUtil {
             pathZipped += "images/";
         }
         return pathZipped + zippedFileName;
-    }
-
-    static public String getSubmissionName(SubmissionTemplate template) {
-        String templateName = template.getDisplayName();
-        Date date = template.getDateLastModified();
-        return new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
     }
 }
