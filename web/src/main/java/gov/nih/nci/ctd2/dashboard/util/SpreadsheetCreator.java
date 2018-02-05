@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -102,6 +103,12 @@ public class SpreadsheetCreator {
     }
 
     private void createDataSheet(HSSFWorkbook workbook) {
+        HSSFPalette palette = workbook.getCustomPalette();
+        palette.setColorAtIndex(HSSFColor.LIGHT_GREEN.index, (byte) 204,
+            (byte) 255, (byte) 153);
+        palette.setColorAtIndex(HSSFColor.LIGHT_TURQUOISE.index, (byte) 204,
+            (byte) 236, (byte) 255);
+
         String templateName = template.getDisplayName();
         HSSFSheet sheet = workbook.createSheet(templateName);
 
