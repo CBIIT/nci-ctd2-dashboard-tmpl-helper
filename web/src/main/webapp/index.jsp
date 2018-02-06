@@ -249,37 +249,6 @@
     </div>
 
     <!-- these are the templates -->
-    <script type="text/template" id="center-tmpl">
-        <div class="container common-container" id="center-submission-container">
-            <div class="row">
-                <div class="span9">
-                    <h2 class="center-title">{{displayName}} <small>submissions</small></h2>
-                    <div class="center-link-container">(<span class="center-link"></span>)</div>
-                </div>
-                <div class="span3">
-                    <img src="img/{{displayName}}.png" title="{{displayName}}" alt="{{displayName}}" class="img-polaroid" width="200">
-                </div>
-            </div>
-
-            <div id="more-project-container"></div>
-
-            <table id="center-submission-grid" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Tier</th>
-                        <th>Project</th>
-                        <th>Description</th>
-                        <th width="90">Date</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- here will go the rows -->
-                </tbody>
-            </table>
-        </div>
-    </script>
-
     <script type="text/template" id="observation-tmpl">
         <div class="container common-container" id="observation-container">
 
@@ -723,7 +692,13 @@
     <script type="text/template" id="template-helper-tmpl">
         <div class="container common-container" id="template-helper-container">
             <h2>CTD<sup>2</sup> Dashboard Submission Builder</h2>
-            
+
+            <div class="pull-right">
+                <a href="https://ocg.cancer.gov/sites/default/files/CTD2-DB-Submission-Builder-Tutorial.pdf" target="_blank" class="btn btn-info">Manual</a>
+                <a href="https://www.ncbi.nlm.nih.gov/pubmed/29220450" target="_blank" class="btn btn-info">Manuscript</a>
+                <a href="https://ocg.cancer.gov/sites/default/files/Glossary-CTD2-Dashboard.pdf" target="_blank" class="btn btn-info">Glossary</a>
+            </div>
+
             <div class="btn-group" role="group" aria-label="...">
             <button type="button" class="btn btn-link" id='menu_home'>Home</button>
             <button type="button" class="btn btn-link" id='menu_manage'>Manage Submission</button>
@@ -976,7 +951,7 @@
     <script src="js/jquery.contextMenu.js"></script>   
     <script src="js/jquery.ui.position.js"></script>    
     <script src="js/ctd2.js"></script>
-    <script src="js/template.helper.js"></script>
+    <script src="js/template.helper.js?ts=2018"></script>
 
   </body>
 </html>
