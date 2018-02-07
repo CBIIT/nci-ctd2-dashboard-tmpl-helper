@@ -1072,27 +1072,28 @@ $ctd2.enable_saving_buttons = function() {
 $ctd2.update_model_from_submission_data_page = function () {
     $ctd2.disable_saving_buttons();
     $ctd2.getObservations(); // this may have started multiple threads reading the evidence files
-    $ctd2.attempt_to_proceed_updating($(this));
-};
 
-/* this function's purpose is to keep checking the threads started by $ctd2.getObservations()
-    if finished, it continues to call $ctd2.updateModelAfterAllDataAreReady(...)
+    /* this function's purpose is to keep checking the threads started by $ctd2.getObservations()
+    if finished, it continues to call $ctd2.update_after_all_data_ready(...)
     if not, wait 1 second and check again. */
-$ctd2.attempt_to_proceed_updating = function (triggeringButton) {
-    if ($ctd2.file_number === $ctd2.finished_file_number) {
-        $ctd2.update_after_all_data_ready(triggeringButton);
-        $ctd2.enable_saving_buttons(); //re-enable the save button when all reading is done
-        if(triggeringButton.hasClass("proceed-to-next-page")) {
-            if($ctd2.saveSuccess) {
-                $ctd2.populateTagList();
-                $ctd2.showPage("#step5", "#menu_summary");
-            } else {
-                $ctd2.saveSuccess = true; // reset the flag
+    var attempt_to_proceed_updating = function (triggeringButton) {
+        if ($ctd2.file_number === $ctd2.finished_file_number) {
+            $ctd2.update_after_all_data_ready(triggeringButton);
+            $ctd2.enable_saving_buttons(); //re-enable the save button when all reading is done
+            if(triggeringButton.hasClass("proceed-to-next-page")) {
+                if($ctd2.saveSuccess) {
+                    $ctd2.populateTagList();
+                    $ctd2.showPage("#step5", "#menu_summary");
+                } else {
+                    $ctd2.saveSuccess = true; // reset the flag
+                }
             }
+            return;
         }
-        return;
-    }
-    setTimeout($ctd2.attempt_to_proceed_updating, 1000, triggeringButton);
+        setTimeout(attempt_to_proceed_updating, 1000, triggeringButton);
+    };
+
+    attempt_to_proceed_updating($(this));
 };
 
 $ctd2.hasDuplicate = function (a) {
