@@ -812,7 +812,7 @@
                     </tr>
                     <tr>
                         <td><button id="save-template-submission-data" class="next-cell">Save</button></td>
-                        <td><button id="apply-template-submission-data" class="next-cell">Save and Continue</button></td>
+                        <td><button id="apply-template-submission-data" class="next-cell proceed-to-next-page">Save and Continue</button></td>
                     </tr>
                 </table>
             </div>
@@ -951,7 +951,7 @@
     <script src="js/jquery.contextMenu.js"></script>   
     <script src="js/jquery.ui.position.js"></script>    
     <script src="js/ctd2.js"></script>
-    <script src="js/template.helper.js?ts=2018"></script>
+    <script src="js/template.helper.js?ts=201802"></script>
 
   </body>
 </html>

@@ -107,22 +107,8 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             }
         });
 
-        $("#save-template-submission-data").click(function () {
-            console.log("saving the submission data ...");
-            $ctd2.update_model_from_submission_data_page($(this));
-        });
-        $("#apply-template-submission-data").click(function () {
-            $ctd2.update_model_from_submission_data_page($(this));
-            if ($ctd2.saveSuccess) {
-                $("#step4").fadeOut();
-                $ctd2.populateTagList();
-                $("#step5").slideDown();
-                $("#menu_data").removeClass("current-page");
-                $("#menu_summary").addClass("current-page");
-            } else {
-                $ctd2.saveSuccess = true; // reset the flag
-            }
-        });
+        $("#save-template-submission-data").click($ctd2.update_model_from_submission_data_page);
+        $("#apply-template-submission-data").click($ctd2.update_model_from_submission_data_page);
 
         $("#template-obs-summary").change(function () {
             console.log('change triggered on summary');
@@ -1083,22 +1069,30 @@ $ctd2.enable_saving_buttons = function() {
     $("#apply-template-submission-data").removeAttr("disabled");
 };
 
-$ctd2.update_model_from_submission_data_page = function (triggeringButton) {
+$ctd2.update_model_from_submission_data_page = function () {
     $ctd2.disable_saving_buttons();
     $ctd2.getObservations(); // this may have started multiple threads reading the evidence files
-    $ctd2.processObservationArray(triggeringButton);
+    $ctd2.attempt_to_proceed_updating($(this));
 };
 
 /* this function's purpose is to keep checking the threads started by $ctd2.getObservations()
     if finished, it continues to call $ctd2.updateModelAfterAllDataAreReady(...)
     if not, wait 1 second and check again. */
-$ctd2.processObservationArray = function (triggeringButton) {
+$ctd2.attempt_to_proceed_updating = function (triggeringButton) {
     if ($ctd2.file_number === $ctd2.finished_file_number) {
         $ctd2.update_after_all_data_ready(triggeringButton);
         $ctd2.enable_saving_buttons(); //re-enable the save button when all reading is done
+        if(triggeringButton.hasClass("proceed-to-next-page")) {
+            if($ctd2.saveSuccess) {
+                $ctd2.populateTagList();
+                $ctd2.showPage("#step5", "#menu_summary");
+            } else {
+                $ctd2.saveSuccess = true; // reset the flag
+            }
+        }
         return;
     }
-    setTimeout($ctd2.processObservationArray, 1000, triggeringButton);
+    setTimeout($ctd2.attempt_to_proceed_updating, 1000, triggeringButton);
 };
 
 $ctd2.hasDuplicate = function (a) {
