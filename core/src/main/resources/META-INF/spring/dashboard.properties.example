@@ -14,12 +14,6 @@ hibernate.hbm2ddl.auto.test=create
 hibernate.ejb.naming_strategy=org.hibernate.cfg.ImprovedNamingStrategy
 hibernate.connection.charSet=UTF-8
 
-# lucene
-search.indexDir=/tmp/dashboard-tmpl-helper-index
-search.test.indexDir=/tmp/dashboard-tmpl-helper-index-test
-# Set the following to <= 0 to disable the cap
-search.max.number.results=200
-
 # when proxying files through dashboard, these hosts will be allowed to serve resource
 allowed.hosts=http://cbio.mskcc.org,http://localhost
 
