@@ -1,4 +1,4 @@
-!function ($) {
+(function ($) {
 
     // These seperators are for replacing items within the observation summary
     var leftSep = "<";
@@ -189,4 +189,4 @@
         });
     });
 
-}(window.jQuery);
+})(window.jQuery);

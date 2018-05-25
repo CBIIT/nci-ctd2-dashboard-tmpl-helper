@@ -746,6 +746,11 @@ $ctd2.TempObservationView = Backbone.View.extend({
     render: function () {
         // this.model should have fields: obvNumber, obvColumn, and obvText for now
         var obvModel = this.model;
+
+        var clear_uploaded = function() {
+            $(this).parent().find(".uploaded").empty();
+        };
+
         for (var column = 0; column < obvModel.observationNumber; column++) {
             var obvContent = obvModel.observations[column];
             var u = '';
@@ -776,9 +781,7 @@ $ctd2.TempObservationView = Backbone.View.extend({
             };
             var obvTemp = this.template(cellModel);
             $(this.el).append(obvTemp);
-            $(this.el).find("input").change(function() {
-                $(this).parent().find(".uploaded").empty();
-            } );
+            $(this.el).find("input").change(clear_uploaded);
         }
 
     }
@@ -1015,12 +1018,16 @@ $ctd2.getObservations = function () {
     $ctd2.finished_file_number = 0;
 
     $("#template-table tr.template-data-row").each(function (i, row) {
+        var row_id = $(row).attr('id');
         $(row).find("[id^=observation]").each(function (j, c) {
             var reader;
 
-            var cell_id = $(c).attr('id');
-            var columntag = cell_id.substring( cell_id.indexOf('-', 12) + 1 ); // skip the first dash
-            var valuetype = $("#value-type-" + columntag).val();
+            var valuetype = ""; // only applicable for evidence, not for subject
+            if(row_id.startsWith("template-evidence-row")) {
+                var cell_id = $(c).attr('id');
+                var columntag = cell_id.substring( cell_id.indexOf('-', 12) + 1 ); // skip the first dash
+                valuetype = $("#value-type-" + columntag).val();
+            }
             if (valuetype != 'file') {
                 $ctd2.observationArray[j * rows + i] = $(c).val();
             } else { // if the value type is 'file', a reading thread would be started
@@ -1285,14 +1292,15 @@ $ctd2.populateOneTemplate = function () {
     var column = 0;
     // make headers for observation part
     $("th.observation-header").remove();
+    var remove_column = function () {
+        var c = $('#template-table tr#subject-header').find('th').index($(this).parent());
+        $('#template-table tr').find('td:eq(' + c + '),th:eq(' + c + ')').remove();
+    };
     for (column = 1; column <= observationNumber; column++) {
         var deleteButton = "delete-column-" + column;
         $("#template-table tr#subject-header").append("<th class=observation-header>Observation " + column + "<br>(<button class='btn btn-link' id='" + deleteButton + "'>delete</button>)</th>");
         $("#template-table tr#evidence-header").append("<th class=observation-header>Observation " + column + "</th>");
-        $("#" + deleteButton).click(function () {
-            var c = $('#template-table tr#subject-header').find('th').index($(this).parent());
-            $('#template-table tr').find('td:eq(' + c + '),th:eq(' + c + ')').remove();
-        });
+        $("#" + deleteButton).click(remove_column);
     }
     if(Array.isArray(rowModel.subjectDescriptions) && rowModel.subjectColumns.length==1) {
         rowModel.subjectDescriptions[0] = rowModel.subjectDescriptions.toString(); // prevent the single element containing commas being treated as an array
