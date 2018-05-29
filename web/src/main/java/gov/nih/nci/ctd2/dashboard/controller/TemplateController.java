@@ -197,7 +197,8 @@ public class TemplateController {
         template.setEvidenceDescriptions(evidenceDescriptions);
         template.setObservationNumber(observationNumber);
 
-        String[] observations = allObservations.split(",", -1);
+        // parsing tip, see https://rjcodeblog.wordpress.com/2013/09/05/regex-to-split-a-string-on-comma-outside-double-quotes/
+        String[] observations = allObservations.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         String[] previousObservations = new String[0];
         String p = template.getObservations();
         if(p!=null)
@@ -208,6 +209,10 @@ public class TemplateController {
         int subjectColumnCount = subjects.length;
         int evidenceColumnCount = evidences.length;
         int columnTagCount = subjectColumnCount + evidenceColumnCount;
+        if(observations.length!=observationNumber*columnTagCount) {
+            log.error("unmatched obsveration number "+observations.length);
+            return new ResponseEntity<String>("unmatched observation number "+observations.length, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         for(int i=0; i<valueTypes.length; i++) {
             if(valueTypes[i].equals("file")) {
                 for(int j=0; j<observationNumber; j++) {
@@ -218,8 +223,12 @@ public class TemplateController {
                     }
                     String obv = observations[index];
                     if(obv==null || obv.indexOf("::")<=0) {
-                        System.out.println("no new observation content for column#="+i+" observation#="+j+" observation="+obv);
-                        if(index<previousObservations.length)observations[index] = previousObservations[index];
+                        log.info("no new observation content for column#="+i+" observation#="+j+" observation="+obv);
+                        if(index<previousObservations.length) {
+                            log.info("keep previous content at index "+index+":"+previousObservations[index]);
+                            String previousContent = previousObservations[index].replace("\"", ""); // not expected except for corrupted data
+                            observations[index] = previousContent;
+                        }
                         continue; // prevent later null pointer exception
                     }
                     File directory = new File(fileLocation);

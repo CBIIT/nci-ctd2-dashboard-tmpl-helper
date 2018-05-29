@@ -221,7 +221,11 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
 
     var s = "";
     for (var i = 0; i < $ctd2.observationArray.length; i++) {
-        s += $ctd2.observationArray[i] + ",";
+        var one_obv = $ctd2.observationArray[i];
+        if (one_obv.indexOf(',') > -1) {
+            one_obv = '"' + one_obv + '"';
+        }
+        s += one_obv + ",";
     }
     var observations = s.substring(0, s.length - 1);
 
@@ -775,7 +779,7 @@ $ctd2.TempObservationView = Backbone.View.extend({
             var cellModel = {
                 obvNumber: column,
                 obvColumn: obvModel.columnTagId,
-                obvText: obvContent,
+                obvText: escapeQuote(obvContent),
                 type: obvModel.obvsType,
                 uploaded: u
             };
@@ -786,6 +790,11 @@ $ctd2.TempObservationView = Backbone.View.extend({
 
     }
 });
+
+var escapeQuote = function (s) {
+    if (s === undefined || s == null) return "";
+    return s.replace(/^[\"]+|[\"]+$/g, "").replace(/\"/g, "&quot;");
+};
 
 /* this is one NEW column in the observation data table. because it is new, it is meant to be empty */
 $ctd2.NewObservationView = Backbone.View.extend({
@@ -855,7 +864,13 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
 
         var subjectColumns = obj.subjectColumns;
         var evidenceColumns = obj.evidenceColumns;
-        var observations = obj.observations.split(",");
+        // same source as line 1303
+        var arr = obj.observations.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
+        arr = arr || [];
+        for (var idx = 0; idx < arr.length; idx++) {
+            arr[idx] = arr[idx].replace(/\s*,$/, "");
+        }
+        var observations = arr;
         var totalRows = subjectColumns.length + evidenceColumns.length;
 
         var observedSubjects = [];
@@ -1285,7 +1300,14 @@ $ctd2.populateOneTemplate = function () {
     $("#template-table-subject > .template-data-row").remove();
     var subjectColumns = rowModel.subjectColumns; // this is an array of strings
     var subjectClasses = rowModel.subjectClasses; // this is an array of strings
-    var observations = rowModel.observations.split(",");
+    // parsing tip, see https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
+    //var arr = rowModel.observations.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+    var arr = rowModel.observations.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
+    arr = arr || [];
+    for (var idx = 0; idx < arr.length; idx++) {
+        arr[idx] = arr[idx].replace(/\s*,$/, "");
+    }
+    var observations = arr;
     var observationNumber = rowModel.observationNumber;
     var evidenceColumns = rowModel.evidenceColumns;
 
