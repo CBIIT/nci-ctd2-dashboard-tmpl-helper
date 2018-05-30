@@ -28,9 +28,6 @@ body {
   margin-top: 10px;
   margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
 }
-.navbar-wrapper .navbar {
-
-}
 
 /* Remove border and change up box shadow for more contrast */
 .navbar .navbar-inner {
@@ -89,9 +86,6 @@ body {
   border: 0;
 }
 
-.carousel .item {
-}
-
 .carousel img.cimg {
   position: absolute;
   top: 0;
@@ -109,9 +103,6 @@ body {
   padding: 0 20px;
   padding-top: 25px;
 
-}
-.carousel-caption h1,
-.carousel-caption .lead {
 }
 
 .marketing .span4 {
@@ -297,9 +288,6 @@ blockquote p {
     margin: 5px 0 0 0;
 }
 
-.topmenu li {
-}
-
 .popover-content {
     font-size: 14px;
 }
@@ -361,20 +349,6 @@ td.next-cell {
     width: 650px;
 }
 
-#cytoscape {
-    width: 93%;
-    height: 70%;
-    border: 1px solid #dddddd;
-    border-radius: 3px;
-    margin: 15px;
-}
-.cytoscape-legend {
-    width: 90%;
-    text-align: center;
-    font-size: 75%;
-    margin-left: 15px;
-    margin-right: 15px;
- }
  .centeredImage {
     position: absolute;
     top: 50%;
@@ -396,10 +370,6 @@ td.next-cell {
 
 .center-name {
     font-weight: bold;
-}
-
-td.center-pi span {
-    /*font-weight: bold;*/
 }
 
 th.submission-count {
