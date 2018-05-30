@@ -4,9 +4,6 @@
     var leftSep = "<";
     var rightSep = ">";
 
-    // To make URL constructing more configurable
-    var CORE_API_URL = "./";
-
     // This is for the moustache-like templates
     // prevents collisions with JSP tags <%...%>
     _.templateSettings = {
@@ -82,12 +79,8 @@
     } );
 
     /* Models */
-    var SubmissionCenter = Backbone.Model.extend({
-        urlRoot: CORE_API_URL + "get/center"
-    });
     var SubmissionCenters = Backbone.Collection.extend({
-        url: CORE_API_URL + "list/center/?filterBy=",
-        model: SubmissionCenter
+        url: "./api/centers"
     });
 
     /* Views */

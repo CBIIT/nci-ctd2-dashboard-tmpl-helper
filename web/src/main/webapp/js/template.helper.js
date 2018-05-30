@@ -268,7 +268,7 @@ $ctd2.updateModel_3 = function (triggerButton) {
 };
 
 $ctd2.Subject = Backbone.Model.extend({
-    urlRoot: "./get/subject"
+    urlRoot: "./api/subject" // not implemented because no real subject ID is available
 });
 
 $ctd2.ObservationPreviewView = Backbone.View.extend({
@@ -936,7 +936,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
 });
 
 $ctd2.StoredTemplates = Backbone.Collection.extend({
-    url: "list/template/?filterBy=",
+    url: "api/templates/",
     model: $ctd2.SubmissionTemplate,
     initialize: function (attributes) {
         this.url += attributes.centerId;

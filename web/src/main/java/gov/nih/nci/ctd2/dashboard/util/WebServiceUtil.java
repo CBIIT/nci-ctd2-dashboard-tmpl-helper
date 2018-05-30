@@ -149,7 +149,7 @@ public class WebServiceUtil {
         return submissions;
     }
 
-    public List<? extends DashboardEntity> getTemplates(Integer centerId) {
+    public List<SubmissionTemplate> getTemplates(Integer centerId) {
         List<SubmissionTemplate> list = new ArrayList<SubmissionTemplate>();
         SubmissionCenter submissionCenter = dashboardDao.getEntityById(SubmissionCenter.class, centerId);
         for (SubmissionTemplate submissionTemplate : dashboardDao.findEntities(SubmissionTemplate.class)) {
