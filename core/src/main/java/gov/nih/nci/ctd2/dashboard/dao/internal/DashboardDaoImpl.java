@@ -1,38 +1,16 @@
 package gov.nih.nci.ctd2.dashboard.dao.internal;
 
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
-import gov.nih.nci.ctd2.dashboard.impl.*;
 import gov.nih.nci.ctd2.dashboard.model.*;
-import gov.nih.nci.ctd2.dashboard.util.DashboardEntityWithCounts;
-import gov.nih.nci.ctd2.dashboard.util.SubjectWithSummaries;
 import org.hibernate.*;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Projections;
-import org.hibernate.proxy.HibernateProxy;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import java.util.*;
 
 public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDao {
-    private static final String[] defaultSearchFields = {
-            DashboardEntityImpl.FIELD_DISPLAYNAME,
-            DashboardEntityImpl.FIELD_DISPLAYNAME_UT,
-            SubjectImpl.FIELD_SYNONYM,
-            SubjectImpl.FIELD_SYNONYM_UT,
-            ObservationTemplateImpl.FIELD_DESCRIPTION,
-            ObservationTemplateImpl.FIELD_SUBMISSIONDESC,
-            ObservationTemplateImpl.FIELD_SUBMISSIONNAME,
-            TissueSampleImpl.FIELD_LINEAGE
-    };
-
-    private static final Class[] searchableClasses = {
-            SubjectWithOrganismImpl.class,
-            TissueSampleImpl.class,
-            CompoundImpl.class,
-            SubmissionImpl.class,
-            ObservationTemplateImpl.class
-    };
 
     private DashboardFactory dashboardFactory;
 
@@ -577,16 +555,6 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
             list.add((ObservedSubject) o);
         }
         return list;
-    }
-
-    @Override
-    public List<SubjectWithSummaries> findSubjectWithSummariesByRole(String role, Integer minScore) {
-        List<SubjectWithSummaries> subjects = new ArrayList<SubjectWithSummaries>();
-        for (Object o : getHibernateTemplate().find("from SubjectWithSummaries where role = ? and score > ?", role, minScore)) {
-            assert o instanceof SubjectWithSummaries;
-            subjects.add((SubjectWithSummaries) o);
-        }
-        return subjects;
     }
 
     @Cacheable(value = "uniprotCache")

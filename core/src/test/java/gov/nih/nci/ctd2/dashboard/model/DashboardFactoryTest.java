@@ -16,16 +16,10 @@ public class DashboardFactoryTest {
                 new ClassPathXmlApplicationContext("classpath*:META-INF/spring/testApplicationContext.xml");
         dashboardFactory = (DashboardFactory) appContext.getBean("dashboardFactory");
 
-        assertNotNull(dashboardFactory.create(ShRna.class));
-        assertNotNull(dashboardFactory.create(CellSample.class));
-        assertNotNull(dashboardFactory.create(Gene.class));
-        assertNotNull(dashboardFactory.create(AnimalModel.class));
-        assertNotNull(dashboardFactory.create(Observation.class));
-        assertNotNull(dashboardFactory.create(Protein.class));
-        assertNotNull(dashboardFactory.create(DataNumericValue.class));
-        FileEvidence fileEvidence = dashboardFactory.create(FileEvidence.class);
-        assertNotNull(fileEvidence);
-        assertEquals(null, fileEvidence.getId());
+        SubmissionCenter center = dashboardFactory.create(SubmissionCenter.class);
+        assertNotNull(center);
+        assertEquals(null, center.getId());
+        assertNotNull(center.getDisplayName());
     }
 
 }
