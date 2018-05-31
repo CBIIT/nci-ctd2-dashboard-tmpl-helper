@@ -16,10 +16,9 @@ import javax.persistence.*;
         indexes = { @Index(name = "entityNameIdx", columnNames = { "displayName" })
 })
 public class DashboardEntityImpl implements DashboardEntity {
-    public final static String FIELD_DISPLAYNAME = "keyword";
-    public final static String FIELD_DISPLAYNAME_UT = "keywordUT";
 
-    private Integer id;
+    private static final long serialVersionUID = 6953675960325146562L;
+	private Integer id;
     private String displayName;
 
     public String getDisplayName() {

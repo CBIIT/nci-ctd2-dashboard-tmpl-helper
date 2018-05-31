@@ -4,11 +4,25 @@ import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.model.*;
 import org.hibernate.*;
 import org.hibernate.criterion.Projections;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import java.util.*;
 
-public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDao {
+public class DashboardDaoImpl implements DashboardDao {
+
+    private SessionFactory sessionFactory;
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    private Session getSession() {
+        Session session = getSessionFactory().openSession();
+        return session;
+    }
 
     private DashboardFactory dashboardFactory;
 
@@ -22,31 +36,44 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
 
     @Override
     public void save(DashboardEntity entity) {
-        getHibernateTemplate().save(entity);
+        Session session = getSession();
+        session.save(entity);
+        session.flush();
+        session.close();
     }
 
     @Override
     public void update(DashboardEntity entity) {
-        getHibernateTemplate().update(entity);
+        Session session = getSession();
+        session.update(entity);
+        session.flush();
+        session.close();
     }
 
     @Override
     public void merge(DashboardEntity entity) {
-        getHibernateTemplate().merge(entity);
+        Session session = getSession();
+        session.merge(entity);
+        session.flush();
+        session.close();
     }
-
 
     @Override
     public void delete(DashboardEntity entity) {
-        getHibernateTemplate().delete(entity);
+        Session session = getSession();
+        session.delete(entity);
+        session.flush();
+        session.close();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends DashboardEntity> T getEntityById(Class<T> entityClass, Integer id) {
-        Class<T> aClass = entityClass.isInterface()
-                ? dashboardFactory.getImplClass(entityClass)
-                : entityClass;
-        return getHibernateTemplate().get(aClass, id);
+        Class<T> aClass = entityClass.isInterface() ? dashboardFactory.getImplClass(entityClass) : entityClass;
+        Session session = getSession();
+        Object object = session.get(aClass, id);
+        session.close();
+        return (T) object;
     }
 
     @Override
@@ -55,6 +82,7 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
         return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends DashboardEntity> List<T> findEntities(Class<T> entityClass) {
         List<T> list = new ArrayList<T>();
@@ -67,16 +95,17 @@ public class DashboardDaoImpl extends HibernateDaoSupport implements DashboardDa
         return list;
     }
 
-	@Override
+    @Override
     public SubmissionCenter findSubmissionCenterByName(String submissionCenterName) {
-		List<SubmissionCenter> list = new ArrayList<SubmissionCenter>();
-        for (Object o : getHibernateTemplate()
-				 .find("from SubmissionCenterImpl where displayName = ?", submissionCenterName)) {
-            assert o instanceof SubmissionCenter;
-            list.add((SubmissionCenter) o);
-        }
-		assert list.size() <= 1;
-		return (list.size() == 1) ? list.iterator().next() : null;
-	}
+        Session session = getSession();
+        org.hibernate.Query query = session.createQuery("from SubmissionCenterImpl where displayName = :cname");
+        query.setParameter("cname", submissionCenterName);
+        @SuppressWarnings("unchecked")
+        List<SubmissionCenter> list = query.list();
+        session.close();
+
+        assert list.size() <= 1;
+        return (list.size() == 1) ? list.iterator().next() : null;
+    }
 
 }
