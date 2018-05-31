@@ -161,7 +161,7 @@ public class TemplateController {
             @RequestParam("valueTypes[]") String[] valueTypes,
             @RequestParam("evidenceDescriptions[]") String[] evidenceDescriptions,
             @RequestParam("observationNumber") Integer observationNumber,
-            @RequestParam("observations") String allObservations,
+            @RequestParam("observations[]") String[] observations,
             @RequestParam("summary") String summary
             )
     {
@@ -197,8 +197,6 @@ public class TemplateController {
         template.setEvidenceDescriptions(evidenceDescriptions);
         template.setObservationNumber(observationNumber);
 
-        // parsing tip, see https://rjcodeblog.wordpress.com/2013/09/05/regex-to-split-a-string-on-comma-outside-double-quotes/
-        String[] observations = allObservations.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         String[] previousObservations = new String[0];
         String p = template.getObservations();
         if(p!=null)
@@ -210,7 +208,7 @@ public class TemplateController {
         int evidenceColumnCount = evidences.length;
         int columnTagCount = subjectColumnCount + evidenceColumnCount;
         if(observations.length!=observationNumber*columnTagCount) {
-            log.error("unmatched obsveration number "+observations.length);
+            log.error("unmatched observation number "+observations.length);
             return new ResponseEntity<String>("unmatched observation number "+observations.length, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         for(int i=0; i<valueTypes.length; i++) {
@@ -263,13 +261,13 @@ public class TemplateController {
                 }
             }
         }
-        StringBuilder sb = new StringBuilder();
         for(int i=0; i<observations.length-1; i++){
-            sb.append(observations[i]).append(",");
+            String one_obv = observations[i];
+            if (one_obv.indexOf(',') > -1) {
+                observations[i] = '"' + one_obv + '"';
+            }
         }
-        if(observations.length>1);
-            sb.append(observations[observations.length-1]);
-        template.setObservations(sb.toString());
+        template.setObservations(join(observations));
 
         template.setSummary(summary);
 

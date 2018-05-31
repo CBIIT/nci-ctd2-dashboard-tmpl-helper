@@ -219,17 +219,6 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
     var evidenceDescriptions = $ctd2.getArray('#template-table-evidence input.evidence-descriptions');
     var observationNumber = $(".observation-header").length / 2;
 
-    var s = "";
-    for (var i = 0; i < $ctd2.observationArray.length; i++) {
-        var one_obv = $ctd2.observationArray[i];
-        if (one_obv.indexOf(',') > -1) {
-            one_obv = '"' + one_obv + '"';
-        }
-        s += one_obv + ",";
-    }
-    var observations = s.substring(0, s.length - 1);
-
-
     var x = $ctd2.validate(); // some arrays are converted to string after validation
     if (x != null && x.length > 0) {
         $ctd2.showAlertMessage("<ul>"+x+"</ul>");
@@ -247,7 +236,7 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
         valueTypes: valueTypes,
         evidenceDescriptions: evidenceDescriptions,
         observationNumber: observationNumber,
-        observations: observations,
+        observations: $ctd2.observationArray,
     });
     $ctd2.updateTemplate(triggeringButton);
 };
@@ -864,13 +853,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
 
         var subjectColumns = obj.subjectColumns;
         var evidenceColumns = obj.evidenceColumns;
-        // same source as line 1303
-        var arr = obj.observations.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
-        arr = arr || [];
-        for (var idx = 0; idx < arr.length; idx++) {
-            arr[idx] = arr[idx].replace(/\s*,$/, "");
-        }
-        var observations = arr;
+        var observations = obj.observations;
         var totalRows = subjectColumns.length + evidenceColumns.length;
 
         var observedSubjects = [];
@@ -1300,14 +1283,7 @@ $ctd2.populateOneTemplate = function () {
     $("#template-table-subject > .template-data-row").remove();
     var subjectColumns = rowModel.subjectColumns; // this is an array of strings
     var subjectClasses = rowModel.subjectClasses; // this is an array of strings
-    // parsing tip, see https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
-    //var arr = rowModel.observations.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-    var arr = rowModel.observations.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
-    arr = arr || [];
-    for (var idx = 0; idx < arr.length; idx++) {
-        arr[idx] = arr[idx].replace(/\s*,$/, "");
-    }
-    var observations = arr;
+    var observations = rowModel.observations;
     var observationNumber = rowModel.observationNumber;
     var evidenceColumns = rowModel.evidenceColumns;
 
@@ -1428,6 +1404,16 @@ $ctd2.refreshTemplateList = function () {
         async: false,
         success: function () {
             _.each(storedTemplates.models, function (oneTemplateModel) {
+                // TODO change observations to array from the server side
+                var obs = oneTemplateModel.get("observations");
+                if(typeof obs === "string") {
+                    var arr = obs.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
+                    arr = arr || [];
+                    for (var idx = 0; idx < arr.length; idx++) {
+                        arr[idx] = arr[idx].replace(/\s*,$/, "");
+                    }
+                    oneTemplateModel.set({observations: arr});
+                }
                 $ctd2.templateModels[oneTemplateModel.id] = oneTemplateModel;
 
                 (new $ctd2.ExistingTemplateView({
