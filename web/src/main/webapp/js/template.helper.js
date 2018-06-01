@@ -1404,16 +1404,6 @@ $ctd2.refreshTemplateList = function () {
         async: false,
         success: function () {
             _.each(storedTemplates.models, function (oneTemplateModel) {
-                // TODO change observations to array from the server side
-                var obs = oneTemplateModel.get("observations");
-                if(typeof obs === "string") {
-                    var arr = obs.match(/(".*?"|[^",]*)(\s*,|\s*$)/g);
-                    arr = arr || [];
-                    for (var idx = 0; idx < arr.length; idx++) {
-                        arr[idx] = arr[idx].replace(/\s*,$/, "");
-                    }
-                    oneTemplateModel.set({observations: arr});
-                }
                 $ctd2.templateModels[oneTemplateModel.id] = oneTemplateModel;
 
                 (new $ctd2.ExistingTemplateView({

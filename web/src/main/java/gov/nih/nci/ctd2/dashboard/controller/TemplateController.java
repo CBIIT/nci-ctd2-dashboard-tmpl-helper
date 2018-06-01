@@ -83,7 +83,7 @@ public class TemplateController {
         template.setEvidenceDescriptions(new String[]{""});
 
         template.setObservationNumber(0);
-        template.setObservations("");
+        template.setObservations(new String[]{""});
 
         dashboardDao.save(template);
 
@@ -124,7 +124,7 @@ public class TemplateController {
         template.setEvidenceTypes(existing.getEvidenceTypes());
         template.setEvidenceDescriptions(existing.getEvidenceDescriptions());
         template.setObservationNumber(0);
-        template.setObservations("");
+        template.setObservations(new String[]{""});
         template.setSummary(existing.getSummary());
 
     	dashboardDao.save(template);
@@ -197,10 +197,9 @@ public class TemplateController {
         template.setEvidenceDescriptions(evidenceDescriptions);
         template.setObservationNumber(observationNumber);
 
-        String[] previousObservations = new String[0];
-        String p = template.getObservations();
-        if(p!=null)
-            previousObservations = p.split(",", -1);
+        String[] previousObservations = template.getObservations();
+        if(previousObservations==null)
+            previousObservations = new String[0];
 
         String fileLocation = getFileLocationPerTemplate(template);
 
@@ -261,13 +260,7 @@ public class TemplateController {
                 }
             }
         }
-        for(int i=0; i<observations.length-1; i++){
-            String one_obv = observations[i];
-            if (one_obv.indexOf(',') > -1) {
-                observations[i] = '"' + one_obv + '"';
-            }
-        }
-        template.setObservations(join(observations));
+        template.setObservations(observations);
 
         template.setSummary(summary);
 

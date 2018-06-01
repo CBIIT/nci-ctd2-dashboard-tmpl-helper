@@ -38,9 +38,11 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String[] valueTypes = new String[0];
     private String[] evidenceDescriptions = new String[0];
     private Integer observationNumber;
-    private String observations;
+    private String[] observations = new String[0];
     private String summary;
     private String storyTitle;
+
+    private String observationString; // only for the purpose of supporting the old data
 
     public String getDescription() {
         return description;
@@ -223,15 +225,14 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         this.observationNumber = observationNumber;
     }
 
-    @Lob
+    @Column(name ="observation_array", columnDefinition = "blob")
     @Override
-    public String getObservations() {
+    public String[] getObservations() {
         return observations;
     }
 
-    @Lob
     @Override
-    public void setObservations(String d) {
+    public void setObservations(String[] d) {
         observations = d;
     }
 
@@ -254,5 +255,18 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setStoryTitle(String s) {
         storyTitle = s;
+    }
+
+    @Lob
+    @Column(name ="observations")
+    @Override
+    public String getObservationString() {
+        return observationString;
+    }
+
+    @Lob
+    @Override
+    public void setObservationString(String d) {
+        observationString = d;
     }
 }

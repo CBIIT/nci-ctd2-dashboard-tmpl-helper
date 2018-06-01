@@ -3,7 +3,11 @@ package gov.nih.nci.ctd2.dashboard.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +28,8 @@ import gov.nih.nci.ctd2.dashboard.util.DateTransformer;
 @Controller
 @RequestMapping("/api")
 public class APIController {
+    private static final Log log = LogFactory.getLog(APIController.class);
+
     @Autowired
     private DashboardDao dashboardDao;
 
@@ -102,18 +108,23 @@ public class APIController {
             observationNumber = 0;
             submissionTemplate.setObservationNumber(observationNumber);
         }
-        String[] observations = new String[0];
-        if (submissionTemplate.getObservations() != null) {
-            observations = submissionTemplate.getObservations().split(",", -1);
+        String[] observations = submissionTemplate.getObservations();
+        String observationString = submissionTemplate.getObservationString();
+        if(observations==null && observationString!=null ) {
+            int size = observationNumber * (subjectColumns.length + evidenceColumns.length);
+            String[] tmp = new String[size];
+            Pattern pattern = Pattern.compile("(\".*?\"|[^\",]*)(\\s*,|\\s*$)");
+            Matcher matcher = pattern.matcher(observationString);
+            int index = 0;
+            while (matcher.find()) {
+                if(index<size)
+                    tmp[index] = matcher.group(1);
+                index++;
+            }
+            submissionTemplate.setObservations(tmp);
+            log.info("observations transferred from the old field");
+        } else {
+            log.info("observations in the new field");
         }
-        int t = observationNumber * (subjectColumns.length + evidenceColumns.length);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < observations.length; i++) {
-            sb.append(observations[i]).append(",");
-        }
-        for (int i = observations.length; i < t; i++) { // in case we need more commas
-            sb.append(",");
-        }
-        submissionTemplate.setObservations(sb.toString());
     }
 }

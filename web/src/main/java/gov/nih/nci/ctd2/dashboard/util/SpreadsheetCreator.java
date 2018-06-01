@@ -245,7 +245,7 @@ public class SpreadsheetCreator {
         HSSFCellStyle infoStyle = workbook.createCellStyle();
         infoStyle.setFont(infoFont);
 
-        String observations = template.getObservations();
+        String[] observations = template.getObservations();
         if (observations == null) { // this should never happen for correct data
             log.error("observtions field is null for template ID " + template.getId());
             return;
@@ -254,7 +254,6 @@ public class SpreadsheetCreator {
         Integer observationNumber = template.getObservationNumber();
         if (observationNumber == null)
             observationNumber = 0; // this should never happen for correct data
-        String[] obv = observations.split(",", -1);
         int index = 0;
         files.clear(); // this is used by the zipping process
         for (int i = 0; i < observationNumber; i++) {
@@ -270,14 +269,14 @@ public class SpreadsheetCreator {
             cell.setCellStyle(infoStyle);
             for (int j = 0; j < subjects.length; j++) {
                 cell = row.createCell(j + 4);
-                cell.setCellValue(obv[index]);
+                cell.setCellValue(observations[index]);
                 cell.setCellStyle(infoStyle);
                 index++;
             }
             for (int j = 0; j < evd.length; j++) {
                 cell = row.createCell(subjects.length + j + 4);
-                String observationData = obv[index];
-                if (valueType[j].equalsIgnoreCase("file")) {
+                String observationData = observations[index];
+                if (valueType[j].equalsIgnoreCase("file") && observationData.trim().length()>0) {
                     int mimeMark = observationData.indexOf("::data:");
                     String filename = observationData;
                     if (mimeMark > 0) {
@@ -295,7 +294,7 @@ public class SpreadsheetCreator {
                     if(sep>=0) filename = filename.substring(sep+1);
 
                     Path savedPath = Paths.get(fileLocation + filename);
-                    if(!savedPath.toFile().exists()) { // this should not happen, but be cautious anyway
+                    if(!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen, but be cautious anyway
                         log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
                         observationData = "";
                     } else {
