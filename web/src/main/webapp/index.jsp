@@ -608,6 +608,7 @@
                     <option value='clone'>Clone</option>
                     <option value='delete'>Delete</option>
                     <option value='download'>Download</option>
+                    <option value='validate'>Validate and Submit</option> <!-- text from requirement document. What does "and Submit" mean? -->
                     </select>
                 </td>
         </tr>
@@ -684,6 +685,19 @@
         <tr id='story-title-row'><th>Story Title</th><td><input id='story-title' class="input-xxlarge" value='{{storyTitle}}' /></td></tr>
     </script>
 
+    <script type="text/template" id="validation-submission-description-tmpl">
+        <tr><th>Submission Name *</th>
+            <td><input id="validation-submission-name" placeholder="" class="input-xxlarge" value="{{displayName}}"></td>
+        </tr>
+        <tr>
+            <th>Is this a resubmission?</th>
+            <td class="next-cell">
+                <input id="is-resubmission" type="checkbox" {{isResubmission?'checked':''}} style="float:left" />
+                <button id="upload-zip-file">Upload ZIP file</button>
+            </td>
+        </tr>
+    </script>
+
     <script type="text/template" id="template-helper-tmpl">
         <div class="container common-container" id="template-helper-container">
             <h2>CTD<sup>2</sup> Dashboard Submission Builder</h2>
@@ -747,19 +761,24 @@
                     You will be able to reuse information entered for one submission in additional, related submissions. A project title is used to group together such related submissions. 
                 </p>
                 </div>
-                <table class="table table-bordered table-striped" id="existing-template-table">
-                        <tr id="template-header">
-                            <th>Submission Name</th><th>Submission Description</th><th>Project</th><th>Tier</th><th>Date last modified</th><th>Is Story</th><th>Action</th>
-                        </tr>
-                </table>
 
                 <table  class="table">
                     <tr>
                         <td class="next-cell">
                             <button id="create-new-submission" class="btn">Create New Submission</button>
                         </td>
+                        <td class="next-cell">
+                            <button id="upload-new-submission" class="btn">Upload New Submission</button>
+                        </td>
                     </tr>
                 </table>
+
+                <table class="table table-bordered table-striped" id="existing-template-table">
+                        <tr id="template-header">
+                            <th>Submission Name</th><th>Submission Description</th><th>Project</th><th>Tier</th><th>Date last modified</th><th>Is Story</th><th>Action</th>
+                        </tr>
+                </table>
+
             </div>
 
             <div id="step3" class="hide">
@@ -774,6 +793,14 @@
                         <td class="next-cell"><button id="continue-to-main-data">Save and Continue</button></td>
                     </tr>
                 </table>
+            </div>
+
+            <div id="upload-view" class="hide">
+                <h3>Submitter Information</h3>
+                <b>Center:</b> <span id="center-name"></span>
+                <table class="table" id="validation-submitter-information"></table>
+                <h3>Submission Description</h3>
+                <table class="table" id="validation-submission-description"></table>
             </div>
 
             <div id="step4" class="hide">

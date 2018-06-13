@@ -79,6 +79,34 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             $("#step3").slideDown();
         });
 
+        $("#upload-new-submission").click(function () {
+            /* this looks similar to "create-new-submission", but really serves completely different purpose.
+            This view is to catch the basic submission/submitter information for a submisstion to be validated;
+            the submission itself is NOT to be imported to the database.
+            */
+            $ctd2.hideTemplateMenu();
+            if($ctd2.currentModel!=null) {
+                console.log('error: unexpected non-null currentModel');
+                return;
+            }
+
+            // this basically has nothing in common with the template model ($ctd2.currentModel) in this app.
+            var validationSubmissionModel = new $ctd2.ValidationSubmission();
+
+            (new $ctd2.SubmitterInformationView({
+                model: validationSubmissionModel,
+                el: $("#validation-submitter-information")
+            })).render();
+        
+            (new $ctd2.ValidationSubmissionDescriptionView({
+                model: validationSubmissionModel,
+                el: $("#validation-submission-description")
+            })).render();
+
+            $("#step2").fadeOut();
+            $("#upload-view").slideDown();
+        });
+
         // although the other button is called #create-new-submission, this is where it is really created back-end
         $("#save-name-description").click(function () {
             if ($ctd2.currentModel.id == 0) {
@@ -150,6 +178,19 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             var model = $ctd2.templateModels[$("#template-id").val()];
             $("#filename-input").val(model.toJSON().displayName);
             return true;
+        });
+
+        // this is only for valiation and has basically no logic relation with other part of this app
+        // they are tangled together only for the reason of two almost unrelated functionalities being mingled on the same page
+        $("#upload-zip-file").click(function () {
+            /*
+            1. save the submission information (completely separated from the regular submission information for the templates entered online)
+            2. upload zip file
+            3. create the 'submission package' (text files required by the validation Python script)
+            4. run the validation script
+            5. create the report
+            */
+           alert("uploading and validation to be implmented");
         });
 
         return this;
@@ -532,6 +573,20 @@ $ctd2.TemplateDescriptionView = Backbone.View.extend({
     },
 });
 
+$ctd2.ValidationSubmissionDescriptionView = Backbone.View.extend({
+    template: _.template($("#validation-submission-description-tmpl").html()),
+
+    render: function () {
+        $(this.el).html(this.template(this.model.toJSON()));
+        return this;
+    },
+    events: {
+        change: function () {
+            console.log('change triggered on validation submission description');
+        }
+    },
+});
+
 $ctd2.ExistingTemplateView = Backbone.View.extend({
     template: _.template($("#existing-template-row-tmpl").html()),
 
@@ -564,6 +619,15 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     $("#template-id").val(templateId);
                     $("#download-form").submit();
                     break;
+                case 'validate':
+                    /* 
+                    1. create ZIP file (asked by requirement document, but why?) 
+                    2. create "submission package" (as in the text files required by the validation Python script)
+                    3. run the validation script
+                    4. create the report
+                    */
+                   alert("validation to be implmented");
+                   break;
                 default: /* this should never happen */
                     alert('template #' + templateId + ': action ' + action + ' clicked');
             }
@@ -817,6 +881,18 @@ $ctd2.NewObservationView = Backbone.View.extend({
     }
 });
 
+// it is not evident why and how we use this data object yet
+$ctd2.ValidationSubmission = Backbone.Model.extend({
+    defaults: {
+        firstName: "John",
+        lastName: "Doe",
+        email: null,
+        phone: null,
+        displayName: null,
+        isResubmission: false,
+    },
+});
+
 $ctd2.SubmissionTemplate = Backbone.Model.extend({
     defaults: {
         id: 0,
@@ -945,6 +1021,7 @@ $ctd2.showPage = function (page_name, menu_item) {
     $("#step1").fadeOut();
     $("#step2").fadeOut();
     $("#step3").fadeOut();
+    $("#upload-view").fadeOut();
     $("#step4").fadeOut();
     $("#step5").fadeOut();
     $("#step6").fadeOut();
