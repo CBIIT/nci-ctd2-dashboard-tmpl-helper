@@ -608,7 +608,7 @@
                     <option value='clone'>Clone</option>
                     <option value='delete'>Delete</option>
                     <option value='download'>Download</option>
-                    <option value='validate'>Validate and Submit</option> <!-- text from requirement document. What does "and Submit" mean? -->
+                    <option value='validate'>Validate and Submit</option> <!-- "Submit" means sending the ZIP file (how or where?) for the next dashboard release -->
                     </select>
                 </td>
         </tr>

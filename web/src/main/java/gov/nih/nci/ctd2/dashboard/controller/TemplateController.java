@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -19,6 +20,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -223,7 +225,7 @@ public class TemplateController {
                 for(int j=0; j<observationNumber; j++) {
                     int index = columnTagCount*j + subjectColumnCount + i;
                     if(index>=observations.length) {
-                        System.out.println("ERROR: observation index="+index+">= observation length="+observations.length);
+                        log.error("ERROR: observation index="+index+">= observation length="+observations.length);
                         continue;
                     }
                     String obv = observations[index];
@@ -320,6 +322,11 @@ public class TemplateController {
             log.error(topDir+" pre-exists but is not a directory.");
         }
 
+        // create the text package
+        String templateName = template.getDisplayName();
+        Date date = template.getDateLastModified();
+        String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
+
         StringBuffer sb = new StringBuffer("<p>Files created:<ol>");
         try {
             byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
@@ -331,31 +338,32 @@ public class TemplateController {
             e.printStackTrace();
         }
 
-        // create the text package
         try {
             Path perColumn = Paths.get(fileLocation+"dashboard-CV-per-column.txt");
             Files.deleteIfExists(perColumn);
-            String content = "per column content";
+            String content = perColumnContent(template);
             Files.write(perColumn, content.getBytes());
             sb.append("<li>"+"dashboard-CV-per-column.txt");
 
-            String content2 = "per template content";
+            String content2 = perTemplateContent(template);
             Files.write(Paths.get(fileLocation+"dashboard-CV-per-template.txt"), content2.getBytes());
             sb.append("<li>"+"dashboard-CV-per-template.txt");
 
-            Path dir = Paths.get(fileLocation+"submissions");
+            Path dir = Paths.get(fileLocation+"submissions"+File.separator+submissionName);
             if(!dir.toFile().exists()) {
-                Files.createDirectory(Paths.get(fileLocation+"submissions"));
+                Files.createDirectories(dir);
             } else if(!dir.toFile().isDirectory()) {
                 log.error(dir+" pre-exists but is not a directory.");
             }
             if(dir.toFile().isDirectory()) {
+                StringBuffer filecontent = new StringBuffer();
                 for(String submission: template.getObservations()) {
-                    Path path = Paths.get(fileLocation+"submissions"+File.separator+submission+".txt");
-                    Files.deleteIfExists(path);
-                    Files.createFile(path);
-                    sb.append("<li>"+path.toString());
+                    filecontent.append(submission).append('\n');
                 }
+                Path path = dir.resolve(submissionName+".txt");
+                Files.deleteIfExists(path);
+                Files.write(path, filecontent.toString().getBytes());
+                sb.append("<li>"+path.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -373,31 +381,108 @@ public class TemplateController {
             log.info("exit of Python script: "+ret);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            System.out.println("output from Python script: ");
+            log.info("output from Python script: ");
             String output = in.readLine();
             while(output!=null) {
-                System.out.println(output);
+                log.info(output);
                 output = in.readLine();
             }
 
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            System.out.println("error from Python script: ");
+            sb.append("<h4>Error(s) reported by the validation script:</h4><ul>");
+            StringBuffer otherMessage = new StringBuffer();
             String error = errorReader.readLine();
             while(error!=null) {
-                System.out.println(error);
+                if(error.startsWith("ERROR:")) {
+                    sb.append("<li>").append(error).append("</li>");
+                } else {
+                    otherMessage.append(error).append('\n');
+                }
                 error = errorReader.readLine();
             }
+            sb.append("</ul>").append("<pre style='color: blue'>").
+                append(escapeHtml(otherMessage.toString())).append("</pre>");
         } catch (IOException e) {
             e.printStackTrace();
         }  catch (InterruptedException e) {
             e.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
         }
 
-        sb.append("<p>Valiation has been run.</p>");
-
         return new ResponseEntity<String>(sb.toString(), HttpStatus.OK);
+    }
+
+    static private String perColumnContent(final SubmissionTemplate template) {
+        String[] headers = {"id", "template_name", "column_name", "subject", "evidence", "role", "mime_type", "numeric_units", "display_text"};
+        StringBuffer sb = new StringBuffer();
+        sb.append(headers[0]);
+        for(int i=1; i<headers.length; i++) {
+            sb.append('\t').append(headers[i]);
+        }
+        sb.append('\n');
+
+        String templateName = template.getDisplayName();
+        // subjects
+        String[] columnName = template.getSubjectColumns();
+        String[] subjectClass = template.getSubjectClasses();
+        String[] subjectRole = template.getSubjectRoles();
+        String[] displayText = template.getSubjectDescriptions();
+        for(int i=0; i<template.getSubjectColumns().length; i++) {
+            sb.append(i+1).append('\t').append(templateName).append('\t').append(columnName[i]).append('\t').append(subjectClass[i]).append('\t').
+                append('\t').append(subjectRole[i]).append('\t').append('\t').append('\t').
+                append(displayText[i]).append('\n');
+        }
+        // evidences
+        String[] evidenceColumnName = template.getEvidenceColumns();
+        String[] evidenceType = template.getEvidenceTypes();
+        String[] evidenceRole = template.getValueTypes(); // cautious: confusing naming
+        String[] observations = template.getObservations();
+        String[] evidenceDescription = template.getEvidenceDescriptions();
+        for(int i=0; i<template.getEvidenceColumns().length; i++) {
+            String mimeType = ""; // applicable only for file evidence type
+            String numericUnits = "";  // applicable only for numeric evidence type
+            if(evidenceRole[i].equals("numeric")) {
+                numericUnits = "";  // TODO not implemented
+            } else if(evidenceRole[i].equals("file")) {
+                String observationData = observations[i + template.getSubjectColumns().length];
+                int mimeMark = observationData.indexOf("::data:");
+                if (mimeMark > 0) {
+                    mimeType = observationData.substring(mimeMark + 7);
+                }
+            }
+            sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t').append(evidenceColumnName[i]).append('\t').
+                append('\t').append(evidenceType[i]).append('\t').append(evidenceRole[i]).append('\t').append(mimeType).append('\t').append(numericUnits).append('\t').
+                append(evidenceDescription[i]).append('\n');
+        }
+        return sb.toString();
+    }
+
+    static private String perTemplateContent(final SubmissionTemplate template) {
+        String[] headers = {"observation_tier", "template_name", "observation_summary", "template_description", "submission_name", "submission_description",
+            "project", "submission_story", "submission_story_rank", "submission_center", "principal_investigator"};
+        StringBuffer sb = new StringBuffer();
+        sb.append(headers[0]);
+        for(int i=1; i<headers.length; i++) {
+            sb.append('\t').append(headers[i]);
+        }
+        sb.append('\n');
+
+        Integer tier = template.getTier();
+        String templateName = template.getDisplayName();
+        Date date = template.getDateLastModified();
+        String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
+        String summary = template.getSummary().replace('\n', ' '); // assuming \n is not intended
+        String templateDescription = template.getDescription();
+        String submissionDescription = template.getStoryTitle(); // Totally confusing name!
+        String project = template.getProject();
+        boolean story = template.getIsStory();
+        Integer rank = 0; // TODO story rank, not implemented in the spreadsheet
+        String center = template.getSubmissionCenter().getDisplayName();
+        String pi = ""; // TODO PI, not implemented in the spreadsheet
+
+        sb.append(tier).append('\t').append(templateName).append('\t').append(summary).append('\t').append(templateDescription).append('\t').
+            append(submissionName).append('\t').append(submissionDescription).append('\t').append(project).append('\t').append(story).append('\t').
+            append(rank).append('\t').append(center).append('\t').append(pi).append('\n');
+        return sb.toString();
     }
 
     @Transactional

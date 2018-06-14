@@ -1239,6 +1239,8 @@ $ctd2.saveNewTemplate = function (sync) {
         console.log('error: unexpected $cdt2.centerId==0');
         return;
     }
+    /* This is the key identifier for submissions and will be used as in subdirectory names and filenames.
+    TODO Should we forbid spaces and other special characters? */
     var submissionName = $("#template-name").val();
 
     var firstName = $("#first-name").val();
