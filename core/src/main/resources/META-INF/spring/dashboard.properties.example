@@ -25,3 +25,9 @@ web.data.url=http://cbio.mskcc.org/cancergenomics/ctd2-dashboard/
 list.max.observations=100
 
 submission.builder.version=v1.0
+
+# location where uploaded files are stored
+upload.location=/ctd2upload/
+
+# full path of the Python validation script
+validation.script=VALIDATION_SCRIPT_LOCATION/submissionCheck.py

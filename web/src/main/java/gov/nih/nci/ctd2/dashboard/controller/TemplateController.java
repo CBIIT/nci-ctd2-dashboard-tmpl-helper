@@ -140,6 +140,10 @@ public class TemplateController {
     @Qualifier("uploadLocation")
     private String uploadLocation = "";
 
+    @Autowired
+    @Qualifier("validationScript")
+    private String validationScript = "";
+
     @Transactional
     @RequestMapping(value="update", method = {RequestMethod.POST}, headers = "Accept=application/text")
     public 
@@ -361,7 +365,7 @@ public class TemplateController {
         sb.append("</ol>");
 
         // run python script to validate
-        ProcessBuilder pb = new ProcessBuilder("python","validation_script.py","arguments_if_necessary");
+        ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir.toString());
         try {
             Process p = pb.start();
 
@@ -369,7 +373,7 @@ public class TemplateController {
             log.info("exit of Python script: "+ret);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            System.out.print("output from Python script: ");
+            System.out.println("output from Python script: ");
             String output = in.readLine();
             while(output!=null) {
                 System.out.println(output);
@@ -377,10 +381,10 @@ public class TemplateController {
             }
 
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            System.out.print("error from Python script: ");
+            System.out.println("error from Python script: ");
             String error = errorReader.readLine();
             while(error!=null) {
-                System.out.print(error);
+                System.out.println(error);
                 error = errorReader.readLine();
             }
         } catch (IOException e) {

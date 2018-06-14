@@ -29,4 +29,7 @@
         <constructor-arg type="String" value="${upload.location}"/>
     </bean>
 
+    <bean id="validationScript" class="java.lang.String">
+        <constructor-arg type="String" value="${validation.script}"/>
+    </bean>
 </beans>
