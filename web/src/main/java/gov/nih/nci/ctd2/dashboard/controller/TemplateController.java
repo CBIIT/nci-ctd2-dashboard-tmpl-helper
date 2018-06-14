@@ -1,10 +1,14 @@
 package gov.nih.nci.ctd2.dashboard.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -291,7 +295,106 @@ public class TemplateController {
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " DELETED", HttpStatus.OK);
     }
 
+    @Transactional
+    @RequestMapping(value="validate", method = {RequestMethod.GET})
+    public ResponseEntity<String> validate(
+            @RequestParam("templateId") Integer templateId)
+    {
+        SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
+        String fileLocation = getFileLocationPerTemplate(template);
+        SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);
+
+        Path topDir = Paths.get(fileLocation); // this may not exist if there is no attachment
+        if(!topDir.toFile().exists()) {
+            try {
+                Files.createDirectory(topDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if(!topDir.toFile().isDirectory()) {
+            log.error(topDir+" pre-exists but is not a directory.");
+        }
+
+        StringBuffer sb = new StringBuffer("<p>Files created:<ol>");
+        try {
+            byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
+            Files.write(Paths.get(fileLocation+"dashboard-CV-master.xls"), workbookAsByteArray);
+            sb.append("<li>"+"dashboard-CV-master.xls");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidPathException e) {
+            e.printStackTrace();
+        }
+
+        // create the text package
+        try {
+            Path perColumn = Paths.get(fileLocation+"dashboard-CV-per-column.txt");
+            Files.deleteIfExists(perColumn);
+            String content = "per column content";
+            Files.write(perColumn, content.getBytes());
+            sb.append("<li>"+"dashboard-CV-per-column.txt");
+
+            String content2 = "per template content";
+            Files.write(Paths.get(fileLocation+"dashboard-CV-per-template.txt"), content2.getBytes());
+            sb.append("<li>"+"dashboard-CV-per-template.txt");
+
+            Path dir = Paths.get(fileLocation+"submissions");
+            if(!dir.toFile().exists()) {
+                Files.createDirectory(Paths.get(fileLocation+"submissions"));
+            } else if(!dir.toFile().isDirectory()) {
+                log.error(dir+" pre-exists but is not a directory.");
+            }
+            if(dir.toFile().isDirectory()) {
+                for(String submission: template.getObservations()) {
+                    Path path = Paths.get(fileLocation+"submissions"+File.separator+submission+".txt");
+                    Files.deleteIfExists(path);
+                    Files.createFile(path);
+                    sb.append("<li>"+path.toString());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidPathException e) {
+            e.printStackTrace();
+        }
+        sb.append("</ol>");
+
+        // run python script to validate
+        ProcessBuilder pb = new ProcessBuilder("python","validation_script.py","arguments_if_necessary");
+        try {
+            Process p = pb.start();
+
+            int ret = p.waitFor();
+            log.info("exit of Python script: "+ret);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            System.out.print("output from Python script: ");
+            String output = in.readLine();
+            while(output!=null) {
+                System.out.println(output);
+                output = in.readLine();
+            }
+
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            System.out.print("error from Python script: ");
+            String error = errorReader.readLine();
+            while(error!=null) {
+                System.out.print(error);
+                error = errorReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }  catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        sb.append("<p>Valiation has been run.</p>");
+
+        return new ResponseEntity<String>(sb.toString(), HttpStatus.OK);
+    }
 
     @Transactional
     @RequestMapping(value="download", method = {RequestMethod.POST})

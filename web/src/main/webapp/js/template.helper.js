@@ -626,7 +626,22 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     3. run the validation script
                     4. create the report
                     */
-                   alert("validation to be implmented");
+                   var report = "<h3>Validation Report</h3>";
+                   $.ajax({
+                        async: false,
+                        url: "template/validate",
+                        type: "GET",
+                        data: jQuery.param({
+                            templateId: templateId,
+                        }),
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response) {
+                            console.log(response);
+                            report += response;
+                        }
+                    });
+
+                   $ctd2.showAlertMessage(report);
                    break;
                 default: /* this should never happen */
                     alert('template #' + templateId + ': action ' + action + ' clicked');
