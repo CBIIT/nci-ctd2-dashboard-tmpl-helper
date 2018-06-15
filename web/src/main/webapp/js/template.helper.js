@@ -587,6 +587,14 @@ $ctd2.ValidationSubmissionDescriptionView = Backbone.View.extend({
     },
 });
 
+$ctd2.ValidationReportView = Backbone.View.extend({
+    template: _.template($("#validation-report-tmpl").html()),
+    render: function() {
+        $.fancybox(this.template(this.model));
+        return this;
+    }
+});
+
 $ctd2.ExistingTemplateView = Backbone.View.extend({
     template: _.template($("#existing-template-row-tmpl").html()),
 
@@ -626,7 +634,6 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     3. run the validation script
                     4. create the report
                     */
-                   var report = "<h3>Validation Report</h3>";
                    $.ajax({
                         async: false,
                         url: "template/validate",
@@ -637,11 +644,15 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
                             console.log(response);
-                            report += response;
-                        }
+                            (new $ctd2.ValidationReportView({
+                                model: response,
+                            })).render();
+                        },
+                        error: function(response, status) {
+                            console.log(response);
+                            console.log(status);
+                        },
                     });
-
-                   $ctd2.showAlertMessage(report);
                    break;
                 default: /* this should never happen */
                     alert('template #' + templateId + ': action ' + action + ' clicked');

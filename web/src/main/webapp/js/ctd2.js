@@ -7,6 +7,7 @@
     // This is for the moustache-like templates
     // prevents collisions with JSP tags <%...%>
     _.templateSettings = {
+        evaluate : /<@(.+?)@>/g,
         interpolate : /\{\{(.+?)\}\}/g
     };
 

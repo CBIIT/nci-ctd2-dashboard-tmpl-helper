@@ -597,6 +597,28 @@
         </tr>
     </script>  
 
+    <script type="text/template" id="validation-report-tmpl">
+        <h3 align=center>{{title}}</h3>
+        <em>Files created:</em>
+        <ol>
+            <@ for(var index in files) { @>
+            <li><samp>{{ files[index] }}</samp></li>
+            <@ } @>
+        </ol>
+        <h4>{{count}} error{{count>1?"s":""}} reported by the validation script:</h4>
+        <table class="table table-condensed table-striped table-bordered">
+            <tr><th></th><th>description</th><th>detail</th></tr>
+            <@ for(var error in errors) { @>
+                <tr><td style="color: red">!</td>
+                    <td>{{ errors[error].description }}</td>
+                    <td class="small">{{ errors[error].detail }}</td>
+                </tr>
+            <@ } @>
+        </table>
+        <strong>Other script error:</strong>
+        <pre style='color: blue'>{{otherError}}</pre>
+    </script>
+
     <script type="text/template" id="existing-template-row-tmpl">
         <tr id="template-table-row-{{id}}" class='stored-template-row'>
             <td>{{displayName}}</td><td>{{description}}</td><td>{{project}}</td>

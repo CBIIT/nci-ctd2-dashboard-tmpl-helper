@@ -10,7 +10,9 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -24,6 +26,7 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
@@ -327,11 +331,11 @@ public class TemplateController {
         Date date = template.getDateLastModified();
         String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
 
-        StringBuffer sb = new StringBuffer("<p>Files created:<ol>");
+        List<String> files = new ArrayList<String>();
         try {
             byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
             Files.write(Paths.get(fileLocation+"dashboard-CV-master.xls"), workbookAsByteArray);
-            sb.append("<li>"+"dashboard-CV-master.xls");
+            files.add("dashboard-CV-master.xls");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidPathException e) {
@@ -343,11 +347,11 @@ public class TemplateController {
             Files.deleteIfExists(perColumn);
             String content = perColumnContent(template);
             Files.write(perColumn, content.getBytes());
-            sb.append("<li>"+"dashboard-CV-per-column.txt");
+            files.add("dashboard-CV-per-column.txt");
 
             String content2 = perTemplateContent(template);
             Files.write(Paths.get(fileLocation+"dashboard-CV-per-template.txt"), content2.getBytes());
-            sb.append("<li>"+"dashboard-CV-per-template.txt");
+            files.add("dashboard-CV-per-template.txt");
 
             Path dir = Paths.get(fileLocation+"submissions"+File.separator+submissionName);
             if(!dir.toFile().exists()) {
@@ -363,17 +367,20 @@ public class TemplateController {
                 Path path = dir.resolve(submissionName+".txt");
                 Files.deleteIfExists(path);
                 Files.write(path, filecontent.toString().getBytes());
-                sb.append("<li>"+path.toString());
+                int pathCount = path.getNameCount();
+                assert pathCount>=3;
+                files.add(path.getName(pathCount-3)+File.separator+path.getName(pathCount-2)+File.separator+path.getFileName());
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidPathException e) {
             e.printStackTrace();
         }
-        sb.append("</ol>");
 
         // run python script to validate
         ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir.toString());
+        List<ValidationError> errors = new ArrayList<ValidationError>();
+        String otherError = "";
         try {
             Process p = pb.start();
 
@@ -389,26 +396,33 @@ public class TemplateController {
             }
 
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            sb.append("<h4>Error(s) reported by the validation script:</h4><ul>");
             StringBuffer otherMessage = new StringBuffer();
             String error = errorReader.readLine();
             while(error!=null) {
                 if(error.startsWith("ERROR:")) {
-                    sb.append("<li>").append(error).append("</li>");
+                    int index = error.indexOf("[");
+                    String description = error.substring("ERROR:".length(), index).trim().replaceAll(":$", "");
+                    String errorDetail = error.substring(index);
+                    errors.add(new ValidationError(description, errorDetail));
                 } else {
                     otherMessage.append(error).append('\n');
                 }
                 error = errorReader.readLine();
             }
-            sb.append("</ul>").append("<pre style='color: blue'>").
-                append(escapeHtml(otherMessage.toString())).append("</pre>");
+            otherError = escapeHtml(otherMessage.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }  catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        return new ResponseEntity<String>(sb.toString(), HttpStatus.OK);
+        ValidationReport report = new ValidationReport("Validation Report", errors.toArray(new ValidationError[0]),
+            files.toArray(new String[0]), otherError);
+        JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
+        String response = jsonSerializer.deepSerialize(report);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(response, headers, HttpStatus.OK);
     }
 
     static private String perColumnContent(final SubmissionTemplate template) {
