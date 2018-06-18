@@ -48,7 +48,10 @@ public class ValidationReport {
                     }
                     String description = error.substring("ERROR:".length(), index).trim().replaceAll(":$", "");
                     String errorDetail = error.substring(index);
-                    errors.add(new ValidationError(description, errorDetail));
+                    errors.add(new ValidationError("ERROR", description, errorDetail));
+                } else if (error.startsWith("WARNING:")) {
+                    String description = error.substring("WARNING:".length()).trim().replaceAll(":$", "");
+                    errors.add(new ValidationError("WARNING", description, ""));
                 } else {
                     otherMessage.append(error).append('\n');
                 }

@@ -609,7 +609,7 @@
         <table class="table table-condensed table-striped table-bordered">
             <tr><th></th><th>description</th><th>detail</th></tr>
             <@ for(var error in errors) { @>
-                <tr><td style="color: red">!</td>
+                <tr><td style="color: {{errors[error].type==="ERROR"?"red":"orange"}}">{{errors[error].type==="ERROR"?"!":"&#9888;"}}</td>
                     <td>{{ errors[error].description }}</td>
                     <td class="small">{{ errors[error].detail }}</td>
                 </tr>
