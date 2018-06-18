@@ -113,8 +113,7 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
                 $(this).attr("disabled", "disabled");
                 $ctd2.saveNewTemplate();
             } else {
-                $ctd2.updateModel_1();
-                $ctd2.updateTemplate($(this));
+                $ctd2.updateModel_1($(this));
             }
         });
         $("#continue-to-main-data").click(function () { // similar to save, additionally moving to the next
@@ -122,8 +121,7 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             if ($ctd2.currentModel.id == 0) {
                 ret = $ctd2.saveNewTemplate(true);
             } else {
-                $ctd2.updateModel_1();
-                $ctd2.updateTemplate($(this));
+                $ctd2.updateModel_1($(this));
             }
             if (ret && $ctd2.saveSuccess) {
                 $("#step3").fadeOut();
@@ -197,7 +195,7 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
     } // end render function
 }); // end of TemplateHelperView
 
-$ctd2.updateModel_1 = function () {
+$ctd2.updateModel_1 = function (triggeringButton) {
     var firstName = $("#first-name").val();
     var lastName = $("#last-name").val();
     var email = $("#email").val();
@@ -221,6 +219,7 @@ $ctd2.updateModel_1 = function () {
         isStory: isStory,
         storyTitle: storyTitle,
     });
+    $ctd2.updateTemplate(triggeringButton);
 };
 
 /* this is the last step on the 'Submission Data' page after possible background reading is done */
@@ -1221,6 +1220,11 @@ $ctd2.hasDuplicate = function (a) {
 };
 
 $ctd2.updateTemplate = function (triggeringButton) {
+    var description = $ctd2.currentModel.get('description');
+    if(description.length==0) {
+        $ctd2.showAlertMessage("template description cannot be empty");
+        return;
+    }
 
     triggeringButton.attr("disabled", "disabled");
     $.ajax({
@@ -1270,6 +1274,10 @@ $ctd2.saveNewTemplate = function (sync) {
         $("#save-name-description").removeAttr("disabled");
         $ctd2.showAlertMessage("new template cannot be created withnot required information: first name, last name, and a submission name");
         return false; // error control
+    }
+    if(description.length==0) {
+        $ctd2.showAlertMessage("template description cannot be empty");
+        return false;
     }
 
     var async = true;
