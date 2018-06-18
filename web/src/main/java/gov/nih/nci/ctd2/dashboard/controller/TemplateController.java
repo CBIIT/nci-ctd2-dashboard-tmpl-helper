@@ -180,6 +180,7 @@ public class TemplateController {
             @RequestParam("summary") String summary
             )
     {
+        log.debug("update request received");
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
     	template.setDisplayName(name);
     	template.setDateLastModified(new Date());
@@ -270,17 +271,21 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    String relativePathAndMimeType = obv.substring(0, obv.indexOf(";base64"));
+                    int indexEncodedContent = obv.indexOf(";base64");
+                    if(indexEncodedContent<0) indexEncodedContent = obv.length();
+                    String relativePathAndMimeType = obv.substring(0, indexEncodedContent);
                     observations[index] = relativePathAndMimeType;
                 }
             }
         }
+        log.debug("after processing uploaded files");
         template.setObservations(observations);
 
         template.setSummary(summary);
 
         dashboardDao.update(template);
 
+        log.debug("ready to respond OK");
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " UPDATED", HttpStatus.OK);
     }
 
