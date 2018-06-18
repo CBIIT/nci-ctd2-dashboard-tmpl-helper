@@ -1,10 +1,8 @@
 package gov.nih.nci.ctd2.dashboard.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -22,7 +20,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -149,6 +146,10 @@ public class TemplateController {
     @Autowired
     @Qualifier("validationScript")
     private String validationScript = "";
+
+    @Autowired
+    @Qualifier("subjectDataLocation")
+    private String subjectDataLocation = "";
 
     @Transactional
     @RequestMapping(value="update", method = {RequestMethod.POST}, headers = "Accept=application/text")
@@ -326,6 +327,20 @@ public class TemplateController {
             log.error(topDir+" pre-exists but is not a directory.");
         }
 
+        // copy the background data
+        /* this is not a very reasonable solution, considering that the background data size is pretty large,
+            but is necessary if we are strictly in not modifying the current validation script.
+        */
+        Path sourcePath = Paths.get(subjectDataLocation+File.separator+"subject_data");
+        Path targetPath = Paths.get(fileLocation+File.separator+"subject_data");
+        try {
+            log.debug("start copying subject data");
+            Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath));
+            log.debug("finished copying subject data");
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
         // create the text package
         String templateName = template.getDisplayName();
         Date date = template.getDateLastModified();
@@ -376,48 +391,11 @@ public class TemplateController {
         } catch (InvalidPathException e) {
             e.printStackTrace();
         }
+        log.debug("finished creating tab-delimited files");
 
         // run python script to validate
-        ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir.toString());
-        List<ValidationError> errors = new ArrayList<ValidationError>();
-        String otherError = "";
-        try {
-            Process p = pb.start();
-
-            int ret = p.waitFor();
-            log.info("exit of Python script: "+ret);
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            log.info("output from Python script: ");
-            String output = in.readLine();
-            while(output!=null) {
-                log.info(output);
-                output = in.readLine();
-            }
-
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            StringBuffer otherMessage = new StringBuffer();
-            String error = errorReader.readLine();
-            while(error!=null) {
-                if(error.startsWith("ERROR:")) {
-                    int index = error.indexOf("[");
-                    String description = error.substring("ERROR:".length(), index).trim().replaceAll(":$", "");
-                    String errorDetail = error.substring(index);
-                    errors.add(new ValidationError(description, errorDetail));
-                } else {
-                    otherMessage.append(error).append('\n');
-                }
-                error = errorReader.readLine();
-            }
-            otherError = escapeHtml(otherMessage.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }  catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ValidationReport report = new ValidationReport("Validation Report", errors.toArray(new ValidationError[0]),
-            files.toArray(new String[0]), otherError);
+        ValidationReport report = new ValidationReport(validationScript, topDir.toString(), files.toArray(new String[0]));
+        log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
         String response = jsonSerializer.deepSerialize(report);
         HttpHeaders headers = new HttpHeaders();
