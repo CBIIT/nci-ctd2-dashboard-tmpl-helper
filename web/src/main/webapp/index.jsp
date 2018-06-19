@@ -715,7 +715,8 @@
             <th>Is this a resubmission?</th>
             <td class="next-cell">
                 <input id="is-resubmission" type="checkbox" {{isResubmission?'checked':''}} style="float:left" />
-                <button id="upload-zip-file">Upload ZIP file</button>
+                Upload ZIP file
+                <input type="file" class="form-control" id="upload-zip-file" />
             </td>
         </tr>
     </script>

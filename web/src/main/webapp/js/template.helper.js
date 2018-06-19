@@ -178,19 +178,6 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             return true;
         });
 
-        // this is only for valiation and has basically no logic relation with other part of this app
-        // they are tangled together only for the reason of two almost unrelated functionalities being mingled on the same page
-        $("#upload-zip-file").click(function () {
-            /*
-            1. save the submission information (completely separated from the regular submission information for the templates entered online)
-            2. upload zip file
-            3. create the 'submission package' (text files required by the validation Python script)
-            4. run the validation script
-            5. create the report
-            */
-           alert("uploading and validation to be implmented");
-        });
-
         return this;
     } // end render function
 }); // end of TemplateHelperView
@@ -577,6 +564,18 @@ $ctd2.ValidationSubmissionDescriptionView = Backbone.View.extend({
 
     render: function () {
         $(this.el).html(this.template(this.model.toJSON()));
+
+        $("#upload-zip-file").change(function () {
+            /*
+            1. save the submission information (completely separated from the regular submission information for the templates entered online)
+            2. upload zip file
+            3. create the 'submission package' (text files required by the validation Python script)
+            4. run the validation script
+            5. create the report
+            */
+           $ctd2.uploadZip(this);
+        });
+
         return this;
     },
     events: {
@@ -1162,6 +1161,43 @@ $ctd2.getObservations = function () {
         });
     });
     // when this function returns here, there are possibly multiple background threads started by this function that are reading files
+};
+
+$ctd2.uploadZip = function(uploadButton) {
+    var filelList = $(uploadButton).prop('files');
+    if (filelList != null && filelList.length > 0) {
+        var file = filelList[0];
+
+        if(file.size>$ctd2.UPLOAD_SIZE_LIMIT) {
+            $ctd2.showAlertMessage('Size of file '+file.name+' is '+file.size+' bytes and over the allowed limit, so it is ignored.');
+            $(this).val("");
+        } else if ( !(file.name.toLowerCase().endsWith(".zip")) ) {
+            $ctd2.showAlertMessage('Only ZIP file expected uploaded, so '+file.name+' is ignored.');
+            $(this).val("");
+        } else {
+            var reader = new FileReader();
+            reader.addEventListener("load", function () {
+
+                    $.ajax({
+                        url: "upload/zip",
+                        type: "POST",
+                        data: {filename: file.name, filecontent: reader.result, centerId: $ctd2.centerId},
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (data) {
+                            console.log("return value: " + data);
+                        },
+                        error: function (response, status) {
+                            console.log(status + ": " + response.responseText);
+                        }
+                    });
+                
+                }, false);
+            reader.readAsDataURL(file);
+            console.log("start reading "+file.name);
+        }
+    } else {
+        console.log("filelList is empty");
+    }
 };
 
 // on 'Submission Data' page
