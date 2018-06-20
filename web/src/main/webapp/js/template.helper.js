@@ -1185,9 +1185,14 @@ $ctd2.uploadZip = function(uploadButton) {
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (data) {
                             console.log("return value: " + data);
+                            if(data.startsWith("VALIDATION FAILURE:"))
+                                $ctd2.showAlertMessage('validation failed: '+data);
+                            else
+                                $ctd2.showAlertMessage('validation succeeded: '+data);
                         },
                         error: function (response, status) {
-                            console.log(status + ": " + response.responseText);
+                            console.log(response);
+                            $ctd2.showAlertMessage(status+'<br>Status '+response.status+" "+response.statusText);
                         }
                     });
                 
