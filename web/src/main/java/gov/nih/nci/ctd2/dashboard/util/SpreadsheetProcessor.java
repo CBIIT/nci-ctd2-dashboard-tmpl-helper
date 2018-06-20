@@ -105,14 +105,136 @@ public class SpreadsheetProcessor {
         String centerName = row1.getCell(9).getStringCellValue();
         SubmissionCenter submissionCenter = dashboardDao.findSubmissionCenterByName(centerName);
 
+        int tier = 0;
+        try {
+            tier = Integer.parseInt(row1.getCell(0).getStringCellValue());
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        boolean isStory = Boolean.parseBoolean(row1.getCell(7).getStringCellValue());
+
         SubmissionTemplate template = new SubmissionTemplateImpl();
         template.setDisplayName(templateName);
         template.setDateLastModified(date);
         template.setSummary(summary);
         template.setSubmissionCenter(submissionCenter);
+        template.setTier(tier);
+        template.setIsStory(isStory);
+
+        parseDataSheet(dataSheet, template);
 
         workbook.close();
         return template;
+    }
+
+    private void parseDataSheet(final Sheet dataSheet, SubmissionTemplate template) throws IOException {
+        int firstRowNumber = dataSheet.getFirstRowNum();
+        int lastRowNumber = dataSheet.getLastRowNum();
+        short topRow = dataSheet.getTopRow();
+        log.debug("lastRowNumber=" + lastRowNumber + ", firstRowNumber=" + firstRowNumber + ", topRow=" + topRow);
+
+        if (lastRowNumber < 6) {
+            throw new IOException("incorrect number of row: " + (lastRowNumber + 1));
+        }
+
+        Row row0 = dataSheet.getRow(topRow);
+        if (!"submission_name".equals(row0.getCell(1).getStringCellValue())) {
+            throw new IOException("incorrect header at column 1: " + row0.getCell(1).getStringCellValue());
+        }
+        if (!"submission_date".equals(row0.getCell(2).getStringCellValue())) {
+            throw new IOException("incorrect header at column 2: " + row0.getCell(2).getStringCellValue());
+        }
+        if (!"template_name".equals(row0.getCell(3).getStringCellValue())) {
+            throw new IOException("incorrect header at column 3: " + row0.getCell(3).getStringCellValue());
+        }
+
+        Row subjectRow = dataSheet.getRow(1);
+        assert "subject".equals(subjectRow.getCell(0).getStringCellValue());
+        Row evidenceRow = dataSheet.getRow(2);
+        assert "evidence".equals(evidenceRow.getCell(0).getStringCellValue());
+        Row roleRow = dataSheet.getRow(3);
+        assert "role".equals(roleRow.getCell(0).getStringCellValue());
+        Row mimeTypeRow = dataSheet.getRow(4);
+        assert "mime_type".equals(mimeTypeRow.getCell(0).getStringCellValue());
+        Row numericUnitsRow = dataSheet.getRow(5);
+        assert "numeric_units".equals(numericUnitsRow.getCell(0).getStringCellValue());
+        Row displayTextRow = dataSheet.getRow(6);
+        assert "display_text".equals(displayTextRow.getCell(0).getStringCellValue());
+
+        short firstColumn = subjectRow.getFirstCellNum();
+        short lastSubjectColumn = subjectRow.getLastCellNum(); // exclusive
+        log.debug("subject first column=" + firstColumn + ", last column=" + lastSubjectColumn);
+        List<String> subjects = new ArrayList<String>();
+        for (int i = 4; i < lastSubjectColumn; i++) {
+            String subjectColumnTag = row0.getCell(i).getStringCellValue();
+            subjects.add(subjectColumnTag);
+        }
+        // Assume evidences are all to the right of subjects. May this be not the case?
+        firstColumn = evidenceRow.getFirstCellNum();
+        short lastEvidenceColumn = evidenceRow.getLastCellNum(); // exclusive
+        log.debug("evidence first column=" + firstColumn + ", last column=" + lastEvidenceColumn);
+        List<String> evidences = new ArrayList<String>();
+        for (int i = lastSubjectColumn; i < lastEvidenceColumn; i++) {
+            String evidencColumnTag = row0.getCell(i).getStringCellValue();
+            evidences.add(evidencColumnTag);
+        }
+
+        int subjectCount = subjects.size();
+        template.setSubjectColumns(subjects.toArray(new String[subjectCount]));
+        String[] subjectClasses = new String[subjectCount];
+        String[] subjectRoles = new String[subjectCount];
+        String[] subjectTexts = new String[subjectCount];
+        for (int i = 0; i < subjectCount; i++) {
+            int col = 4 + i;
+            subjectClasses[i] = subjectRow.getCell(col).getStringCellValue();
+            subjectRoles[i] = roleRow.getCell(col).getStringCellValue();
+            subjectTexts[i] = displayTextRow.getCell(col).getStringCellValue();
+        }
+        template.setSubjectClasses(subjectClasses);
+        template.setSubjectRoles(subjectRoles);
+        template.setSubjectDescriptions(subjectTexts);
+
+        int evidenceCount = evidences.size();
+        template.setEvidenceColumns(evidences.toArray(new String[evidenceCount]));
+        /* BE CAUTIOUS WITH THESE INCONSISTENT NAMINGS */
+        String[] evidenceTypes = new String[evidenceCount];
+        String[] valueTypes = new String[evidenceCount];
+        String[] evidenceDescription = new String[evidenceCount];
+        for (int i = 0; i < evidenceCount; i++) {
+            int col = lastSubjectColumn + i;
+            evidenceTypes[i] = evidenceRow.getCell(col).getStringCellValue();
+            valueTypes[i] = roleRow.getCell(col).getStringCellValue();
+            evidenceDescription[i] = displayTextRow.getCell(col).getStringCellValue();
+        }
+        template.setEvidenceTypes(evidenceTypes);
+        template.setValueTypes(valueTypes);
+        template.setEvidenceDescriptions(evidenceDescription);
+
+        String templateName = template.getDisplayName();
+        for (int i = 7; i <= lastRowNumber; i++) {
+            log.debug("row #" + i);
+            Row row = dataSheet.getRow(i);
+            firstColumn = row.getFirstCellNum();
+            short lastColumn = row.getLastCellNum();
+            log.debug("first column=" + firstColumn + ", last column=" + lastColumn);
+
+            String submissionName = row.getCell(1).getStringCellValue();
+            String submissionDate = row.getCell(2).getStringCellValue();
+            String templateName_x = row.getCell(3).getStringCellValue();
+            if (!templateName.equals(templateName_x)) {
+                throw new IOException("incorrect template_name " + templateName_x);
+            }
+            String submissionName_x = submissionDate.replaceAll("\\.", "") + "-" + templateName;
+            if (!submissionName.equals(submissionName_x)) {
+                throw new IOException("incorrect submission_name " + submissionName_x);
+            }
+            try {
+                Date date = new SimpleDateFormat("yyyy.MM.dd").parse(submissionDate);
+                log.debug("submission date is " + date);
+            } catch (ParseException e) {
+                throw new IOException("incorrect submission_date " + submissionDate);
+            }
+        }
     }
 
     public List<String> createTextFiles() {
@@ -240,8 +362,9 @@ public class SpreadsheetProcessor {
 
         sb.append(tier).append('\t').append(templateName).append('\t').append(summary).append('\t')
                 .append(templateDescription).append('\t').append(submissionName).append('\t')
-                .append(submissionDescription).append('\t').append(project).append('\t').append(story).append('\t')
-                .append(rank).append('\t').append(center).append('\t').append(pi).append('\n');
+                .append(submissionDescription).append('\t').append(project).append('\t')
+                .append(story.toString().toUpperCase()).append('\t').append(rank).append('\t').append(center)
+                .append('\t').append(pi).append('\n');
         return sb.toString();
     }
 }
