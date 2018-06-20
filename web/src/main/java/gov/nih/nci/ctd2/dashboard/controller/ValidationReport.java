@@ -19,6 +19,14 @@ public class ValidationReport {
 
     private static final Log log = LogFactory.getLog(ValidationReport.class);
 
+    public ValidationReport(String message) {
+        this.title = "Generic Validation Report";
+        this.count = 0;
+        this.errors = new ValidationError[0];
+        this.files = new String[0];
+        this.otherError = message;
+    }
+
     public ValidationReport(String validationScript, String topDir, String[] files) {
         ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir);
         List<ValidationError> errors = new ArrayList<ValidationError>();

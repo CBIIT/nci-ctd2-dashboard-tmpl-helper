@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.util.SpreadsheetProcessor;
 
@@ -94,23 +96,30 @@ public class UploadController {
             log.error(e.getMessage(), e);
         }
 
+        ValidationReport report = null;
         try {
-            validate(excelFilePath);
+            report = validate(excelFilePath);
         } catch(IOException e) { // TODO change this to more specialized exception
             e.printStackTrace();
-            return new ResponseEntity<String>("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage(), HttpStatus.OK);
+            report = new ValidationReport("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage());
         } catch(Exception e) { // TODO remove this from the final code
             e.printStackTrace();
-            return new ResponseEntity<String>("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage(), HttpStatus.OK);
+            report = new ValidationReport("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage());
         }
 
-        return new ResponseEntity<String>(filename + " uploaded and unzipped", HttpStatus.OK);
+        log.info(filename + " uploaded and unzipped");
+
+        JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
+        String response = jsonSerializer.deepSerialize(report);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(response, headers, HttpStatus.OK);
     }
 
-    private void validate(Path excelFilePath) throws IOException, Exception {
+    private ValidationReport validate(Path excelFilePath) throws IOException, Exception {
         if (!excelFilePath.toFile().exists()) {
             log.error("expected file " + excelFilePath.toFile() + " not existing");
-            return;
+            return new ValidationReport("expected file " + excelFilePath.toFile() + " not existing");
         }
 
         SpreadsheetProcessor processor = new SpreadsheetProcessor(excelFilePath, dashboardDao);
@@ -152,6 +161,6 @@ public class UploadController {
         // run python script to validate
         ValidationReport report = new ValidationReport(validationScript, topDir.toString(),
                 files.toArray(new String[0]));
-        System.out.println(report.getTitle() + " " + report.getOtherError());
+        return report;
     }
 }

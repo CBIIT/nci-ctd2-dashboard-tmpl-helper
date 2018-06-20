@@ -1183,12 +1183,10 @@ $ctd2.uploadZip = function(uploadButton) {
                         type: "POST",
                         data: {filename: file.name, filecontent: reader.result, centerId: $ctd2.centerId},
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        success: function (data) {
-                            console.log("return value: " + data);
-                            if(data.startsWith("VALIDATION FAILURE:"))
-                                $ctd2.showAlertMessage('validation failed: '+data);
-                            else
-                                $ctd2.showAlertMessage('validation succeeded: '+data);
+                        success: function (response) {
+                            (new $ctd2.ValidationReportView({
+                                model: response,
+                            })).render();
                         },
                         error: function (response, status) {
                             console.log(response);
