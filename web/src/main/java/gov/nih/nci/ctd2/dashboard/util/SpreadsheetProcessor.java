@@ -32,7 +32,7 @@ public class SpreadsheetProcessor {
     private final Path xlsFilePath;
     private final SubmissionTemplate template;
 
-    public SpreadsheetProcessor(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException {
+    public SpreadsheetProcessor(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
         this.xlsFilePath = xlsFilePath;
         template = readTemplateFromXsl(dashboardDao);
     }
@@ -42,7 +42,7 @@ public class SpreadsheetProcessor {
             "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
             "submission_center", "principal_investigator" };
 
-    private SubmissionTemplate readTemplateFromXsl(final DashboardDao dashboardDao) throws IOException {
+    private SubmissionTemplate readTemplateFromXsl(final DashboardDao dashboardDao) throws IOException, ValidationException {
         FileInputStream excelFile = new FileInputStream(xlsFilePath.toFile());
         Workbook workbook = new HSSFWorkbook(excelFile);
         Sheet metadataSheet = workbook.getSheetAt(0);
@@ -52,9 +52,7 @@ public class SpreadsheetProcessor {
 
         if (!metasheetName.equals(metadataSheetName)) {
             workbook.close();
-            System.out.println("metadata sheet name is " + metadataSheetName + " but it should be " + metasheetName);
-            // TODO use more specialized exception
-            throw new IOException("metadata sheet name is " + metadataSheetName + " but it should be " + metasheetName);
+            throw new ValidationException("metadata sheet name is " + metadataSheetName + " but it should be " + metasheetName);
         }
 
         int lastRowNumber = metadataSheet.getLastRowNum();
@@ -67,7 +65,8 @@ public class SpreadsheetProcessor {
             Cell cell = iter.next();
             String v = cell.getStringCellValue();
             if (!v.equals(headers[index])) {
-                throw new IOException("incorrect header ''" + v + "'. Expected: " + headers[index]);
+                workbook.close();
+                throw new ValidationException("incorrect header ''" + v + "'. Expected: " + headers[index]);
             }
             index++;
         }
@@ -83,7 +82,8 @@ public class SpreadsheetProcessor {
         }
 
         if (!templateName.equals(row1.getCell(1).getStringCellValue())) {
-            throw new IOException("incorrect template_name " + row1.getCell(1).getStringCellValue());
+            workbook.close();
+            throw new ValidationException("incorrect template_name " + row1.getCell(1).getStringCellValue());
         }
 
         String submissionName = row1.getCell(4).getStringCellValue();
@@ -95,9 +95,11 @@ public class SpreadsheetProcessor {
             log.debug("dateString=" + dateString);
             date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
         } catch (ParseException e) {
-            throw new IOException("incorrect date portion of submission_name " + submissionName);
+            workbook.close();
+            throw new ValidationException("incorrect date portion of submission_name " + submissionName);
         } catch (Exception e) {
-            throw new IOException("incorrect submission_name " + submissionName); // too many possibilities
+            workbook.close();
+            throw new ValidationException("incorrect submission_name " + submissionName); // too many possibilities
         }
 
         String summary = row1.getCell(2).getStringCellValue();
@@ -127,25 +129,25 @@ public class SpreadsheetProcessor {
         return template;
     }
 
-    private void parseDataSheet(final Sheet dataSheet, SubmissionTemplate template) throws IOException {
+    private void parseDataSheet(final Sheet dataSheet, SubmissionTemplate template) throws ValidationException {
         int firstRowNumber = dataSheet.getFirstRowNum();
         int lastRowNumber = dataSheet.getLastRowNum();
         short topRow = dataSheet.getTopRow();
         log.debug("lastRowNumber=" + lastRowNumber + ", firstRowNumber=" + firstRowNumber + ", topRow=" + topRow);
 
         if (lastRowNumber < 6) {
-            throw new IOException("incorrect number of row: " + (lastRowNumber + 1));
+            throw new ValidationException("incorrect number of row: " + (lastRowNumber + 1));
         }
 
         Row row0 = dataSheet.getRow(topRow);
         if (!"submission_name".equals(row0.getCell(1).getStringCellValue())) {
-            throw new IOException("incorrect header at column 1: " + row0.getCell(1).getStringCellValue());
+            throw new ValidationException("incorrect header at column 1: " + row0.getCell(1).getStringCellValue());
         }
         if (!"submission_date".equals(row0.getCell(2).getStringCellValue())) {
-            throw new IOException("incorrect header at column 2: " + row0.getCell(2).getStringCellValue());
+            throw new ValidationException("incorrect header at column 2: " + row0.getCell(2).getStringCellValue());
         }
         if (!"template_name".equals(row0.getCell(3).getStringCellValue())) {
-            throw new IOException("incorrect header at column 3: " + row0.getCell(3).getStringCellValue());
+            throw new ValidationException("incorrect header at column 3: " + row0.getCell(3).getStringCellValue());
         }
 
         Row subjectRow = dataSheet.getRow(1);
@@ -222,17 +224,17 @@ public class SpreadsheetProcessor {
             String submissionDate = row.getCell(2).getStringCellValue();
             String templateName_x = row.getCell(3).getStringCellValue();
             if (!templateName.equals(templateName_x)) {
-                throw new IOException("incorrect template_name " + templateName_x);
+                throw new ValidationException("incorrect template_name " + templateName_x);
             }
             String submissionName_x = submissionDate.replaceAll("\\.", "") + "-" + templateName;
             if (!submissionName.equals(submissionName_x)) {
-                throw new IOException("incorrect submission_name " + submissionName_x);
+                throw new ValidationException("incorrect submission_name " + submissionName_x);
             }
             try {
                 Date date = new SimpleDateFormat("yyyy.MM.dd").parse(submissionDate);
                 log.debug("submission date is " + date);
             } catch (ParseException e) {
-                throw new IOException("incorrect submission_date " + submissionDate);
+                throw new ValidationException("incorrect submission_date " + submissionDate);
             }
         }
     }

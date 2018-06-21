@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.util.SpreadsheetProcessor;
+import gov.nih.nci.ctd2.dashboard.util.ValidationException;
 
 @Controller
 @RequestMapping("/upload")
@@ -99,12 +100,12 @@ public class UploadController {
         ValidationReport report = null;
         try {
             report = validate(excelFilePath);
-        } catch(IOException e) { // TODO change this to more specialized exception
+        } catch(ValidationException e) {
             e.printStackTrace();
-            report = new ValidationReport("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage());
-        } catch(Exception e) { // TODO remove this from the final code
+            report = new ValidationReport("file " + filename + ":"+e.getMessage());
+        } catch(Exception e) {
             e.printStackTrace();
-            report = new ValidationReport("VALIDATION FAILURE:" + filename + " exception:"+e.getMessage());
+            report = new ValidationReport("Unexpected exception: " + filename + " "+e.getMessage());
         }
 
         log.info(filename + " uploaded and unzipped");
@@ -116,7 +117,7 @@ public class UploadController {
         return new ResponseEntity<String>(response, headers, HttpStatus.OK);
     }
 
-    private ValidationReport validate(Path excelFilePath) throws IOException, Exception {
+    private ValidationReport validate(Path excelFilePath) throws IOException, ValidationException {
         if (!excelFilePath.toFile().exists()) {
             log.error("expected file " + excelFilePath.toFile() + " not existing");
             return new ValidationReport("expected file " + excelFilePath.toFile() + " not existing");
