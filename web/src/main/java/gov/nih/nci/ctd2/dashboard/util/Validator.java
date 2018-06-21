@@ -217,6 +217,12 @@ public class Validator {
         template.setValueTypes(valueTypes);
         template.setEvidenceDescriptions(evidenceDescription);
 
+        int observationNumber = lastRowNumber - 6;
+        template.setObservationNumber(observationNumber);
+        String[] observations = new String[observationNumber*(subjectCount + evidenceCount)];
+        log.debug("observation array size "+observations.length);
+        int observationIndex = 0;
+
         String templateName = template.getDisplayName();
         for (int i = 7; i <= lastRowNumber; i++) {
             log.debug("row #" + i);
@@ -241,7 +247,18 @@ public class Validator {
             } catch (ParseException e) {
                 throw new ValidationException("incorrect submission_date " + submissionDate);
             }
+
+            for (int col = 4; col < lastEvidenceColumn; col++) {
+                if(observationIndex>=observations.length) {
+                    log.error("observationIndex="+observationIndex);
+                    break;
+                }
+                observations[observationIndex++] = row.getCell(col).getStringCellValue();
+            }
         }
+
+        template.setObservations(observations);
+        template.setObservationString(null); // this field is for back-compatible only, so make sure it is null.
     }
 
     public List<String> createTextFiles() {
