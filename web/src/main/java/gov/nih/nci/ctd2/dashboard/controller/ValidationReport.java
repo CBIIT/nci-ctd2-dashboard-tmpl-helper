@@ -90,8 +90,6 @@ public class ValidationReport {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (Exception e) { // TODO this should be removed in the final code
-            e.printStackTrace();
         }
 
         this.title = "Validation Report";

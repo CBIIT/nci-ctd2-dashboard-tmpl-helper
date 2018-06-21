@@ -26,18 +26,18 @@ import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 
-public class SpreadsheetProcessor {
-    private static final Log log = LogFactory.getLog(SpreadsheetProcessor.class);
+public class Validator {
+    private static final Log log = LogFactory.getLog(Validator.class);
 
     private final SubmissionTemplate template;
     private final Path topDir;
 
-    public SpreadsheetProcessor(SubmissionTemplate template, Path topDir) {
+    public Validator(SubmissionTemplate template, Path topDir) {
         this.template = template;
         this.topDir = topDir;
     }
 
-    public SpreadsheetProcessor(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
+    public Validator(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
         template = readTemplateFromXsl(xlsFilePath, dashboardDao);
         topDir = xlsFilePath.getParent();
     }
@@ -287,8 +287,6 @@ public class SpreadsheetProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidPathException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
             e.printStackTrace();
         }
         log.debug("finished creating tab-delimited files");

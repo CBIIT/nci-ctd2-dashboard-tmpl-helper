@@ -36,7 +36,7 @@ import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 import gov.nih.nci.ctd2.dashboard.util.SpreadsheetCreator;
-import gov.nih.nci.ctd2.dashboard.util.SpreadsheetProcessor;
+import gov.nih.nci.ctd2.dashboard.util.Validator;
 
 @Controller
 @RequestMapping("/template")
@@ -330,7 +330,7 @@ public class TemplateController {
             log.error(topDir+" pre-exists but is not a directory.");
         }
 
-        SpreadsheetProcessor validator = new SpreadsheetProcessor(template, topDir);
+        Validator validator = new Validator(template, topDir);
         List<String> files = validator.createTextFiles();
 
         if(log.isDebugEnabled()) { // the Excel file are not needed by the validation script

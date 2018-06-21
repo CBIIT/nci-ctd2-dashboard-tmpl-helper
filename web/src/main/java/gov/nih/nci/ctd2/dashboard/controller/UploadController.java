@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
-import gov.nih.nci.ctd2.dashboard.util.SpreadsheetProcessor;
+import gov.nih.nci.ctd2.dashboard.util.Validator;
 import gov.nih.nci.ctd2.dashboard.util.ValidationException;
 
 @Controller
@@ -123,7 +123,7 @@ public class UploadController {
             return new ValidationReport("expected file " + excelFilePath.toFile() + " not existing");
         }
 
-        SpreadsheetProcessor processor = new SpreadsheetProcessor(excelFilePath, dashboardDao);
+        Validator validator = new Validator(excelFilePath, dashboardDao);
         /*
          * The tab-delimited text files are created put in the directory structure
          * overlapping the original Excel file and uploaded attachment. This is
@@ -141,7 +141,7 @@ public class UploadController {
         }
 
         // create the text package
-        List<String> files = processor.createTextFiles();
+        List<String> files = validator.createTextFiles();
 
         // run python script to validate
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
