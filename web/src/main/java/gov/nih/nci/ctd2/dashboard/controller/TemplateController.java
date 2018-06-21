@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +36,7 @@ import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 import gov.nih.nci.ctd2.dashboard.util.SpreadsheetCreator;
+import gov.nih.nci.ctd2.dashboard.util.SpreadsheetProcessor;
 
 @Controller
 @RequestMapping("/template")
@@ -319,7 +318,6 @@ public class TemplateController {
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
         String fileLocation = getFileLocationPerTemplate(template);
-        SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);
 
         Path topDir = Paths.get(fileLocation); // this may not exist if there is no attachment
         if(!topDir.toFile().exists()) {
@@ -332,154 +330,30 @@ public class TemplateController {
             log.error(topDir+" pre-exists but is not a directory.");
         }
 
-        // copy the background data
-        /* this is not a very reasonable solution, considering that the background data size is pretty large,
-            but is necessary if we are strictly in not modifying the current validation script.
-        */
-        Path sourcePath = Paths.get(subjectDataLocation+File.separator+"subject_data");
-        Path targetPath = Paths.get(fileLocation+File.separator+"subject_data");
-        try {
-            log.debug("start copying subject data");
-            Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath));
-            log.debug("finished copying subject data");
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        SpreadsheetProcessor validator = new SpreadsheetProcessor(template, topDir);
+        List<String> files = validator.createTextFiles();
 
-        // create the text package
-        String templateName = template.getDisplayName();
-        Date date = template.getDateLastModified();
-        String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
-
-        List<String> files = new ArrayList<String>();
-        try {
-            byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
-            Files.write(Paths.get(fileLocation+"dashboard-CV-master.xls"), workbookAsByteArray);
-            files.add("dashboard-CV-master.xls");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidPathException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Path perColumn = Paths.get(fileLocation+"dashboard-CV-per-column.txt");
-            Files.deleteIfExists(perColumn);
-            String content = perColumnContent(template);
-            Files.write(perColumn, content.getBytes());
-            files.add("dashboard-CV-per-column.txt");
-
-            String content2 = perTemplateContent(template);
-            Files.write(Paths.get(fileLocation+"dashboard-CV-per-template.txt"), content2.getBytes());
-            files.add("dashboard-CV-per-template.txt");
-
-            Path dir = Paths.get(fileLocation+"submissions"+File.separator+submissionName);
-            if(!dir.toFile().exists()) {
-                Files.createDirectories(dir);
-            } else if(!dir.toFile().isDirectory()) {
-                log.error(dir+" pre-exists but is not a directory.");
+        if(log.isDebugEnabled()) { // the Excel file are not needed by the validation script
+            SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);
+            try {
+                byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
+                Files.write(Paths.get(fileLocation+"dashboard-CV-master.xls"), workbookAsByteArray);
+                files.add("dashboard-CV-master.xls");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidPathException e) {
+                e.printStackTrace();
             }
-            if(dir.toFile().isDirectory()) {
-                StringBuffer filecontent = new StringBuffer();
-                for(String submission: template.getObservations()) {
-                    filecontent.append(submission).append('\n');
-                }
-                Path path = dir.resolve(submissionName+".txt");
-                Files.deleteIfExists(path);
-                Files.write(path, filecontent.toString().getBytes());
-                int pathCount = path.getNameCount();
-                assert pathCount>=3;
-                files.add(path.getName(pathCount-3)+File.separator+path.getName(pathCount-2)+File.separator+path.getFileName());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidPathException e) {
-            e.printStackTrace();
         }
-        log.debug("finished creating tab-delimited files");
 
         // run python script to validate
-        ValidationReport report = new ValidationReport(validationScript, topDir.toString(), files.toArray(new String[0]));
+        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]));
         log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
         String response = jsonSerializer.deepSerialize(report);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(response, headers, HttpStatus.OK);
-    }
-
-    static private String perColumnContent(final SubmissionTemplate template) {
-        String[] headers = {"id", "template_name", "column_name", "subject", "evidence", "role", "mime_type", "numeric_units", "display_text"};
-        StringBuffer sb = new StringBuffer();
-        sb.append(headers[0]);
-        for(int i=1; i<headers.length; i++) {
-            sb.append('\t').append(headers[i]);
-        }
-        sb.append('\n');
-
-        String templateName = template.getDisplayName();
-        // subjects
-        String[] columnName = template.getSubjectColumns();
-        String[] subjectClass = template.getSubjectClasses();
-        String[] subjectRole = template.getSubjectRoles();
-        String[] displayText = template.getSubjectDescriptions();
-        for(int i=0; i<template.getSubjectColumns().length; i++) {
-            sb.append(i+1).append('\t').append(templateName).append('\t').append(columnName[i]).append('\t').append(subjectClass[i]).append('\t').
-                append('\t').append(subjectRole[i]).append('\t').append('\t').append('\t').
-                append(displayText[i]).append('\n');
-        }
-        // evidences
-        String[] evidenceColumnName = template.getEvidenceColumns();
-        String[] evidenceType = template.getEvidenceTypes();
-        String[] evidenceRole = template.getValueTypes(); // cautious: confusing naming
-        String[] observations = template.getObservations();
-        String[] evidenceDescription = template.getEvidenceDescriptions();
-        for(int i=0; i<template.getEvidenceColumns().length; i++) {
-            String mimeType = ""; // applicable only for file evidence type
-            String numericUnits = "";  // applicable only for numeric evidence type
-            if(evidenceRole[i].equals("numeric")) {
-                numericUnits = "";  // TODO not implemented
-            } else if(evidenceRole[i].equals("file")) {
-                String observationData = observations[i + template.getSubjectColumns().length];
-                int mimeMark = observationData.indexOf("::data:");
-                if (mimeMark > 0) {
-                    mimeType = observationData.substring(mimeMark + 7);
-                }
-            }
-            sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t').append(evidenceColumnName[i]).append('\t').
-                append('\t').append(evidenceType[i]).append('\t').append(evidenceRole[i]).append('\t').append(mimeType).append('\t').append(numericUnits).append('\t').
-                append(evidenceDescription[i]).append('\n');
-        }
-        return sb.toString();
-    }
-
-    static private String perTemplateContent(final SubmissionTemplate template) {
-        String[] headers = {"observation_tier", "template_name", "observation_summary", "template_description", "submission_name", "submission_description",
-            "project", "submission_story", "submission_story_rank", "submission_center", "principal_investigator"};
-        StringBuffer sb = new StringBuffer();
-        sb.append(headers[0]);
-        for(int i=1; i<headers.length; i++) {
-            sb.append('\t').append(headers[i]);
-        }
-        sb.append('\n');
-
-        Integer tier = template.getTier();
-        String templateName = template.getDisplayName();
-        Date date = template.getDateLastModified();
-        String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
-        String summary = template.getSummary().replace('\n', ' '); // assuming \n is not intended
-        String templateDescription = template.getDescription();
-        String submissionDescription = template.getStoryTitle(); // Totally confusing name!
-        String project = template.getProject();
-        boolean story = template.getIsStory();
-        Integer rank = 0; // TODO story rank, not implemented in the spreadsheet
-        String center = template.getSubmissionCenter().getDisplayName();
-        String pi = ""; // TODO PI, not implemented in the spreadsheet
-
-        sb.append(tier).append('\t').append(templateName).append('\t').append(summary).append('\t').append(templateDescription).append('\t').
-            append(submissionName).append('\t').append(submissionDescription).append('\t').append(project).append('\t').append(story).append('\t').
-            append(rank).append('\t').append(center).append('\t').append(pi).append('\n');
-        return sb.toString();
     }
 
     @Transactional

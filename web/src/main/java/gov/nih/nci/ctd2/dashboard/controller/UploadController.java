@@ -140,27 +140,11 @@ public class UploadController {
             log.error(topDir + " pre-exists but is not a directory.");
         }
 
-        // copy the background data
-        /*
-         * this is not a very reasonable solution, considering that the background data
-         * size is pretty large, but is necessary if we are strictly in not modifying
-         * the current validation script.
-         */
-        Path sourcePath = Paths.get(subjectDataLocation + File.separator + "subject_data");
-        Path targetPath = topDir.resolve("subject_data");
-        try {
-            log.debug("start copying subject data");
-            Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath));
-            log.debug("finished copying subject data");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // create the text package
         List<String> files = processor.createTextFiles();
 
         // run python script to validate
-        ValidationReport report = new ValidationReport(validationScript, topDir.toString(),
+        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
                 files.toArray(new String[0]));
         return report;
     }

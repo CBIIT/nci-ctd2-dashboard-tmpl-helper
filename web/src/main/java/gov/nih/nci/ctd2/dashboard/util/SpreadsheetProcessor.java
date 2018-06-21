@@ -29,12 +29,17 @@ import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 public class SpreadsheetProcessor {
     private static final Log log = LogFactory.getLog(SpreadsheetProcessor.class);
 
-    private final Path xlsFilePath;
     private final SubmissionTemplate template;
+    private final Path topDir;
+
+    public SpreadsheetProcessor(SubmissionTemplate template, Path topDir) {
+        this.template = template;
+        this.topDir = topDir;
+    }
 
     public SpreadsheetProcessor(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
-        this.xlsFilePath = xlsFilePath;
-        template = readTemplateFromXsl(dashboardDao);
+        template = readTemplateFromXsl(xlsFilePath, dashboardDao);
+        topDir = xlsFilePath.getParent();
     }
 
     final static String metasheetName = "dashboard-CV-per-template";
@@ -42,7 +47,7 @@ public class SpreadsheetProcessor {
             "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
             "submission_center", "principal_investigator" };
 
-    private SubmissionTemplate readTemplateFromXsl(final DashboardDao dashboardDao) throws IOException, ValidationException {
+    private SubmissionTemplate readTemplateFromXsl(final Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
         FileInputStream excelFile = new FileInputStream(xlsFilePath.toFile());
         Workbook workbook = new HSSFWorkbook(excelFile);
         Sheet metadataSheet = workbook.getSheetAt(0);
@@ -241,8 +246,7 @@ public class SpreadsheetProcessor {
 
     public List<String> createTextFiles() {
         assert template != null;
-
-        Path topDir = xlsFilePath.getParent();
+        assert topDir != null;
 
         String templateName = template.getDisplayName();
         Date date = template.getDateLastModified();

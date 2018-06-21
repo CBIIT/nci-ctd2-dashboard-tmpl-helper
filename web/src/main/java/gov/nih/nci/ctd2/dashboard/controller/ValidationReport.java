@@ -1,8 +1,12 @@
 package gov.nih.nci.ctd2.dashboard.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +31,24 @@ public class ValidationReport {
         this.otherError = message;
     }
 
-    public ValidationReport(String validationScript, String topDir, String[] files) {
-        ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir);
+    public ValidationReport(String validationScript, String subjectDataLocation, Path topDir, String[] files) {
+        // copy the background data
+        /*
+         * this is not a very reasonable solution, considering that the background data
+         * size is pretty large, but is necessary if we are strictly in not modifying
+         * the current validation script.
+         */
+        Path sourcePath = Paths.get(subjectDataLocation + File.separator + "subject_data");
+        Path targetPath = topDir.resolve("subject_data");
+        try {
+            log.debug("start copying subject data");
+            Files.walkFileTree(sourcePath, new CopyFileVisitor(targetPath));
+            log.debug("finished copying subject data");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir.toString());
         List<ValidationError> errors = new ArrayList<ValidationError>();
         String otherError = "";
         try {
