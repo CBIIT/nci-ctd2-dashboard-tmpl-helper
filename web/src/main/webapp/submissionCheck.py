@@ -85,11 +85,16 @@ def main():
         print("ERROR: Submission folder not specified", file=sys.stderr)
         sys.exit(2)
     submissionFolder = sys.argv[1]
+    subjectFolder = submissionFolder
     if len(sys.argv) > 2 and sys.argv[2] == '+':
         CHECK_URLS = True
+    elif len(sys.argv) > 2:
+        subjectFolder = sys.argv[2]
+        if len(sys.argv) > 3 and sys.argv[3] == '+':
+            CHECK_URLS = True
     print("INFO: Submission folder = '"+submissionFolder+"'")
     columns = loadColumns(submissionFolder)
-    backgroundData = loadBackgroundData(submissionFolder)
+    backgroundData = loadBackgroundData(subjectFolder)
     (submissions, storyTitles, tiers) = checkTemplates(submissionFolder, columns)
     checkColumns(submissionFolder, set(submissions.values()))
     for submission in sorted(submissions):
