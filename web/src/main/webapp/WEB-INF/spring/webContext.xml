@@ -29,10 +29,6 @@
         <constructor-arg type="String" value="${upload.location}"/>
     </bean>
 
-    <bean id="validationScript" class="java.lang.String">
-        <constructor-arg type="String" value="${validation.script}"/>
-    </bean>
-
     <bean id="subjectDataLocation" class="java.lang.String">
         <constructor-arg type="String" value="${subject.data.location}"/>
     </bean>

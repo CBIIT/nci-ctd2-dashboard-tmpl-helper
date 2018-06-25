@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.servlet.ServletContext;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
@@ -41,12 +42,11 @@ public class UploadController {
     private DashboardDao dashboardDao;
 
     @Autowired
-    @Qualifier("uploadLocation")
-    private String uploadLocation = "";
+    private ServletContext servletContext;
 
     @Autowired
-    @Qualifier("validationScript")
-    private String validationScript = "";
+    @Qualifier("uploadLocation")
+    private String uploadLocation = "";
 
     @Autowired
     @Qualifier("subjectDataLocation")
@@ -144,6 +144,7 @@ public class UploadController {
         List<String> files = validator.createTextFiles();
 
         // run python script to validate
+        String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
                 files.toArray(new String[0]));
         return report;

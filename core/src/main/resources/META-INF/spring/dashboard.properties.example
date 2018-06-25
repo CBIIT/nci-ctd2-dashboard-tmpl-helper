@@ -29,8 +29,5 @@ submission.builder.version=v1.0
 # location where uploaded files are stored
 upload.location=/ctd2upload/
 
-# full path of the Python validation script
-validation.script=VALIDATION_SCRIPT_LOCATION/submissionCheck.py
-
 # parent directory of the subject data
 subject.data.location=SUBJECT_DATA_LOCATION

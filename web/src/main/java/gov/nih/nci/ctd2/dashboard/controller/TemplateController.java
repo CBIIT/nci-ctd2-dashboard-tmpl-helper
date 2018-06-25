@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
@@ -139,12 +140,11 @@ public class TemplateController {
     }
 
     @Autowired
-    @Qualifier("uploadLocation")
-    private String uploadLocation = "";
+    private ServletContext servletContext;
 
     @Autowired
-    @Qualifier("validationScript")
-    private String validationScript = "";
+    @Qualifier("uploadLocation")
+    private String uploadLocation = "";
 
     @Autowired
     @Qualifier("subjectDataLocation")
@@ -347,6 +347,7 @@ public class TemplateController {
         }
 
         // run python script to validate
+        String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]));
         log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
