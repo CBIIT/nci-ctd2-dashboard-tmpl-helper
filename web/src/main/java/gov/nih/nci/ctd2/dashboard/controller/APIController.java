@@ -122,6 +122,8 @@ public class APIController {
                 index++;
             }
             submissionTemplate.setObservations(tmp);
+            submissionTemplate.setObservationString(null);
+            dashboardDao.update(submissionTemplate);
             log.info("observations transferred from the old field");
         } else {
             log.info("observations in the new field");
