@@ -121,7 +121,7 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             if ($ctd2.currentModel.id == 0) {
                 ret = $ctd2.saveNewTemplate(true);
             } else {
-                $ctd2.updateModel_1($(this));
+                ret = $ctd2.updateModel_1($(this));
             }
             if (ret && $ctd2.saveSuccess) {
                 $("#step3").fadeOut();
@@ -206,7 +206,8 @@ $ctd2.updateModel_1 = function (triggeringButton) {
         isStory: isStory,
         storyTitle: storyTitle,
     });
-    $ctd2.updateTemplate(triggeringButton);
+    var ret = $ctd2.updateTemplate(triggeringButton);
+    return ret;
 };
 
 /* this is the last step on the 'Submission Data' page after possible background reading is done */
@@ -1269,11 +1270,17 @@ $ctd2.updateTemplate = function (triggeringButton) {
     var description = $ctd2.currentModel.get('description');
     if(description.length==0) {
         $ctd2.showAlertMessage("template description cannot be empty");
-        return;
+        return false;
+    }
+    var project = $ctd2.currentModel.get('project');
+    if(project.length==0) {
+        $ctd2.showAlertMessage("project title cannot be empty");
+        return false;
     }
 
     triggeringButton.attr("disabled", "disabled");
     $.ajax({
+        async: false,
         url: "template/update",
         type: "POST",
         data: jQuery.param($ctd2.currentModel.toJSON()),
@@ -1293,6 +1300,7 @@ $ctd2.updateTemplate = function (triggeringButton) {
                 "Sorry for the inconvenience.");
         }
     });
+    return true;
 };
 
 $ctd2.saveNewTemplate = function (sync) {
@@ -1323,6 +1331,10 @@ $ctd2.saveNewTemplate = function (sync) {
     }
     if(description.length==0) {
         $ctd2.showAlertMessage("template description cannot be empty");
+        return false;
+    }
+    if(project.length==0) {
+        $ctd2.showAlertMessage("project title cannot be empty");
         return false;
     }
 
