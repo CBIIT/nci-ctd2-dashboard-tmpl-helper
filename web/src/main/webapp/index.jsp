@@ -248,6 +248,16 @@
         </div>
     </div>
 
+    <div class="modal hide" id='validation-progress'>
+        <div class="modal-body" >
+            <div class="progress progress-striped active">
+                <div class="bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                </div>
+            </div>
+            The validation is being processed.
+        </div>
+    </div>
+
     <!-- these are the templates -->
     <script type="text/template" id="observation-tmpl">
         <div class="container common-container" id="observation-container">

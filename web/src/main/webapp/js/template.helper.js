@@ -632,6 +632,7 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     3. run the validation script
                     4. create the report
                     */
+                   $('#validation-progress').modal('show');
                    $.ajax({
                         async: false,
                         url: "template/validate",
@@ -641,12 +642,14 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                         }),
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
+                            $('#validation-progress').modal('hide');
                             console.log(response);
                             (new $ctd2.ValidationReportView({
                                 model: response,
                             })).render();
                         },
                         error: function(response, status) {
+                            $('#validation-progress').modal('hide');
                             console.log(response);
                             console.log(status);
                         },
@@ -1178,22 +1181,26 @@ $ctd2.uploadZip = function(uploadButton) {
             var reader = new FileReader();
             reader.addEventListener("load", function () {
 
+                $('#validation-progress').modal('show');
                     $.ajax({
+                        async: false,
                         url: "upload/zip",
                         type: "POST",
                         data: {filename: file.name, filecontent: reader.result, centerId: $ctd2.centerId},
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
+                            $('#validation-progress').modal('hide');
                             (new $ctd2.ValidationReportView({
                                 model: response,
                             })).render();
                         },
                         error: function (response, status) {
+                            $('#validation-progress').modal('hide');
                             console.log(response);
                             $ctd2.showAlertMessage(status+'<br>Status '+response.status+" "+response.statusText);
                         }
                     });
-                
+
                 }, false);
             reader.readAsDataURL(file);
             console.log("start reading "+file.name);
