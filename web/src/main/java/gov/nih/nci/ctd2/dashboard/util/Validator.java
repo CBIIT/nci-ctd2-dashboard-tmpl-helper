@@ -10,8 +10,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -379,7 +382,7 @@ public class Validator {
         Boolean story = template.getIsStory();
         Integer rank = 0; // TODO story rank, not implemented in the spreadsheet
         String center = template.getSubmissionCenter().getDisplayName();
-        String pi = ""; // TODO PI, not implemented in the spreadsheet
+        String pi = pis.get(center);
 
         sb.append(tier).append('\t').append(templateName).append('\t').append(summary).append('\t')
                 .append(templateDescription).append('\t').append(submissionName).append('\t')
@@ -387,5 +390,23 @@ public class Validator {
                 .append(story.toString().toUpperCase()).append('\t').append(rank).append('\t').append(center)
                 .append('\t').append(pi).append('\n');
         return sb.toString();
+    }
+
+    private static Map<String, String> pis = new HashMap<String, String>();
+
+    static {
+        pis.put("Broad Institute", "Stuart L. Schreiber, Ph.D.");
+        pis.put("Cold Spring Harbor Laboratory", "Scott Powers, Ph.D.");
+        pis.put("Columbia University", "Andrea Califano, Ph.D.");
+        pis.put("Dana-Farber Cancer Institute", "William C. Hahn, M.D., Ph.D.");
+        pis.put("Emory University", "Haian Fu, Ph.D.");
+        pis.put("Fred Hutchinson Cancer Research Center (1)", "Christopher Kemp, Ph.D.");
+        pis.put("Fred Hutchinson Cancer Research Center (2)", "Martin McIntosh, Ph.D.");
+        pis.put("Stanford University", "Calvin J. Kuo, M.D., Ph.D.");
+        pis.put("Translational Genomics Research Institute", "Michael E. Berens, Ph.D.");
+        pis.put("University of California San Francisco (1)", "Michael McManus, Ph.D.");
+        pis.put("University of California San Francisco (2)", "William A. Weiss, M.D., Ph.D.");
+        pis.put("University of Texas MD Anderson Cancer Center", "Gordon B. Mills, M.D., Ph.D.");
+        pis.put("University of Texas Southwestern Medical Center", "Michael Roth, Ph.D.");
     }
 }
