@@ -292,13 +292,10 @@ public class Validator {
                 log.error(dir + " pre-exists but is not a directory.");
             }
             if (dir.toFile().isDirectory()) {
-                StringBuffer filecontent = new StringBuffer();
-                for (String submission : template.getObservations()) {
-                    filecontent.append(submission).append('\n');
-                }
+                String filecontent = submissionFileContent();
                 Path path = dir.resolve(submissionName + ".txt");
                 Files.deleteIfExists(path);
-                Files.write(path, filecontent.toString().getBytes());
+                Files.write(path, filecontent.getBytes());
                 int pathCount = path.getNameCount();
                 assert pathCount >= 3;
                 files.add(path.getName(pathCount - 3) + File.separator + path.getName(pathCount - 2) + File.separator
@@ -311,6 +308,107 @@ public class Validator {
         }
         log.debug("finished creating tab-delimited files");
         return files;
+    }
+
+    private String submissionFileContent() {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("\tsubmission_name\tsubmission_date\ttemplate_name");
+        for(String columnTag: template.getSubjectColumns()) {
+            sb.append('\t').append(columnTag);
+        }
+        for(String columnTag: template.getEvidenceColumns()) {
+            sb.append('\t').append(columnTag);
+        }
+        sb.append('\n');
+
+        sb.append("subject\t\t\t");
+        for(String subject: template.getSubjectClasses()) {
+            sb.append('\t').append(subject);
+        }
+        for(int i=0; i<template.getEvidenceColumns().length; i++) {
+            sb.append('\t');
+        }
+        sb.append('\n');
+
+        sb.append("evidence\t\t\t");
+        for(int i=0; i<template.getSubjectColumns().length; i++) {
+            sb.append('\t');
+        }
+        for(String evidence: template.getValueTypes()) {
+            sb.append('\t').append(evidence);
+        }
+        sb.append('\n');
+
+        sb.append("role\t\t\t");
+        for(String role: template.getSubjectRoles()) {
+            sb.append('\t').append(role);
+        }
+        for(String role: template.getEvidenceTypes()) {
+            sb.append('\t').append(role);
+        }
+        sb.append('\n');
+
+        sb.append("mime_type\t\t\t");
+        for(int i=0; i<template.getSubjectColumns().length; i++) {
+            sb.append('\t');
+        }
+        String[] observations = template.getObservations();
+        for (int i = 0; i < template.getEvidenceColumns().length; i++) {
+            String evidence = template.getValueTypes()[i];
+            sb.append('\t');
+            if (evidence.equals("file")) {
+                String mimeType = "";
+                String observationData = observations[i + template.getSubjectColumns().length];
+                int mimeMark = observationData.indexOf("::data:");
+                if (mimeMark > 0) {
+                    mimeType = observationData.substring(mimeMark + 7);
+                } else {
+                    mimeType = "application/octet-stream";
+                }
+                sb.append(mimeType);
+            }
+        }
+        sb.append('\n');
+
+        sb.append("numeric_units\t\t\t");
+        for(int i=0; i<template.getSubjectColumns().length; i++) {
+            sb.append('\t');
+        }
+        for (int i = 0; i < template.getEvidenceColumns().length; i++) {
+            String evidence = template.getValueTypes()[i];
+            sb.append('\t');
+            if (evidence.equals("numeric")) {
+                // TODO numeric_unit not implemented
+            }
+        }
+        sb.append('\n');
+
+        sb.append("display_text\t\t\t");
+        for(String displayText: template.getSubjectDescriptions()) {
+            sb.append('\t').append(displayText);
+        }
+        for(String displayText: template.getEvidenceDescriptions()) {
+            sb.append('\t').append(displayText);
+        }
+        sb.append('\n');
+
+        Date date = template.getDateLastModified();
+        String templateName = template.getDisplayName();
+        String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
+
+        int observationIndex = 0;
+        for(int i=0; i<template.getObservationNumber(); i++) {
+            sb.append('\t').append(submissionName).append('\t').append(new SimpleDateFormat("yyyy.MM.dd").format(date)).
+                append('\t').append(templateName);
+            for(int j=0; j<template.getSubjectColumns().length; j++) {
+                String observation = observations[observationIndex++];
+                sb.append('\t').append(observation);
+            }
+            sb.append('\n');
+        }
+
+        return sb.toString();
     }
 
     private String perColumnContent() {
