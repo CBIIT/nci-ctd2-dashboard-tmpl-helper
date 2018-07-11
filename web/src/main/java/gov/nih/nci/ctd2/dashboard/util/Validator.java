@@ -398,6 +398,7 @@ public class Validator {
         String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
 
         int observationIndex = 0;
+        String[] valueType = template.getValueTypes();
         for(int i=0; i<template.getObservationNumber(); i++) {
             sb.append('\t').append(submissionName).append('\t').append(new SimpleDateFormat("yyyy.MM.dd").format(date)).
                 append('\t').append(templateName);
@@ -405,10 +406,49 @@ public class Validator {
                 String observation = observations[observationIndex++];
                 sb.append('\t').append(observation);
             }
+            for(int j=0; j<template.getEvidenceColumns().length; j++) {
+                String observation = observations[observationIndex++];
+                if (valueType[j].equalsIgnoreCase("file") && observation.trim().length()>0) {
+                    int mimeMark = observation.indexOf("::data:");
+                    String filename = observation;
+                    if (mimeMark > 0) {
+                        filename = observation.substring(0, mimeMark); // the new code only stores the filname without directories
+                    }
+
+                    // ignore possible subdirectory names
+                    int sep = filename.lastIndexOf('/');
+                    if(sep>=0) filename = filename.substring(sep+1);
+                    sep = filename.lastIndexOf('\\');
+                    if(sep>=0) filename = filename.substring(sep+1);
+
+                    Path savedPath = topDir.resolve(filename);
+                    if(!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen, but be cautious anyway
+                        log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
+                        observation = "";
+                    } else {
+                        String zippedPath = getZippedPath(filename, submissionName);
+                        observation = "./" + zippedPath;
+                    }
+                }
+                sb.append('\t').append(observation);
+            }
             sb.append('\n');
         }
 
         return sb.toString();
+    }
+
+    static private String getZippedPath(String zippedFileName, String submissionName) {
+        String pathZipped = "submissions/" + submissionName + "/";
+        String lowercase = zippedFileName.toLowerCase();
+        boolean hasImageFileExtension = false;
+        if (lowercase.endsWith("png") || lowercase.endsWith("jpeg") || lowercase.endsWith("jpg")) {
+            hasImageFileExtension = true;
+        }
+        if (hasImageFileExtension) {
+            pathZipped += "images/";
+        }
+        return pathZipped + zippedFileName;
     }
 
     private String perColumnContent() {
