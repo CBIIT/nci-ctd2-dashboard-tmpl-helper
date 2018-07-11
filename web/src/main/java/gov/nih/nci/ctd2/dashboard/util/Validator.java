@@ -350,6 +350,8 @@ public class Validator {
                 int mimeMark = observationData.indexOf("::data:");
                 if (mimeMark > 0) {
                     mimeType = observationData.substring(mimeMark + 7);
+                } else {
+                    mimeType = "application/octet-stream";
                 }
             }
             sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t')
