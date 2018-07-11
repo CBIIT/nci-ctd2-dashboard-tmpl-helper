@@ -208,16 +208,16 @@ public class Validator {
         template.setEvidenceColumns(evidences.toArray(new String[evidenceCount]));
         /* BE CAUTIOUS WITH THESE INCONSISTENT NAMINGS */
         String[] evidenceTypes = new String[evidenceCount];
-        String[] valueTypes = new String[evidenceCount];
+        String[] evidenceRoles = new String[evidenceCount];
         String[] evidenceDescription = new String[evidenceCount];
         for (int i = 0; i < evidenceCount; i++) {
             int col = lastSubjectColumn + i;
             evidenceTypes[i] = evidenceRow.getCell(col).getStringCellValue();
-            valueTypes[i] = roleRow.getCell(col).getStringCellValue();
+            evidenceRoles[i] = roleRow.getCell(col).getStringCellValue();
             evidenceDescription[i] = displayTextRow.getCell(col).getStringCellValue();
         }
-        template.setEvidenceTypes(evidenceTypes);
-        template.setValueTypes(valueTypes);
+        template.setEvidenceTypes(evidenceRoles);
+        template.setValueTypes(evidenceTypes);
         template.setEvidenceDescriptions(evidenceDescription);
 
         int observationNumber = lastRowNumber - 6;
@@ -336,16 +336,16 @@ public class Validator {
         }
         // evidences
         String[] evidenceColumnName = template.getEvidenceColumns();
-        String[] evidenceType = template.getEvidenceTypes();
-        String[] evidenceRole = template.getValueTypes(); // cautious: confusing naming
+        String[] evidenceRole = template.getEvidenceTypes(); // cautious: extremely confusing naming
+        String[] evidenceValueType = template.getValueTypes();
         String[] observations = template.getObservations();
         String[] evidenceDescription = template.getEvidenceDescriptions();
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             String mimeType = ""; // applicable only for file evidence type
             String numericUnits = ""; // applicable only for numeric evidence type
-            if (evidenceRole[i].equals("numeric")) {
+            if (evidenceValueType[i].equals("numeric")) {
                 numericUnits = ""; // TODO not implemented
-            } else if (evidenceRole[i].equals("file")) {
+            } else if (evidenceValueType[i].equals("file")) {
                 String observationData = observations[i + template.getSubjectColumns().length];
                 int mimeMark = observationData.indexOf("::data:");
                 if (mimeMark > 0) {
@@ -353,7 +353,7 @@ public class Validator {
                 }
             }
             sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t')
-                    .append(evidenceColumnName[i]).append('\t').append('\t').append(evidenceType[i]).append('\t')
+                    .append(evidenceColumnName[i]).append('\t').append('\t').append(evidenceValueType[i]).append('\t')
                     .append(evidenceRole[i]).append('\t').append(mimeType).append('\t').append(numericUnits)
                     .append('\t').append(evidenceDescription[i]).append('\n');
         }
