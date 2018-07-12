@@ -865,6 +865,7 @@ $ctd2.TempObservationView = Backbone.View.extend({
         for (var column = 0; column < obvModel.observationNumber; column++) {
             var obvContent = obvModel.observations[column];
             var u = '';
+            var input_type = "text";
             if (obvModel.obvsType == 'file') {
                 if (obvContent === undefined || obvContent == null || obvContent == "undefined" ||
                     (obvContent.length>200 && obvContent.includes("base64:"))) {
@@ -882,12 +883,17 @@ $ctd2.TempObservationView = Backbone.View.extend({
                     i = u.lastIndexOf('/');
                     if (i >= 0) u = u.substring(i+1);
                 }
+                input_type = "file";
+            } else if (obvModel.obvsType == 'url') {
+                input_type = "url";
+            } else if (obvModel.obvsType == 'numeric') {
+                input_type = "number";
             }
             var cellModel = {
                 obvNumber: column,
                 obvColumn: obvModel.columnTagId,
                 obvText: escapeQuote(obvContent),
-                type: obvModel.obvsType,
+                type: input_type,
                 uploaded: u
             };
             var obvTemp = this.template(cellModel);
