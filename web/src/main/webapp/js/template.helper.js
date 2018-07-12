@@ -234,6 +234,32 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
         if ($ctd2.hasDuplicate(evidences)) {
             message += "<li>There is duplicate in evidence column tags. This is not allowed.";
         }
+        var previousUploaded = new Array($ctd2.observationArray.length);
+        var rows = $("#template-table tr.template-data-row").length;
+        $("#template-table tr.template-data-row").each(function (i, row) {
+            var row_id = $(row).attr('id');
+            $(row).find("[id^=observation]").each(function (j, c) {
+    
+                var valuetype = ""; // only applicable for evidence, not for subject
+                if(row_id.startsWith("template-evidence-row")) {
+                    var cell_id = $(c).attr('id');
+                    var columntag = cell_id.substring( cell_id.indexOf('-', 12) + 1 ); // skip the first dash
+                    valuetype = $("#value-type-" + columntag).val();
+                }
+                var observationIndex = i + rows * j;
+                previousUploaded[observationIndex] = "";
+                if (valuetype == 'file') {
+                    previousUploaded[observationIndex] = $(c).parent().find(".uploaded").text();
+                }
+            });
+        });
+        for(i = 0; i <$ctd2.observationArray.length; i++) {
+            if($ctd2.observationArray[i] == "" && previousUploaded[i] == "") {
+                console.log('missing observation at index='+i);
+                message += "<li>Some observation fields are empty. This is not allowed.";
+                break;
+            }
+        }
         return message;
     };
 
