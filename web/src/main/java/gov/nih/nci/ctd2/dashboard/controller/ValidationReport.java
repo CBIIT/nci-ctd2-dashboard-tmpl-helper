@@ -3,6 +3,7 @@ package gov.nih.nci.ctd2.dashboard.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public class ValidationReport {
     final private String[] files;
     final private String otherError;
 
+    final private Path topDir;
+
     private static final Log log = LogFactory.getLog(ValidationReport.class);
 
     public ValidationReport(String message) {
@@ -26,6 +29,8 @@ public class ValidationReport {
         this.errors = new ValidationError[0];
         this.files = new String[0];
         this.otherError = message;
+
+        this.topDir = null;
     }
 
     public ValidationReport(String validationScript, String subjectDataLocation, Path topDir, String[] files) {
@@ -79,6 +84,32 @@ public class ValidationReport {
         this.errors = errors.toArray(new ValidationError[0]);
         this.files = files;
         this.otherError = otherError;
+
+        this.topDir = topDir;
+    }
+
+    public void export() {
+        try {
+            Path reportFile = topDir.resolve("validation-report.txt");
+            Files.deleteIfExists(reportFile);
+            Files.write(reportFile, this.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(title);
+        sb.append("\n\n").append(count).append(" error");
+        if(count>1) sb.append('s');
+        sb.append(" reported by the validation script:").append('\n');
+        sb.append("\ttype\tdescription\tdetail\n------------------------------\n");
+        for(int i=0; i< count; i++) {
+            sb.append(i+1).append("\t").append(errors[i]).append('\n');
+        }
+        sb.append("\nOther script error:").append(otherError);
+        return sb.toString();
     }
 
     public int getCount() {

@@ -616,6 +616,11 @@ $ctd2.ValidationReportView = Backbone.View.extend({
     template: _.template($("#validation-report-tmpl").html()),
     render: function() {
         $.fancybox(this.template(this.model));
+
+        var templateId = this.model.templateId;
+        $("#download-report").unbind('click').click(function () {
+            location.href='download/report?centerId='+$ctd2.centerId+'&templateId='+templateId;
+        });
         return this;
     }
 });
@@ -670,6 +675,7 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
                             $('#validation-progress').modal('hide');
+                            response.templateId = templateId;
                             console.log(response);
                             (new $ctd2.ValidationReportView({
                                 model: response,
@@ -1223,6 +1229,7 @@ $ctd2.uploadZip = function(uploadButton) {
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
                             $('#validation-progress').modal('hide');
+                            response.templateId = "unzipped/"+file.name; // name of subdirectory where reported is saved
                             (new $ctd2.ValidationReportView({
                                 model: response,
                             })).render();

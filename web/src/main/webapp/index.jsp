@@ -627,6 +627,7 @@
         </table>
         <strong>Other script error:</strong>
         <pre style='color: blue'>{{otherError}}</pre>
+        <button type="button" class="btn" id='download-report'>Download this report as a text file</button>
     </script>
 
     <script type="text/template" id="existing-template-row-tmpl">

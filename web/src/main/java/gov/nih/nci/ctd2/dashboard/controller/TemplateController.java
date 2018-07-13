@@ -349,6 +349,7 @@ public class TemplateController {
         // run python script to validate
         String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]));
+        report.export();
         log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
         String response = jsonSerializer.deepSerialize(report);

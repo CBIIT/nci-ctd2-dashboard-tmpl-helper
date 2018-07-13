@@ -22,4 +22,9 @@ class ValidationError {
     public String getDetail() {
         return detail;
     }
+
+    @Override
+    public String toString() {
+        return type+'\t'+description+'\t'+detail;
+    }
 }

@@ -147,6 +147,7 @@ public class UploadController {
         String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
                 files.toArray(new String[0]));
+        report.export();
         return report;
     }
 }
