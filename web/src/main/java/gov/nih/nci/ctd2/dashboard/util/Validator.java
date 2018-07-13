@@ -428,6 +428,16 @@ public class Validator {
                     } else {
                         String zippedPath = getZippedPath(filename, submissionName);
                         observation = "./" + zippedPath;
+                        Path sourcePath = topDir.resolve(filename);
+                        Path targetPath = topDir.resolve(zippedPath);
+                        try {
+                            Files.createDirectories(topDir.resolve("submissions").resolve(submissionName).resolve("images"));
+                            Files.copy(sourcePath, targetPath,
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
+                                java.nio.file.LinkOption.NOFOLLOW_LINKS);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 sb.append('\t').append(observation);
