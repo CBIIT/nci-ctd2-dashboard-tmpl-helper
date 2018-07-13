@@ -29,18 +29,18 @@ import gov.nih.nci.ctd2.dashboard.impl.SubmissionTemplateImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 
-public class Validator {
-    private static final Log log = LogFactory.getLog(Validator.class);
+public class TxtFileCreator {
+    private static final Log log = LogFactory.getLog(TxtFileCreator.class);
 
     private final SubmissionTemplate template;
     private final Path topDir;
 
-    public Validator(SubmissionTemplate template, Path topDir) {
+    public TxtFileCreator(SubmissionTemplate template, Path topDir) {
         this.template = template;
         this.topDir = topDir;
     }
 
-    public Validator(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
+    public TxtFileCreator(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
         template = readTemplateFromXsl(xlsFilePath, dashboardDao);
         topDir = xlsFilePath.getParent();
     }
