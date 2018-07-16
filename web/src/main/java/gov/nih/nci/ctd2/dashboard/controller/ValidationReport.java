@@ -104,11 +104,19 @@ public class ValidationReport {
         sb.append("\n\n").append(count).append(" error");
         if(count>1) sb.append('s');
         sb.append(" reported by the validation script:").append('\n');
-        sb.append("\ttype\tdescription\tdetail\n------------------------------\n");
-        for(int i=0; i< count; i++) {
-            sb.append(i+1).append("\t").append(errors[i]).append('\n');
+        if(count>0) {
+            sb.append("\ttype\tdescription\tdetail\n------------------------------\n");
+            for(int i=0; i< count; i++) {
+                sb.append(i+1).append("\t").append(errors[i]).append('\n');
+            }
         }
-        sb.append("\nOther script error:").append(otherError);
+        if(otherError.length()>0)
+            sb.append("\nOther script error:").append(otherError);
+
+        if(count<1 && otherError.length()==0) {
+            sb.append("Your submission has successfully passed the validation. The package as a ZIP file is ready for further processing.");
+        }
+
         return sb.toString();
     }
 

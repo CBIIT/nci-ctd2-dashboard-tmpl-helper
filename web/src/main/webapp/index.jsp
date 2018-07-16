@@ -616,6 +616,7 @@
             <@ } @>
         </ol>
         <h4>{{count}} error{{count>1?"s":""}} reported by the validation script:</h4>
+        <@ if(count>0) { @>
         <table class="table table-condensed table-striped table-bordered">
             <tr><th></th><th>description</th><th>detail</th></tr>
             <@ for(var error in errors) { @>
@@ -625,8 +626,15 @@
                 </tr>
             <@ } @>
         </table>
+        <@ } @>
+        <@ if(otherError!="") { @>
         <strong>Other script error:</strong>
         <pre style='color: blue'>{{otherError}}</pre>
+        <@ } @>
+        <@ if(count<1 && otherError=="") { @>
+            <p>Your submission has successfully passed the validation. 
+                The package as a ZIP file is ready for further processing.</p>
+        <@ } @>
         <button type="button" class="btn" id='download-report'>Download this report as a text file</button>
     </script>
 
