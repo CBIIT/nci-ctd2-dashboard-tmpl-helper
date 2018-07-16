@@ -1317,12 +1317,19 @@ $ctd2.updateTemplate = function (triggeringButton) {
         return false;
     }
 
+    var update_data = jQuery.param($ctd2.currentModel.toJSON());
+    var MAX_PARAM_STRING = 100000000;
+    console.log("update_data.length="+update_data.length);
+    if(update_data.length>MAX_PARAM_STRING) {
+        $ctd2.showAlertMessage("the size of update/upload data is too large to be transferred");
+        return false;
+    }
     triggeringButton.attr("disabled", "disabled");
     $.ajax({
         async: false,
         url: "template/update",
         type: "POST",
-        data: jQuery.param($ctd2.currentModel.toJSON()),
+        data: update_data,
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         success: function (data) {
             console.log("return value: " + data);
