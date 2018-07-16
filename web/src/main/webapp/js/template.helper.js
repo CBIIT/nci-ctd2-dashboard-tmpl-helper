@@ -93,11 +93,6 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             // this basically has nothing in common with the template model ($ctd2.currentModel) in this app.
             var validationSubmissionModel = new $ctd2.ValidationSubmission();
 
-            (new $ctd2.SubmitterInformationView({
-                model: validationSubmissionModel,
-                el: $("#validation-submitter-information")
-            })).render();
-        
             (new $ctd2.ValidationSubmissionDescriptionView({
                 model: validationSubmissionModel,
                 el: $("#validation-submission-description")
@@ -1214,7 +1209,7 @@ $ctd2.uploadZip = function(uploadButton) {
             $ctd2.showAlertMessage('Size of file '+file.name+' is '+file.size+' bytes and over the allowed limit, so it is ignored.');
             $(this).val("");
         } else if ( !(file.name.toLowerCase().endsWith(".zip")) ) {
-            $ctd2.showAlertMessage('Only ZIP file expected uploaded, so '+file.name+' is ignored.');
+            $ctd2.showAlertMessage('You can only upload a ZIP file (containing a spreadsheet etc) to be validated, so '+file.name+' is ignored.');
             $(this).val("");
         } else {
             var reader = new FileReader();

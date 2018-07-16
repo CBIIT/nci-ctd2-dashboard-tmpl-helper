@@ -727,14 +727,10 @@
     </script>
 
     <script type="text/template" id="validation-submission-description-tmpl">
-        <tr><th>Submission Name *</th>
-            <td><input id="validation-submission-name" placeholder="" class="input-xxlarge" value="{{displayName}}"></td>
+        <tr><th>Upload the ZIP file to be validated:</th>
         </tr>
         <tr>
-            <th>Is this a resubmission?</th>
             <td class="next-cell">
-                <input id="is-resubmission" type="checkbox" {{isResubmission?'checked':''}} style="float:left" />
-                Upload ZIP file
                 <input type="file" class="form-control" id="upload-zip-file" />
             </td>
         </tr>
@@ -838,10 +834,8 @@
             </div>
 
             <div id="upload-view" class="hide">
-                <h3>Submitter Information</h3>
+                <h3>Upload for Validation</h3>
                 <b>Center:</b> <span id="center-name"></span>
-                <table class="table" id="validation-submitter-information"></table>
-                <h3>Submission Description</h3>
                 <table class="table" id="validation-submission-description"></table>
             </div>
 
