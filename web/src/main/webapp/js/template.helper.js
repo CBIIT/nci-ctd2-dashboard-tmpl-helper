@@ -661,7 +661,7 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
                     */
                    $('#validation-progress').modal('show');
                    $.ajax({
-                        async: false,
+                        async: true,
                         url: "template/validate",
                         type: "GET",
                         data: jQuery.param({
@@ -1217,7 +1217,7 @@ $ctd2.uploadZip = function(uploadButton) {
 
                 $('#validation-progress').modal('show');
                     $.ajax({
-                        async: false,
+                        async: true,
                         url: "upload/zip",
                         type: "POST",
                         data: {filename: file.name, filecontent: reader.result, centerId: $ctd2.centerId},

@@ -248,7 +248,7 @@
         </div>
     </div>
 
-    <div class="modal hide" id='validation-progress'>
+    <div class="modal hide" id='validation-progress' data-backdrop="static">
         <div class="modal-body" >
             <div class="progress progress-striped active">
                 <div class="bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
@@ -1009,7 +1009,7 @@
     <script src="js/jquery.contextMenu.js"></script>   
     <script src="js/jquery.ui.position.js"></script>    
     <script src="js/ctd2.js"></script>
-    <script src="js/template.helper.js?ts=201802"></script>
+    <script src="js/template.helper.js?ts=201807"></script>
 
   </body>
 </html>
