@@ -161,7 +161,7 @@ public class TemplateController {
             @RequestParam("valueTypes[]") String[] valueTypes,
             @RequestParam("evidenceDescriptions[]") String[] evidenceDescriptions,
             @RequestParam("observationNumber") Integer observationNumber,
-            @RequestParam("observations[]") String[] observations,
+            @RequestParam(value="observations[]", required=false, defaultValue="") String[] observations,
             @RequestParam("summary") String summary
             )
     {
