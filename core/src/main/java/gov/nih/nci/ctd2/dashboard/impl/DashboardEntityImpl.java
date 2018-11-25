@@ -1,15 +1,25 @@
 package gov.nih.nci.ctd2.dashboard.impl;
 
-import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Proxy;
 
-import javax.persistence.*;
+import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
 
 @Entity
 @Proxy(proxyClass= DashboardEntity.class)
 @Inheritance(strategy = InheritanceType.JOINED)
-@org.hibernate.annotations.Entity(dynamicUpdate = true, dynamicInsert = true)
+@DynamicUpdate
+@DynamicInsert
 @Table(name = "dashboard_entity")
 @org.hibernate.annotations.Table(
         appliesTo = "dashboard_entity",

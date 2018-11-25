@@ -57,6 +57,7 @@
                     <compilerVersion>${java.compiler.version}</compilerVersion>
                     <source>${java.compiler.version}</source>
                     <target>${java.compiler.version}</target>
+                    <compilerArgument>-Xlint:all</compilerArgument>
                 </configuration>
             </plugin>
         </plugins>
