@@ -11,7 +11,7 @@
 
     <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
         <property name="driverClassName" value="${database.driverClassName}"/>
-        <property name="url" value="${database.url}"/>
+        <property name="url" value="${database.test.url}"/>
         <property name="username" value="${database.username}"/>
         <property name="password" value="${database.password}"/>
     </bean>
@@ -26,30 +26,20 @@
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
-                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto.test}</prop>
                 <prop key="hibernate.ejb.naming_strategy">${hibernate.ejb.naming_strategy}</prop>
                 <prop key="hibernate.connection.charSet">${hibernate.connection.charSet}</prop>
             </props>
         </property>
 
-        <property name="packagesToScan">
-            <list>
-                <value>gov.nih.nci.ctd2.dashboard.impl</value>
-                <value>gov.nih.nci.ctd2.dashboard.util</value>
-            </list>
-        </property>
+        <property name="packagesToScan" value="gov.nih.nci.ctd2.dashboard.impl"/>
     </bean>
 
-    <bean id="allowedProxyHosts" class="java.lang.String">
-        <constructor-arg index="0" value="${allowed.hosts}"/>
+    <bean id="maxNumberOfEntities" class="java.lang.Integer">
+        <constructor-arg type="int" value="100"/>
     </bean>
 
-    <bean id="dataURL" class="java.lang.String">
-        <constructor-arg index="0" value="${web.data.url}"/>
+    <bean id="uploadLocation" class="java.lang.String">
+        <constructor-arg type="String" value="./tmp/upload"/>
     </bean>
-
-    <bean id="submissionBuilderVersion" class="java.lang.String">
-        <constructor-arg index="0" value="${submission.builder.version}"/>
-    </bean>
-    
 </beans>

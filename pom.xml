@@ -15,7 +15,6 @@
         <aspectj.version>1.6.12</aspectj.version>
     </properties>
     <modules>
-        <module>core</module>
         <module>web</module>
     </modules>
     <dependencies>
