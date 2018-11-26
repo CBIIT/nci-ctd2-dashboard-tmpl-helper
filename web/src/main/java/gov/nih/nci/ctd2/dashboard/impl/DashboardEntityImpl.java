@@ -10,7 +10,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Proxy;
 
 import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
@@ -21,10 +20,6 @@ import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
 @DynamicUpdate
 @DynamicInsert
 @Table(name = "dashboard_entity")
-@org.hibernate.annotations.Table(
-        appliesTo = "dashboard_entity",
-        indexes = { @Index(name = "entityNameIdx", columnNames = { "displayName" })
-})
 public class DashboardEntityImpl implements DashboardEntity {
 
     private static final long serialVersionUID = 6953675960325146562L;
@@ -40,7 +35,7 @@ public class DashboardEntityImpl implements DashboardEntity {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE)
+    @GeneratedValue(strategy=GenerationType.TABLE) /* this was left to be different from CTD^2 dashboard in case of affecting existing data */
     public Integer getId() {
         return id;
     }
