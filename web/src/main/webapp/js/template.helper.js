@@ -1198,7 +1198,10 @@ $ctd2.saveNewTemplate = function (sync) {
        },
         error: function (response, status) {
             $("#save-name-description").removeAttr("disabled");
-            $ctd2.showInvalidMessage("create failed\n" + status + ": " + response.responseText);
+            console.log(status + ": " + response.responseText);
+            $ctd2.showInvalidMessage("The new template was NOT created for some unexpected error. " +
+            "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+            "Sorry for the inconvenience.");
         }
     });
     if (async || result)
@@ -1231,7 +1234,10 @@ $ctd2.clone = function (templateId) {
             console.log('clone succeeded ' + templateId + ' -> ' + resultId);
         },
         error: function (response, status) {
-            $ctd2.showInvalidMessage("clone failed\n" + status + ": " + response.responseText);
+            console.log(status + ": " + response.responseText);
+            $ctd2.showInvalidMessage("The template was NOT cloned successfully for some unexpected error. " +
+            "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+            "Sorry for the inconvenience.");
             $("#template-table-row-" + tmpltModel.id).removeAttr("disabled");
         }
     });

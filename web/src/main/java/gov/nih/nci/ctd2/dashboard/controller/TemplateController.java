@@ -85,7 +85,18 @@ public class TemplateController {
         template.setObservationNumber(0);
         template.setObservations(new String[]{""});
 
-        dashboardDao.save(template);
+        try {
+            dashboardDao.save(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            String msg = "The new submission template was not created successfully. ID="+template.getId();
+            if(template.getId()==null) {
+                msg = "The new submission template to be created does not have a proper ID";
+            }
+            return new ResponseEntity<String>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     	return new ResponseEntity<String>(template.getId().toString(), HttpStatus.OK);
     }
@@ -264,7 +275,14 @@ public class TemplateController {
 
         template.setSummary(summary);
 
-        dashboardDao.update(template);
+        try {
+            dashboardDao.update(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            return new ResponseEntity<String>("The submission template was not updated successfully. ID="+template.getId(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " UPDATED", HttpStatus.OK);
     }
