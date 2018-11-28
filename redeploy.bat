@@ -3,8 +3,7 @@ rem Windows script to rebuild the whole project and redeploy to local tomcat
 rem CATALINA_HOME needs to be set to run this
 
 set start=%time%
-call mvn clean
-call mvn package
+call mvn -f ./web/pom.xml clean package
 if errorlevel 1 (
     echo Failure Reason Given is %errorlevel%
     exit /b %errorlevel%
