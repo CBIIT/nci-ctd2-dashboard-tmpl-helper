@@ -1,11 +1,18 @@
 package gov.nih.nci.ctd2.dashboard.dao.internal;
 
-import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
-import gov.nih.nci.ctd2.dashboard.model.*;
-import org.hibernate.*;
-import org.hibernate.criterion.Projections;
+import java.util.List;
 
-import java.util.*;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
+import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
+import gov.nih.nci.ctd2.dashboard.model.DashboardFactory;
+import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
 
 public class DashboardDaoImpl implements DashboardDao {
 
@@ -86,30 +93,36 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Override
     public Long countEntities(Class<? extends DashboardEntity> entityClass) {
-        Criteria criteria = getSession().createCriteria(dashboardFactory.getImplClass(entityClass));
-        return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
+        Session session = getSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        cq.select(cb.count( cq.from( dashboardFactory.getImplClass(entityClass) ) ));
+        TypedQuery<Long> typedQuery = session.createQuery(cq);
+        Long count = typedQuery.getSingleResult();
+        session.close();
+        return count;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends DashboardEntity> List<T> findEntities(Class<T> entityClass) {
-        List<T> list = new ArrayList<T>();
         Class<T> implClass = dashboardFactory.getImplClass(entityClass);
-        Criteria criteria = getSession().createCriteria(implClass);
-        for (Object o : criteria.list()) {
-            assert implClass.isInstance(o);
-            list.add((T) o);
-        }
+        Session session = getSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(implClass);
+        cq.from(implClass); // ignore the return value Root<T>
+        TypedQuery<T> typedQuery = session.createQuery(cq);
+        List<T> list = typedQuery.getResultList();
+        session.close();
         return list;
     }
 
     @Override
     public SubmissionCenter findSubmissionCenterByName(String submissionCenterName) {
         Session session = getSession();
-        org.hibernate.Query query = session.createQuery("from SubmissionCenterImpl where displayName = :cname");
+        org.hibernate.query.Query<?> query = session.createQuery("from SubmissionCenterImpl where displayName = :cname");
         query.setParameter("cname", submissionCenterName);
         @SuppressWarnings("unchecked")
-        List<SubmissionCenter> list = query.list();
+        List<SubmissionCenter> list = (List<SubmissionCenter>)query.list();
         session.close();
 
         assert list.size() <= 1;
