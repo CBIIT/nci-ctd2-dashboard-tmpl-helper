@@ -37,32 +37,40 @@ public class DashboardDaoImpl implements DashboardDao {
     @Override
     public void save(DashboardEntity entity) {
         Session session = getSession();
+        session.beginTransaction();
         session.save(entity);
         session.flush();
+        session.getTransaction().commit();
         session.close();
     }
 
     @Override
     public void update(DashboardEntity entity) {
         Session session = getSession();
+        session.beginTransaction();
         session.update(entity);
         session.flush();
+        session.getTransaction().commit();
         session.close();
     }
 
     @Override
     public void merge(DashboardEntity entity) {
         Session session = getSession();
+        session.beginTransaction();
         session.merge(entity);
         session.flush();
+        session.getTransaction().commit();
         session.close();
     }
 
     @Override
     public void delete(DashboardEntity entity) {
         Session session = getSession();
+        session.beginTransaction();
         session.delete(entity);
         session.flush();
+        session.getTransaction().commit();
         session.close();
     }
 

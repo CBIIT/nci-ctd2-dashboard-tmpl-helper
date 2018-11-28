@@ -35,7 +35,7 @@ public class DashboardEntityImpl implements DashboardEntity {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE) /* this was left to be different from CTD^2 dashboard in case of affecting existing data */
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Integer getId() {
         return id;
     }
