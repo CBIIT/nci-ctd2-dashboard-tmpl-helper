@@ -1,6 +1,7 @@
 package util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
@@ -9,15 +10,28 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
 import gov.nih.nci.ctd2.dashboard.impl.SubmissionCenterImpl;
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
+import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 
 // a simplistic tool to create the initial list of submission centers
 public class AdminTool {
+
+    static private void removeSubmission(DashboardDao dashboardDao) {
+        List<SubmissionTemplate> submissionTemplates = dashboardDao.findEntities(SubmissionTemplate.class);
+        for(SubmissionTemplate t : submissionTemplates) {
+            dashboardDao.delete(t);
+        }
+    }
 
     public static void main(String[] args) {
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext(
                 "classpath*:META-INF/spring/applicationContext.xml");
         DashboardDao dashboardDao = (DashboardDao) appContext.getBean("dashboardDao");
+
+        if(args.length>0 && args[0].equalsIgnoreCase("remove-submission")) {
+            removeSubmission(dashboardDao);
+            return;
+        }
 
         Map<String, String> centerPIs = new HashMap<String, String>();
         centerPIs.put("Broad Institute", "Stuart L. Schreiber, Ph.D.");
