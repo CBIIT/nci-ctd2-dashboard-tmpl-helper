@@ -22,9 +22,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css" />
-    <link rel="stylesheet" href="css/buttons.dataTables.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/jquery.contextMenu.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="css/ctd2.css" type="text/css" />
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -39,20 +37,14 @@
   <body>
     <!-- NAVBAR
     ================================================== -->
-    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
     <div class="navbar-wrapper">
       <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
       <div class="container">
 
         <div class="navbar navbar-inverse">
           <div class="navbar-inner">
-            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </a>
-            <div class="nav-collapse collapse">
+            <div class="nav-collapse collapse show">
               <ul id="nav" class="nav">
                 <li><a id="navlink-dashboard" class="navlink" href="/dashboard/#">CTD<sup>2</sup> Dashboard</a></li>
                 <li><a id="navlink-centers" class="navlink" href="/dashboard/#centers">Centers</a></li>
@@ -88,18 +80,20 @@
                       </ul>
                   </li>
               </ul>
-              <ul class="nav pull-right">
+              <ul class="nav ml-auto">
                   <form class="form-search" id="omnisearch">
                       <div class="input-append">
-                          <input type="text" id="omni-input" class="span3 search-query" title="Search" placeholder="e.g. CTNNB1 or ABT-737">
+                          <input type="text" id="omni-input" class="search-query" title="Search" placeholder="e.g. CTNNB1 or ABT-737">
                           <button type="submit" class="btn search-button">Search</button>
-                          <span class="hide" id="search-help-content">
+                          <span class="d-none" id="search-help-content">
                               <p>Please enter the keyword you would like to search on the website.</p>
                               <strong>Examples:</strong>
                               <ul>
-                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a> or <a href="/dashboard/#search/YAP*">YAP*</a></li>
-                                <li><em>Compound: </em> <a href="/dashboard/#search/ABT-737">ABT-737</a></li>
-                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/HPBALL">HPBALL</a></li>
+                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a></li>
+                                <li><em>Gene: </em> <a href="/dashboard/#search/YAP*">YAP*</a></li>
+                                <li><em>Compound: </em> <a href="/dashboard/#search/dasatinib">dasatinib</a></li>
+                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/OVCAR8">OVCAR8</a></li>
+                                <li><em>Multiple: </em> <a href="/dashboard/#search/dexamethasone AKT1">dexamethasone AKT1</a></li>
                               </ul>
                               <br>
                           </span>
@@ -161,16 +155,22 @@
         </footer>
     </div>
      
-    <div class="modal hide fade" id="alert-message-modal">  <!-- a hidden div for showing alert message -->          
+    <div class="modal hide fade" id="alert-message-modal">  <!-- a hidden div for showing alert message -->
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
         <div class="modal-body" >
             <br><medium id="alertMessage"></medium>
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
+      </div>
+      </div>
     </div>
 
     <div class="modal hide fade" id="popup-textarea-modal">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
         <div class="modal-body" >
             <textarea id="temporary-text" style='width:95%' rows='10' cols='100'></textarea>
         </div>
@@ -178,6 +178,8 @@
             <button class="btn btn-primary" data-dismiss="modal" id="close-tempoary-text">Close</button>
         </div>
         <span id='invoker-id' style='display:none'></span>
+      </div>
+      </div>
     </div>
 
     <div class="modal fade" tabindex="-1" role="dialog" id="confirmation-modal">
@@ -203,7 +205,7 @@
         <div class="container common-container" id="observation-container">
 
             <div class="row">
-                <div class="span10">
+                <div class="col-10">
                     <h2>Observation <small>(Tier {{submission.observationTemplate.tier}})</small></h2>
                     <blockquote>
                         <p id="observation-summary"></p>
@@ -883,8 +885,8 @@
     <script src="js/paging.js"></script>
     <script src="js/underscore.js"></script>
     <script src="js/backbone-min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.fancybox-1.3.4.pack.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/ctd2.js"></script>
     <script src="js/template.helper.js?ts=2019"></script>
 

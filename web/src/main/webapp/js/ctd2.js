@@ -90,7 +90,7 @@
         render: function() {
             var content = this.template({});
 
-            $.fancybox(
+            $.fancybox.open(
                 content,
                 {
                     'autoDimensions' : false,
