@@ -40,56 +40,6 @@
     <!-- NAVBAR
     ================================================== -->
     <script src="js/jquery.min.js"></script>
-    <script src="js/jquery.ba-hashchange.min.js"></script>
-    <script>
-    $(function() {
-        // Bind an event to window.onhashchange that, when the hash changes, 
-        // gets the hash and alters class of desired navlinks
-        $(window).hashchange(function() {
-            var hash = location.hash || '#';
-            $('[id^="navlink-"]').each(function() {
-                // navbar regular items
-                if (
-                    $(this).attr('id') == 'navlink-dashboard' ||
-                    $(this).attr('id') == 'navlink-centers'
-                ) {
-                    if ($(this).attr('href') === decodeURIComponent(hash)) {
-                        $(this).removeClass('navlink');
-                        $(this).addClass('navlink-current');
-                    }
-                    else {
-                        $(this).removeClass('navlink-current');
-                        $(this).addClass('navlink');
-                    }
-                }
-                // navbar dropdown menu items
-                else if (
-                    $(this).attr('id') == 'navlink-browse' ||
-                    $(this).attr('id') == 'navlink-genecart'
-                ) {
-                    var id = $(this).attr('id') == 'navlink-browse'
-                           ? 'dropdown-menu-browse'
-                           : 'dropdown-menu-genecart';
-                    var dropdownLink = $(this);
-                    $('#' + id + ' li a').each(function() {
-                        if ($(this).attr('href') === decodeURIComponent(hash)) {
-                            dropdownLink.removeClass('navlink');
-                            dropdownLink.addClass('navlink-current');
-                            return false;
-                        }
-                        else {
-                            dropdownLink.removeClass('navlink-current');
-                            dropdownLink.addClass('navlink');
-                        }
-                    });
-                }
-            });
-        });
-        // Since the event is only triggered when the hash changes, we need to trigger
-        // the event now, to handle the hash the page may have been loaded with.
-        $(window).hashchange();
-    });
-    </script>
     <div class="navbar-wrapper">
       <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
       <div class="container">
@@ -930,23 +880,13 @@
     <!-- end of templates -->
     
     <script src="js/jquery.dataTables.min.js"></script>
-    <script src="js/dataTables.buttons.min.js"></script>
-    <script src="js/buttons.html5.min.js"></script>
-    <script src="js/jszip.min.js"></script>
     <script src="js/paging.js"></script>
-    <script src="js/holder.js"></script>
     <script src="js/underscore.js"></script>
-    <script src="js/json2.js"></script>
     <script src="js/backbone-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.fancybox-1.3.4.pack.js"></script>
-    <script src="js/jquery.easing-1.3.pack.js"></script>
-    <script src="js/jquery.expander.min.js"></script>
-    <script src="js/encoder.js"></script>
-    <script src="js/jquery.contextMenu.js"></script>   
-    <script src="js/jquery.ui.position.js"></script>    
     <script src="js/ctd2.js"></script>
-    <script src="js/template.helper.js?ts=201802"></script>
+    <script src="js/template.helper.js?ts=2019"></script>
 
   </body>
 </html>

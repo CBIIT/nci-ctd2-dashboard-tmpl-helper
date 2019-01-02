@@ -342,12 +342,6 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
         $("#" + observationId + " #observation-summary").html(summary);
 
         $('.desc-tooltip').tooltip({ placement: "left" });
-        $("div.expandable").expander({
-            slicePoint: 50,
-            expandText: '[...]',
-            expandPrefix: ' ',
-            userCollapseText: '[^]'
-        });
 
         $(".numeric-value").each(function (idx) {
             var val = $(this).html();
