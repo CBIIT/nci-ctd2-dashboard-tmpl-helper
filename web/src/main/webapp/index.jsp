@@ -668,7 +668,7 @@
                     </tr>
                     <tr>
                         <td colspan=2 class="next-cell">
-                            <button id="apply-submission-center" class="btn">Continue</button>
+                            <button id="apply-submission-center" class="btn btn-outline-dark">Continue</button>
                         </td>
                     </tr>
                 </table>
@@ -698,7 +698,7 @@
                 <table  class="table">
                     <tr>
                         <td class="next-cell">
-                            <button id="create-new-submission" class="btn">Create New Submission</button>
+                            <button id="create-new-submission" class="btn btn-outline-dark">Create New Submission</button>
                         </td>
                     </tr>
                 </table>
