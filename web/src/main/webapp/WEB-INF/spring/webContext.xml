@@ -21,10 +21,6 @@
         <property name="cacheManager" ref="ehcache"/>
     </bean>
 
-    <bean id="maxNumberOfEntities" class="java.lang.Integer">
-        <constructor-arg type="int" value="${list.max.observations}"/>
-    </bean>
-
     <bean id="uploadLocation" class="java.lang.String">
         <constructor-arg type="String" value="${upload.location}"/>
     </bean>

@@ -36,10 +36,6 @@
         <property name="packagesToScan" value="gov.nih.nci.ctd2.dashboard.impl"/>
     </bean>
 
-    <bean id="maxNumberOfEntities" class="java.lang.Integer">
-        <constructor-arg type="int" value="100"/>
-    </bean>
-
     <bean id="uploadLocation" class="java.lang.String">
         <constructor-arg type="String" value="./tmp/upload"/>
     </bean>

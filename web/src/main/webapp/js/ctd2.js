@@ -10,9 +10,6 @@
         interpolate : /\{\{(.+?)\}\}/g
     };
 
-    // Get these options from the page
-    var maxNumberOfEntities = $("#maxNumberOfEntites").html() * 1;
-
     /* Models */
     var SubmissionCenters = Backbone.Collection.extend({
         url: "./api/centers"
@@ -44,14 +41,14 @@
     	  $("#alertMessage").text(message);
     	  $("#alertMessage").css('color', '#5a5a5a');   
     	  $("#alert-message-modal").modal('show');
-       }   
+       };
      
        var showInvalidMessage = function(message)
        {    	 
     	  $("#alertMessage").text(message);
     	  $("#alertMessage").css('color', 'red');
     	  $("#alert-message-modal").modal('show');
-       }   
+       };
 
     /* Routers */
     AppRouter = Backbone.Router.extend({

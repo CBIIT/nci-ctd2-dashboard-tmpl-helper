@@ -33,18 +33,6 @@ public class APIController {
     @Autowired
     private DashboardDao dashboardDao;
 
-    @Autowired
-    @Qualifier("maxNumberOfEntities")
-    private Integer maxNumberOfEntities = 100;
-
-    public Integer getMaxNumberOfEntities() {
-        return maxNumberOfEntities;
-    }
-
-    public void setMaxNumberOfEntities(Integer maxNumberOfEntities) {
-        this.maxNumberOfEntities = maxNumberOfEntities;
-    }
-
     @Transactional
     @RequestMapping(value = "centers", method = { RequestMethod.GET }, headers = "Accept=application/json")
     public ResponseEntity<String> getCenters() {
