@@ -11,4 +11,4 @@ hibernate.connection.charSet=UTF-8
 # If you make this too high and the client will suffer a lot to load details for each observation
 list.max.observations=100
 
-submission.builder.version=v1.0
+submission.builder.version=v2.0
