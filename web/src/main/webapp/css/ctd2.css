@@ -598,6 +598,8 @@ blockquote p {
 .help-navigate-text-container {
     padding-left: 20px;
     padding-right: 20px;
+    width: 80%;
+    height: 95%;
 }
 
 tr.group td {

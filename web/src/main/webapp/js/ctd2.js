@@ -29,8 +29,6 @@
                 content,
                 {
                     'autoDimensions' : false,
-                    'width': '75%',
-                    'height': '99%',
                     'centerOnScroll': true,
                     'transitionIn' : 'none',
                     'transitionOut' : 'none'
