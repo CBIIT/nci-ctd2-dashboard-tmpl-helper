@@ -299,7 +299,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
                         });
 
                         imgTemplate = $("#search-results-compund-image-tmpl");
-                        thatEl2.append(_.template(imgTemplate.html(), compound));
+                        thatEl2.append(_.template(imgTemplate.html())(compound));
                     }
                 });
             } else if (subject.class == "gene") {
@@ -314,14 +314,14 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
                 imgTemplate = $("#search-results-animalmodel-image-tmpl");
             }
             if (subject.class != "compound") // for Compound, this would be set asynchronously and use compound instead of subject
-                thatEl2.append(_.template(imgTemplate.html(), subject));
+                thatEl2.append(_.template(imgTemplate.html())(subject));
 
             if (observedSubject.observedSubjectRole == null || observedSubject.subject == null)
                 return;
 
             summary = summary.replace(
                 new RegExp("<" + observedSubject.observedSubjectRole.columnName + ">", "g"),
-                _.template($("#summary-subject-replacement-tmpl").html(), observedSubject.subject)
+                _.template($("#summary-subject-replacement-tmpl").html())(observedSubject.subject)
             );
         });
 
@@ -336,7 +336,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
             observedEvidenceRowView.render();
             summary = summary.replace(
                 new RegExp("<" + observedEvidence.observedEvidenceRole.columnName + ">", "g"),
-                _.template($("#summary-evidence-replacement-tmpl").html(), observedEvidence.evidence)
+                _.template($("#summary-evidence-replacement-tmpl").html())(observedEvidence.evidence)
             );
         });
         $("#" + observationId + " #observation-summary").html(summary);
@@ -347,7 +347,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
             var val = $(this).html();
             var vals = val.split("e"); // capture scientific notation
             if (vals.length > 1) {
-                $(this).html(_.template($("#observeddatanumericevidence-val-tmpl").html(), {
+                $(this).html(_.template($("#observeddatanumericevidence-val-tmpl").html())({
                     firstPart: vals[0],
                     secondPart: vals[1].replace("+", "")
                 }));

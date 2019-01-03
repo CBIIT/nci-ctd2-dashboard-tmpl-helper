@@ -874,7 +874,7 @@
     
     <script src="js/jquery.dataTables.min.js"></script>
     <script src="js/paging.js"></script>
-    <script src="js/underscore.js"></script>
+    <script src="js/underscore-min.js"></script>
     <script src="js/backbone-min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.fancybox.min.js"></script>
