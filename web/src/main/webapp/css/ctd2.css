@@ -219,15 +219,6 @@ table.table thead .sorting_desc { background: url('../images/sort_desc.png') no-
 table.table thead .sorting_asc_disabled { background: url('../images/sort_asc_disabled.png') no-repeat center right; }
 table.table thead .sorting_desc_disabled { background: url('../images/sort_desc_disabled.png') no-repeat center right; }
 
-div.dataTables_info {
-    padding-top: 8px;
-}
-
-div.dataTables_paginate {
-    float: right;
-    margin: 0;
-}
-
 table {
     margin-bottom: 6px !important;
     clear: both;
@@ -590,10 +581,6 @@ blockquote p {
 .help-navigate-text-container {
     padding-left: 20px;
     padding-right: 20px;
-}
-
-table.dataTable tr.odd {
-    background-color: transparent;
 }
 
 tr.group td {
