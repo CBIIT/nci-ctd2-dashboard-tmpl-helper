@@ -47,8 +47,4 @@ public interface SubmissionTemplate extends DashboardEntity {
     public void setSummary(String s);
     public String getStoryTitle();
     public void setStoryTitle(String s);
-
-    // only for the purpose of supporting old data
-    public String getObservationString();
-    public void setObservationString(String d);
 }

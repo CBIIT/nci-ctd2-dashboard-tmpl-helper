@@ -3,7 +3,6 @@ package gov.nih.nci.ctd2.dashboard.impl;
 import java.util.Date;
 
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Column;
@@ -41,8 +40,6 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String[] observations = new String[0];
     private String summary;
     private String storyTitle;
-
-    private String observationString; // only for the purpose of supporting the old data
 
     public String getDescription() {
         return description;
@@ -255,18 +252,5 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setStoryTitle(String s) {
         storyTitle = s;
-    }
-
-    @Lob
-    @Column(name ="observations")
-    @Override
-    public String getObservationString() {
-        return observationString;
-    }
-
-    @Lob
-    @Override
-    public void setObservationString(String d) {
-        observationString = d;
     }
 }
