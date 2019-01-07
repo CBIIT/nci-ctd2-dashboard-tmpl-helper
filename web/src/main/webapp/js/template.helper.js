@@ -684,9 +684,8 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
 
         tableRow.find('.value-types').change(function () {
             var fields = $('#template-evidence-row-columntag-' + columnTagId + " [id^=observation-]");
-            var prev_type = fields[0].type;
             var new_type = $(this).val();
-            if (new_type != prev_type) {
+            if (fields.length>0 && new_type != fields[0].type) {
                 resetEvidenceTypeDropdown(new_type, null);
                 for (var i = 0; i < fields.length; i++) {
                     fields[i].type = new_type;
