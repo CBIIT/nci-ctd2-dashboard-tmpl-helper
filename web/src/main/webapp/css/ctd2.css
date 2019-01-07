@@ -60,6 +60,7 @@ a,a:not([href]):not([tabindex]),.btn-link{color:#9c0001}
 
 .hide{display: none;}
 .current-page {color: black;}
+input[type="file"] {height:inherit;}
 
 /* Special class on .container surrounding .navbar, used for positioning it into place. */
 .navbar-wrapper {
