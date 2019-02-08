@@ -795,6 +795,7 @@
                 <b>Submission Name:</b> <span id="submission-name"></span><br/>
                 <select id="preview-select"></select>
                 <div id='preview-container'></div>
+                <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
             </div> <!-- end of step 6 -->
 
         </div><!-- end of template-helper-container -->

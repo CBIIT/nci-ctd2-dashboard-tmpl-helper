@@ -156,6 +156,10 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             return true;
         });
 
+        $("#download-from-preview").click(function() {
+            $("#download-form").submit();
+        });
+
         return this;
     } // end render function
 }); // end of TemplateHelperView
