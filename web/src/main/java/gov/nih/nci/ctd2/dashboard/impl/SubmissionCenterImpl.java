@@ -10,4 +10,17 @@ import javax.persistence.Table;
 @Proxy(proxyClass= SubmissionCenter.class)
 @Table(name = "submission_center")
 public class SubmissionCenterImpl extends DashboardEntityImpl implements SubmissionCenter {
+
+    private static final long serialVersionUID = 1L;
+    private String piName;
+
+    @Override
+    public String getPiName() {
+        return piName;
+    }
+
+    @Override
+    public void setPiName(String piName) {
+        this.piName = piName;
+    }
 }

@@ -40,6 +40,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String[] observations = new String[0];
     private String summary;
     private String storyTitle;
+    private String piName;
 
     public String getDescription() {
         return description;
@@ -252,5 +253,15 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setStoryTitle(String s) {
         storyTitle = s;
+    }
+
+    @Override
+    public String getPiName() {
+        return piName;
+    }
+
+    @Override
+    public void setPiName(String piName) {
+        this.piName = piName;
     }
 }

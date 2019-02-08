@@ -47,4 +47,6 @@ public interface SubmissionTemplate extends DashboardEntity {
     public void setSummary(String s);
     public String getStoryTitle();
     public void setStoryTitle(String s);
+    public String getPiName();
+    public void setPiName(String piName);
 }

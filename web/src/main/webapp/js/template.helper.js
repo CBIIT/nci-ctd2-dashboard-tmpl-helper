@@ -3,6 +3,7 @@ $ctd2 = {
     templateModels: null, // data of all templates, keyed by their ID's
     currentModel: null, // currently selected submission template, or null meaning no template selected
     saveSuccess: true,
+    defaultPis: {},
 }; /* the supporting module of ctd2-dashboard app ctd2.js */
 
 $ctd2.TemplateHelperView = Backbone.View.extend({
@@ -43,9 +44,12 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
         var submissionCenters = new $ctd2.SubmissionCenters();
         submissionCenters.fetch({
             success: function () {
+                $ctd2.defaultPis = {};
                 _.each(submissionCenters.models, function (aCenter) {
+                    var centerModel = aCenter.toJSON();
+                    $ctd2.defaultPis[centerModel.id] = centerModel.piName;
                     (new $ctd2.TemplateHelperCenterView({
-                        model: aCenter.toJSON(),
+                        model: centerModel,
                         el: $("#template-submission-centers")
                     })).render();
                 });
@@ -179,6 +183,7 @@ $ctd2.updateModel_1 = function () {
         tier: tier,
         isStory: isStory,
         storyTitle: storyTitle,
+        piName: $('#pi-name').val(),
     });
 };
 
@@ -831,6 +836,7 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
         observationNumber: 0,
         observations: "",
         summary: "",
+        piName: "",
     },
     getPreviewModel: function (obvIndex) {
         // re-structure the data for the preview, required by the original observation template
@@ -1179,6 +1185,7 @@ $ctd2.saveNewTemplate = function (sync) {
             tier: tier,
             isStory: isStory,
             storyTitle: storyTitle,
+            piName: $('#pi-name').val(),
         }),
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         success: function (resultId) {
@@ -1263,8 +1270,10 @@ $ctd2.addNewEvidence = function (tag) {
 };
 
 $ctd2.populateOneTemplate = function () {
-    if ($ctd2.currentModel==null || $ctd2.currentModel === undefined) /* case of new template */
+    if ($ctd2.currentModel==null || $ctd2.currentModel === undefined) { /* case of new template */
         $ctd2.currentModel = new $ctd2.SubmissionTemplate();
+        $ctd2.currentModel.set({piName: $ctd2.defaultPis[$ctd2.centerId]});
+    }
     $("#template-id").val($ctd2.currentModel.id); /* used by download form only */
     var rowModel = $ctd2.currentModel.toJSON();
 
@@ -1403,6 +1412,9 @@ $ctd2.refreshTemplateList = function () {
         async: false,
         success: function () {
             _.each(storedTemplates.models, function (oneTemplateModel) {
+                if(oneTemplateModel.get("piName")==null) {
+                    oneTemplateModel.set({piName: $ctd2.defaultPis[$ctd2.centerId]});
+                }
                 $ctd2.templateModels[oneTemplateModel.id] = oneTemplateModel;
 
                 (new $ctd2.ExistingTemplateView({
