@@ -195,12 +195,14 @@ $ctd2.updateModel_1 = function () {
 $ctd2.update_after_all_data_ready = function (triggeringButton) {
 
     $ctd2.validate = function () {
+        var pattern = /^[a-z0-9]+(_[a-z0-9]+)*$/;
         var message = '';
         var i = 0;
         for (i = 0; i < subjects.length; i++) {
-            if (subjects[i] == null || subjects[i] == "") {
-                subjects[i] = "MISSING_TAG"; // double safe-guard the list itself not be mis-interpreted as empty
-                message += "<li>subject column tag cannot be empty";
+            if (!pattern.test(subjects[i])) {
+                message += "<li>subject column tag '"+subjects[i]+"' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
+                subjects[i] = "invalid_tag"; // double safe-guard the list itself not be mis-interpreted as empty
+                return message;
             }
         }
         if ($ctd2.hasDuplicate(subjects)) {

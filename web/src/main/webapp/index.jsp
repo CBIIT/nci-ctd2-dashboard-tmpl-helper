@@ -619,7 +619,7 @@
                 <option value=1 {{tier==1?'selected=selected':null}}>Tier 1 (initial or screening)</option>
                 <option value=2 {{tier==2?'selected=selected':null}}>Tier 2 (in vitro)</option>
                 <option value=3 {{tier==3?'selected=selected':null}}>Tier 3 (in vivo validation)</option>
-            </slect></td>
+            </select></td>
         </tr>
         <tr><th>Is this submission a story?</th><td><input id="template-is-story" type="checkbox" {{isStory?'checked':''}} /></td></tr>
         <tr id='story-title-row'><th>Story Title</th><td><input id='story-title' class="input-xxxlarge" value='{{storyTitle}}' /></td></tr>
