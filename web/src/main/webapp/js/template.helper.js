@@ -209,9 +209,10 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
             message += "<li>There is duplicate in subject column tags. This is not allowed.";
         }
         for (i = 0; i < evidences.length; i++) {
-            if (evidences[i] == null || evidences[i] == "") {
-                evidences[i] = "MISSING_TAG"; // double safe-guard the list itself not be mis-interpreted as empty
-                message += "<li>evidence column tag cannot be empty";
+            if (!pattern.test(evidences[i])) {
+                message += "<li>evidence column tag '"+evidences[i]+"' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
+                evidences[i] = "invalid_tag"; // double safe-guard the list itself not be mis-interpreted as empty
+                return message;
             }
         }
         if ($ctd2.hasDuplicate(evidences)) {
