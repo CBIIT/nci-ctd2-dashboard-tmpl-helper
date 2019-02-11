@@ -218,6 +218,17 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
         if ($ctd2.hasDuplicate(evidences)) {
             message += "<li>There is duplicate in evidence column tags. This is not allowed.";
         }
+        var normalCharacaters = /^[ -~\t\n\r]+$/;
+        for (i = 0; i < subjectDescriptions.length; i++) {
+            if(!normalCharacaters.test(subjectDescriptions[i])) {
+                return "subject description contains characters beyond 7-bit ASCII";
+            }
+        }
+        for (i = 0; i < evidenceDescriptions.length; i++) {
+            if(!normalCharacaters.test(evidenceDescriptions[i])) {
+                return "evidence description contains characters beyond 7-bit ASCII";
+            }
+        }
         return message;
     };
 
