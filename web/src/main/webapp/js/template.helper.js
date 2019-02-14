@@ -1,3 +1,5 @@
+var __TemplateHelperView = (function ($) {
+
 $ctd2 = {
     centerId: 0,
     templateModels: null, // data of all templates, keyed by their ID's
@@ -5,6 +7,10 @@ $ctd2 = {
     saveSuccess: true,
     defaultPis: {},
 }; /* the supporting module of ctd2-dashboard app ctd2.js */
+
+var SubmissionCenters = Backbone.Collection.extend({
+    url: "./api/centers"
+});
 
 $ctd2.TemplateHelperView = Backbone.View.extend({
     template: _.template($("#template-helper-tmpl").html()),
@@ -41,7 +47,7 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
             $ctd2.showPage("#step6", this);
         }).hide();
 
-        var submissionCenters = new $ctd2.SubmissionCenters();
+        var submissionCenters = new SubmissionCenters();
         submissionCenters.fetch({
             success: function () {
                 $ctd2.defaultPis = {};
@@ -1475,3 +1481,7 @@ $ctd2.showInvalidMessage = function(message) {
     $("#alertMessage").css('color', 'red');
     $("#alert-message-modal").modal('show');
 };
+
+return $ctd2.TemplateHelperView;
+
+})(window.jQuery);

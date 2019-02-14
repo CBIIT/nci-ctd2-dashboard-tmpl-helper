@@ -10,11 +10,6 @@
         interpolate : /\{\{(.+?)\}\}/g
     };
 
-    /* Models */
-    var SubmissionCenters = Backbone.Collection.extend({
-        url: "./api/centers"
-    });
-
     /* Views */
     var HelpNavigateView = Backbone.View.extend({
         template: _.template($("#help-navigate-tmpl").html()),
@@ -65,9 +60,7 @@
         },
 
         showTemplateHelper: function() {
-            $ctd2.SubmissionCenters = SubmissionCenters;
-            var templateHelperView = new $ctd2.TemplateHelperView();
-            templateHelperView.render();
+            new __TemplateHelperView().render();
         }
     });
 
