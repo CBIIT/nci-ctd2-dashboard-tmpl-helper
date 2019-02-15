@@ -1,18 +1,16 @@
 var __TemplateHelperView = (function ($) {
 
-$ctd2 = {
-    centerId: 0,
-    templateModels: null, // data of all templates, keyed by their ID's
-    currentModel: null, // currently selected submission template, or null meaning no template selected
-    saveSuccess: true,
-    defaultPis: {},
-}; /* the supporting module of ctd2-dashboard app ctd2.js */
+    var centerId = 0; // ID of the center currently selected
+    var templateModels = {}; // data of all templates, keyed by their ID's
+    var currentModel = null; // currently selected submission template, or null meaning no template selected
+    var saveSuccess = true;
+    var defaultPis = {};
 
-var SubmissionCenters = Backbone.Collection.extend({
-    url: "./api/centers"
-});
+    var SubmissionCenters = Backbone.Collection.extend({
+        url: "./api/centers"
+    });
 
-$ctd2.TemplateHelperView = Backbone.View.extend({
+    var TemplateHelperView = Backbone.View.extend({
     template: _.template($("#template-helper-tmpl").html()),
     el: $("#main-container"),
 
@@ -21,40 +19,40 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
 
         // top menu
         $("#menu_home").click(function () {
-            $ctd2.centerId = 0;
-            $ctd2.templateModels = null;
-            $ctd2.currentModel = null;
+            centerId = 0;
+            templateModels = {};
+            currentModel = null;
             $("#menu_manage").hide();
-            $ctd2.hideTemplateMenu();
-            $ctd2.showPage("#step1");
+            hideTemplateMenu();
+            showPage("#step1");
         });
         $("#menu_manage").click(function () {
-            $ctd2.currentModel = null;
-            $ctd2.hideTemplateMenu();
-            $ctd2.showPage("#step2");
+            currentModel = null;
+            hideTemplateMenu();
+            showPage("#step2");
         }).hide();
         $("#menu_description").click(function () {
-            $ctd2.showPage("#step3", this);
+            showPage("#step3", this);
         }).hide();
         $("#menu_data").click(function () {
-            $ctd2.showPage("#step4", this);
+            showPage("#step4", this);
         }).hide();
         $("#menu_summary").click(function () {
-            $ctd2.populateTagList();
-            $ctd2.showPage("#step5", this);
+            populateTagList();
+            showPage("#step5", this);
         }).hide();
         $("#menu_preview").click(function () {
-            $ctd2.showPage("#step6", this);
+            showPage("#step6", this);
         }).hide();
 
         var submissionCenters = new SubmissionCenters();
         submissionCenters.fetch({
             success: function () {
-                $ctd2.defaultPis = {};
+                defaultPis = {};
                 _.each(submissionCenters.models, function (aCenter) {
                     var centerModel = aCenter.toJSON();
-                    $ctd2.defaultPis[centerModel.id] = centerModel.piName;
-                    (new $ctd2.TemplateHelperCenterView({
+                    defaultPis[centerModel.id] = centerModel.piName;
+                    (new TemplateHelperCenterView({
                         model: centerModel,
                         el: $("#template-submission-centers")
                     })).render();
@@ -68,22 +66,22 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
                 console.log("centerId_selected is empty");
                 return; // error control
             }
-            $ctd2.centerId = centerId_selected;
+            centerId = centerId_selected;
 
             $("#menu_manage").show();
             $("#step1").fadeOut();
             $("#step2").slideDown();
             $("span#center-name").text($("#template-submission-centers option:selected").text());
-            $ctd2.refreshTemplateList();
+            refreshTemplateList();
         });
 
         $("#create-new-submission").click(function () {
-            $ctd2.hideTemplateMenu();
-            if($ctd2.currentModel!=null) {
+            hideTemplateMenu();
+            if(currentModel!=null) {
                 console.log('error: unexpected non-null currentModel');
                 return;
             }
-            $ctd2.populateOneTemplate(); // TODO maybe use a separate method for the case of new template
+            populateOneTemplate(); // TODO maybe use a separate method for the case of new template
 
             $("#step2").fadeOut();
             $("#step3").slideDown();
@@ -91,73 +89,73 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
 
         // although the other button is called #create-new-submission, this is where it is really created back-end
         $("#save-name-description").click(function () {
-            if ($ctd2.currentModel.id == 0) {
+            if (currentModel.id == 0) {
                 $(this).attr("disabled", "disabled");
-                $ctd2.saveNewTemplate();
+                saveNewTemplate();
             } else {
-                $ctd2.updateModel_1();
-                $ctd2.updateTemplate($(this));
+                update_model_from_description_page();
+                updateTemplate($(this));
             }
         });
         $("#continue-to-main-data").click(function () { // similar to save, additionally moving to the next
             var ret = true;
-            if ($ctd2.currentModel.id == 0) {
-                ret = $ctd2.saveNewTemplate(true);
+            if (currentModel.id == 0) {
+                ret = saveNewTemplate(true);
             } else {
-                $ctd2.updateModel_1();
-                $ctd2.updateTemplate($(this));
+                update_model_from_description_page();
+                updateTemplate($(this));
             }
-            if (ret && $ctd2.saveSuccess) {
+            if (ret && saveSuccess) {
                 $("#step3").fadeOut();
                 $("#step4").slideDown();
                 $("#menu_description").removeClass("current-page");
                 $("#menu_data").addClass("current-page");
             } else {
-                $ctd2.saveSuccess = true; // reset the flag
+                saveSuccess = true; // reset the flag
             }
         });
 
-        $("#save-template-submission-data").click($ctd2.update_model_from_submission_data_page);
-        $("#apply-template-submission-data").click($ctd2.update_model_from_submission_data_page);
+        $("#save-template-submission-data").click(update_model_from_submission_data_page);
+        $("#apply-template-submission-data").click(update_model_from_submission_data_page);
 
         $("#template-obs-summary").change(function () {
             console.log('change triggered on summary');
         });
         $("#save-summary").click(function () {
             console.log("saving the summary ...");
-            $ctd2.updateModel_3($(this)); // TODO add lock
+            update_model_from_summary_page($(this)); // TODO add lock
         });
         $("#continue-from-summary").click(function () {
-            $ctd2.updateModel_3($(this));
-            if ($ctd2.saveSuccess) {
+            update_model_from_summary_page($(this));
+            if (saveSuccess) {
                 $("#step5").fadeOut();
                 $("#step6").slideDown();
                 $("#menu_summary").removeClass("current-page");
                 $("#menu_preview").addClass("current-page");
             } else {
-                $ctd2.saveSuccess = true; // reset the flag
+                saveSuccess = true; // reset the flag
             }
         });
 
         $("#add-evidence").click(function () {
-            $ctd2.addNewEvidence();
+            addNewEvidence();
         });
 
         $("#add-subject").click(function () {
-            $ctd2.addNewSubject();
+            addNewSubject();
         });
 
         $("#add-observation").click(function () {
-            new $ctd2.NewObservationView({
+            new NewObservationView({
                 el: $("#template-table"),
             }).render();
         });
 
         $("#download-form").submit(function () {
             if(!$("#template-id").val() || $("#template-id").val()=="0") {
-                $("#template-id").val($ctd2.currentModel.id);
+                $("#template-id").val(currentModel.id);
             }
-            var model = $ctd2.templateModels[$("#template-id").val()];
+            var model = templateModels[$("#template-id").val()];
             $("#filename-input").val(model.toJSON().displayName);
             return true;
         });
@@ -168,9 +166,9 @@ $ctd2.TemplateHelperView = Backbone.View.extend({
 
         return this;
     } // end render function
-}); // end of TemplateHelperView
+    }); // end of TemplateHelperView
 
-$ctd2.updateModel_1 = function () {
+    var update_model_from_description_page = function () {
     var firstName = $("#first-name").val();
     var lastName = $("#last-name").val();
     var email = $("#email").val();
@@ -182,7 +180,7 @@ $ctd2.updateModel_1 = function () {
     var isStory = $("#template-is-story").is(':checked');
     var storyTitle = $('#story-title').val();
 
-    $ctd2.currentModel.set({
+    currentModel.set({
         firstName: firstName,
         lastName: lastName,
         email: email,
@@ -195,12 +193,12 @@ $ctd2.updateModel_1 = function () {
         storyTitle: storyTitle,
         piName: $('#pi-name').val(),
     });
-};
+    };
 
-/* this is the last step on the 'Submission Data' page after possible background reading is done */
-$ctd2.update_after_all_data_ready = function (triggeringButton) {
+    /* this is the last step on the 'Submission Data' page after possible background reading is done */
+    var update_after_all_data_ready = function (triggeringButton) {
 
-    $ctd2.validate = function () {
+    var validate = function () {
         var pattern = /^[a-z0-9]+(_[a-z0-9]+)*$/;
         var message = '';
         var i = 0;
@@ -211,7 +209,7 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
                 return message;
             }
         }
-        if ($ctd2.hasDuplicate(subjects)) {
+        if (hasDuplicate(subjects)) {
             message += "<li>There is duplicate in subject column tags. This is not allowed.";
         }
         for (i = 0; i < evidences.length; i++) {
@@ -221,7 +219,7 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
                 return message;
             }
         }
-        if ($ctd2.hasDuplicate(evidences)) {
+        if (hasDuplicate(evidences)) {
             message += "<li>There is duplicate in evidence column tags. This is not allowed.";
         }
         var normalCharacaters = /^[ -~\t\n\r]+$/;
@@ -238,24 +236,24 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
         return message;
     };
 
-    var subjects = $ctd2.getArray('#template-table-subject input.subject-columntag');
-    var subjectClasses = $ctd2.getArray('#template-table-subject select.subject-classes');
-    var subjectRoles = $ctd2.getArray('#template-table-subject select.subject-roles');
-    var subjectDescriptions = $ctd2.getArray('#template-table-subject input.subject-descriptions');
-    var evidences = $ctd2.getArray('#template-table-evidence input.evidence-columntag');
-    var evidenceTypes = $ctd2.getArray('#template-table-evidence select.evidence-types');
-    var valueTypes = $ctd2.getArray('#template-table-evidence select.value-types');
-    var evidenceDescriptions = $ctd2.getArray('#template-table-evidence input.evidence-descriptions');
+    var subjects = getArray('#template-table-subject input.subject-columntag');
+    var subjectClasses = getArray('#template-table-subject select.subject-classes');
+    var subjectRoles = getArray('#template-table-subject select.subject-roles');
+    var subjectDescriptions = getArray('#template-table-subject input.subject-descriptions');
+    var evidences = getArray('#template-table-evidence input.evidence-columntag');
+    var evidenceTypes = getArray('#template-table-evidence select.evidence-types');
+    var valueTypes = getArray('#template-table-evidence select.value-types');
+    var evidenceDescriptions = getArray('#template-table-evidence input.evidence-descriptions');
     var observationNumber = $(".observation-header").length / 2;
 
-    var x = $ctd2.validate(); // some arrays are converted to string after validation
+    var x = validate(); // some arrays are converted to string after validation
     if (x != null && x.length > 0) {
-        $ctd2.showAlertMessage("<ul>"+x+"</ul>");
-        $ctd2.saveSuccess = false;
+        showAlertMessage("<ul>"+x+"</ul>");
+        saveSuccess = false;
         return;
     }
 
-    $ctd2.currentModel.set({
+    currentModel.set({
         subjectColumns: subjects,
         subjectClasses: subjectClasses,
         subjectRoles: subjectRoles,
@@ -265,31 +263,27 @@ $ctd2.update_after_all_data_ready = function (triggeringButton) {
         valueTypes: valueTypes,
         evidenceDescriptions: evidenceDescriptions,
         observationNumber: observationNumber,
-        observations: $ctd2.observationArray,
+        observations: observationArray,
     });
-    $ctd2.updateTemplate(triggeringButton);
-};
+    updateTemplate(triggeringButton);
+    };
 
-// update model from the observation summary page
-$ctd2.updateModel_3 = function (triggerButton) {
+    // update model from the observation summary page
+    var update_model_from_summary_page = function (triggerButton) {
     var summary = $("#template-obs-summary").val();
     if (summary.length > 1024) {
-        $ctd2.showAlertMessage("<ul>The summary that you entered has "+summary.length+" characters. 1024 characters is the designed limit of this field. Please modify it before trying to save again.</ul>");
-        $ctd2.saveSuccess = false;
+        showAlertMessage("<ul>The summary that you entered has "+summary.length+" characters. 1024 characters is the designed limit of this field. Please modify it before trying to save again.</ul>");
+        saveSuccess = false;
         return;
     }
 
-    $ctd2.currentModel.set({
+    currentModel.set({
         summary: summary,
     });
-    $ctd2.updateTemplate(triggerButton);
-};
+    updateTemplate(triggerButton);
+    };
 
-$ctd2.Subject = Backbone.Model.extend({
-    urlRoot: "./api/subject" // not implemented because no real subject ID is available
-});
-
-$ctd2.ObservationPreviewView = Backbone.View.extend({
+    var ObservationPreviewView = Backbone.View.extend({
     template: _.template($("#observation-tmpl").html()),
     render: function () {
         var thisModel = this.model;
@@ -307,7 +301,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
         var thatEl = $("#" + observationId + " #observed-subjects-grid");
         _.each(thisModel.observedSubjects, function (observedSubject) {
             var observedSubjectRowView
-                = new $ctd2.ObservedSubjectSummaryRowView({
+                = new ObservedSubjectSummaryRowView({
                     el: $(thatEl).find("tbody"),
                     model: observedSubject
                 });
@@ -317,20 +311,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
             var thatEl2 = $("#" + observationId + " #subject-image-" + observedSubject.id);
             var imgTemplate = $("#search-results-unknown-image-tmpl");
             if (subject.class == "compound") {
-                var compound = new $ctd2.Subject({ id: subject.id });
-                compound.fetch({ // TODO this does not work because subject.id is not real
-                    success: function () {
-                        compound = compound.toJSON();
-                        _.each(compound.xrefs, function (xref) {
-                            if (xref.databaseName == "IMAGE") {
-                                compound.imageFile = xref.databaseId;
-                            }
-                        });
-
-                        imgTemplate = $("#search-results-compund-image-tmpl");
-                        thatEl2.append(_.template(imgTemplate.html())(compound));
-                    }
-                });
+                imgTemplate = $("#search-results-compund-image-tmpl");
             } else if (subject.class == "gene") {
                 imgTemplate = $("#search-results-gene-image-tmpl");
             } else if (subject.class == "shrna") {
@@ -342,8 +323,8 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
             } else if (subject.class == "animal_model") {
                 imgTemplate = $("#search-results-animalmodel-image-tmpl");
             }
-            if (subject.class != "compound") // for Compound, this would be set asynchronously and use compound instead of subject
-                thatEl2.append(_.template(imgTemplate.html())(subject));
+            /* in the dashboard app, for Compound, this would be set asynchronously and use compound instead of subject */
+            thatEl2.append(_.template(imgTemplate.html())(subject));
 
             if (observedSubject.observedSubjectRole == null || observedSubject.subject == null)
                 return;
@@ -357,7 +338,7 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
         // Load evidences
         var thatEl2 = $("#" + observationId + " #observed-evidences-grid");
         _.each(thisModel.observedEvidences, function (observedEvidence) {
-            var observedEvidenceRowView = new $ctd2.ObservedEvidenceRowView({
+            var observedEvidenceRowView = new ObservedEvidenceRowView({
                 el: $(thatEl2).find("tbody"),
                 model: observedEvidence
             });
@@ -405,10 +386,10 @@ $ctd2.ObservationPreviewView = Backbone.View.extend({
 
         return this;
     }
-});
+    });
 
-// this is the same as the one in ctd2.js for now
-$ctd2.ObservedSubjectSummaryRowView = Backbone.View.extend({
+    // this is the same as the one in dashboard ctd2.js for now
+    var ObservedSubjectSummaryRowView = Backbone.View.extend({
     template: _.template($("#observedsubject-summary-row-tmpl").html()),
     render: function () {
         var result = this.model;
@@ -434,10 +415,10 @@ $ctd2.ObservedSubjectSummaryRowView = Backbone.View.extend({
 
         return this;
     }
-});
+    });
 
-// this is the same as the one in ctd2.js for now
-$ctd2.ObservedEvidenceRowView = Backbone.View.extend({
+    // this is the same as the one in dashboard ctd2.js for now
+    var ObservedEvidenceRowView = Backbone.View.extend({
     render: function () {
         var result = this.model;
         var type = result.evidence.class;
@@ -493,34 +474,34 @@ $ctd2.ObservedEvidenceRowView = Backbone.View.extend({
         $(".img-rounded").tooltip({ placement: "left" });
         return this;
     }
-});
+    });
 
-$ctd2.ObservationOptionView = Backbone.View.extend({
+    var ObservationOptionView = Backbone.View.extend({
     template: _.template($("#observation-option-tmpl").html()),
     render: function () {
         $(this.el).append(this.template(this.model));
         return this;
     }
-});
+    });
 
-$ctd2.ColumnTagView = Backbone.View.extend({
+    var ColumnTagView = Backbone.View.extend({
     template: _.template($("#column-tag-item-tmpl").html()),
     render: function () {
         $(this.el).append(this.template(this.model));
         return this;
     }
-});
+    });
 
-$ctd2.TemplateHelperCenterView = Backbone.View.extend({
+    var TemplateHelperCenterView = Backbone.View.extend({
     template: _.template($("#template-helper-center-tmpl").html()),
 
     render: function () {
         $(this.el).append(this.template(this.model));
         return this;
     }
-});
+    });
 
-$ctd2.SubmitterInformationView = Backbone.View.extend({
+    var SubmitterInformationView = Backbone.View.extend({
     template: _.template($("#submitter-information-tmpl").html()),
 
     render: function () {
@@ -532,9 +513,9 @@ $ctd2.SubmitterInformationView = Backbone.View.extend({
             console.log('change triggered on submitter information');
         }
     },
-});
+    });
 
-$ctd2.TemplateDescriptionView = Backbone.View.extend({
+    var TemplateDescriptionView = Backbone.View.extend({
     template: _.template($("#template-description-tmpl").html()),
 
     render: function () {
@@ -553,9 +534,9 @@ $ctd2.TemplateDescriptionView = Backbone.View.extend({
             console.log('change triggered on template description');
         }
     },
-});
+    });
 
-$ctd2.ExistingTemplateView = Backbone.View.extend({
+    var ExistingTemplateView = Backbone.View.extend({
     template: _.template($("#existing-template-row-tmpl").html()),
 
     render: function () {
@@ -565,23 +546,23 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
             var action = $(this).val();
             switch (action) {
                 case 'edit':
-                    $ctd2.showTemplateMenu();
-                    $ctd2.currentModel = $ctd2.templateModels[templateId];
-                    $ctd2.populateOneTemplate();
-                    $ctd2.showPage("#step4", "#menu_data");
+                    showTemplateMenu();
+                    currentModel = templateModels[templateId];
+                    populateOneTemplate();
+                    showPage("#step4", "#menu_data");
                     break;
                 case 'delete':
-                    $ctd2.deleteTemplate(templateId);
+                    deleteTemplate(templateId);
                     $("#template-action-" + templateId).val(""); // in case not confirmed 
                     break;
                 case 'preview':
-                    $ctd2.showTemplateMenu();
-                    $ctd2.currentModel = $ctd2.templateModels[templateId];
-                    $ctd2.populateOneTemplate();
-                    $ctd2.showPage("#step6", "#menu_preview");
+                    showTemplateMenu();
+                    currentModel = templateModels[templateId];
+                    populateOneTemplate();
+                    showPage("#step6", "#menu_preview");
                     break;
                 case 'clone':
-                    $ctd2.clone(templateId);
+                    clone(templateId);
                     break;
                 case 'download':
                     $("#template-id").val(templateId);
@@ -594,20 +575,20 @@ $ctd2.ExistingTemplateView = Backbone.View.extend({
         });
         return this;
     }
-});
+    });
 
-$ctd2.popupLargeTextfield = function() {
+    var popupLargeTextfield = function() {
     $("#invoker-id").text( $(this).attr('id') );
     $("#temporary-text").val( $(this).val() );
     $("#popup-textarea-modal").modal('show');
-};
+    };
 
-$ctd2.closeLargeTextfield = function() {
+    var closeLargeTextfield = function() {
     var invoker_id = $("#invoker-id").text();
     $('#'+invoker_id).val( $("#temporary-text").val() );
-};
+    };
 
-$ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
+    var TemplateSubjectDataRowView = Backbone.View.extend({
     template: _.template($("#template-subject-data-row-tmpl").html()),
     render: function () {
         $(this.el).append(this.template(this.model));
@@ -624,17 +605,17 @@ $ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
         if (subjectClass === undefined || subjectClass == null) subjectClass = "gene"; // simple default value
 
         var resetRoleDropdown = function (sc, sr) {
-            roleOptions = $ctd2.subjectRoles[sc];
+            roleOptions = subject2role[sc];
             if (roleOptions === undefined) { // exceptional case
                 console.log("error: roleOption is undefined for subject class " + sc);
                 // because this happens for previous stored data, let's allow this
                 //return;
-                roleOptions = $ctd2.subjectRoles.gene;
+                roleOptions = subject2role.gene;
             }
             $('#role-dropdown-' + columnTagId).empty();
             for (var i = 0; i < roleOptions.length; i++) {
                 var roleName = roleOptions[i];
-                new $ctd2.SubjectRoleDropdownRowView(
+                new SubjectRoleDropdownRowView(
                     {
                         el: $('#role-dropdown-' + columnTagId),
                         model: { roleName: roleName, selected: roleName == sr ? 'selected' : null }
@@ -652,13 +633,13 @@ $ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
         var row = this.model.row;
         var observationNumber = this.model.observationNumber;
         var observations = this.model.observations;
-        new $ctd2.TempObservationView({
+        new TempObservationView({
             el: tableRow,
             model: { columnTagId: columnTagId, observationNumber: observationNumber, observations: observations, obvsType: 'text' },
         }).render();
 
-        $(".collapsed-textarea").click($ctd2.popupLargeTextfield);
-        $("#close-tempoary-text").unbind('click').click($ctd2.closeLargeTextfield);
+        $(".collapsed-textarea").click(popupLargeTextfield);
+        $("#close-tempoary-text").unbind('click').click(closeLargeTextfield);
 
         return this;
     },
@@ -667,9 +648,9 @@ $ctd2.TemplateSubjectDataRowView = Backbone.View.extend({
             console.log('change triggered on subject data');
         }
     },
-});
+    });
 
-$ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
+    var TemplateEvidenceDataRowView = Backbone.View.extend({
     template: _.template($("#template-evidence-data-row-tmpl").html()),
     render: function () {
         $(this.el).append(this.template(this.model));
@@ -683,15 +664,15 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
         });
 
         var resetEvidenceTypeDropdown = function (vt, et) {
-            var evidenceTypeOptions = $ctd2.evidenceTypes[vt];
+            var evidenceTypeOptions = value_type2evidence_type[vt];
             if (evidenceTypeOptions === undefined) { // exceptional case
                 console.log('incorrect value type: ' + vt);
                 //return;
-                evidenceTypeOptions = $ctd2.evidenceTypes.numeric;
+                evidenceTypeOptions = value_type2evidence_type.numeric;
             }
             $('#evidence-type-' + columnTagId).empty();
             for (var i = 0; i < evidenceTypeOptions.length; i++) {
-                new $ctd2.EvidenceTypeDropdownView({
+                new EvidenceTypeDropdownView({
                     el: $('#evidence-type-' + columnTagId),
                     model: { evidenceType: evidenceTypeOptions[i], selected: evidenceTypeOptions[i] == et }
                 }).render();
@@ -706,7 +687,7 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
         var observationNumber = this.model.observationNumber;
         var observations = this.model.observations;
         var obsvType = this.model.valueType;
-        new $ctd2.TempObservationView({
+        new TempObservationView({
             el: tableRow,
             model: { columnTagId: columnTagId, observationNumber: observationNumber, observations: observations, obvsType: obsvType },
         }).render();
@@ -724,8 +705,8 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
             }
         });
 
-        $(".collapsed-textarea").click($ctd2.popupLargeTextfield);
-        $("#close-tempoary-text").unbind('click').click($ctd2.closeLargeTextfield);
+        $(".collapsed-textarea").click(popupLargeTextfield);
+        $("#close-tempoary-text").unbind('click').click(closeLargeTextfield);
 
         return this;
     },
@@ -734,32 +715,31 @@ $ctd2.TemplateEvidenceDataRowView = Backbone.View.extend({
             console.log('change triggered on evidence data');
         }
     },
-});
+    });
 
-$ctd2.SubjectRoleDropdownRowView = Backbone.View.extend({
+    var SubjectRoleDropdownRowView = Backbone.View.extend({
     template: _.template($('#role-dropdown-row-tmpl').html()),
     render: function () {
         // the template expects roleName, selected, cName from the model
         $(this.el).append(this.template(this.model));
     }
-});
+    });
 
-$ctd2.EvidenceTypeDropdownView = Backbone.View.extend({
+    var EvidenceTypeDropdownView = Backbone.View.extend({
     template: _.template($('#evidence-type-dropdown-tmpl').html()),
     render: function () {
         $(this.el).append(this.template(this.model));
     }
-});
+    });
 
 /* This view's model covers observation data of one row (i.e. subject column tag),
  * but the template is for individual cells 
  * so the template's own model contains individual cell's data.
  * This is necessary because the number of observations, and thus the column number, is a variable. 
  */
-$ctd2.TempObservationView = Backbone.View.extend({
+    var TempObservationView = Backbone.View.extend({
     template: _.template($("#temp-observation-tmpl").html()),
     render: function () {
-        // this.model should have fields: obvNumber, obvColumn, and obvText for now
         var obvModel = this.model;
 
         var clear_uploaded = function() {
@@ -800,15 +780,15 @@ $ctd2.TempObservationView = Backbone.View.extend({
         }
 
     }
-});
+    });
 
-var escapeQuote = function (s) {
+    var escapeQuote = function (s) {
     if (s === undefined || s == null) return "";
     return s.replace(/^[\"]+|[\"]+$/g, "").replace(/\"/g, "&quot;");
-};
+    };
 
 /* this is one NEW column in the observation data table. because it is new, it is meant to be empty */
-$ctd2.NewObservationView = Backbone.View.extend({
+    var NewObservationView = Backbone.View.extend({
     template: _.template($("#temp-observation-tmpl").html()),
     render: function () {
         var tmplt = this.template;
@@ -834,12 +814,11 @@ $ctd2.NewObservationView = Backbone.View.extend({
             var c = $('#template-table tr#subject-header').find('th').index($(this).parent());
             $('#template-table tr').find('td:eq(' + c + '),th:eq(' + c + ')').remove();
         });
-        $ctd2.obvNumber++;
         $(this.el).parent().scrollLeft($(this.el).width());
     }
-});
+    });
 
-$ctd2.SubmissionTemplate = Backbone.Model.extend({
+    var SubmissionTemplate = Backbone.Model.extend({
     defaults: {
         id: 0,
         firstName: null,
@@ -939,32 +918,32 @@ $ctd2.SubmissionTemplate = Backbone.Model.extend({
             observedEvidences: observedEvidences,
         };
     },
-});
+    });
 
-$ctd2.StoredTemplates = Backbone.Collection.extend({
+    var StoredTemplates = Backbone.Collection.extend({
     url: "api/templates/",
-    model: $ctd2.SubmissionTemplate,
+    model: SubmissionTemplate,
     initialize: function (attributes) {
         this.url += attributes.centerId;
     }
-});
+    });
 
-$ctd2.subjectRoles = {
+    var subject2role = {
     'gene': ['target', 'biomarker', 'oncogene', 'perturbagen', 'master regulator', 'candidate master regulator', 'interactor', 'background'],
     'shrna': ['perturbagen'],
     'tissue_sample': ['metastasis', 'disease', 'tissue'],
     'cell_sample': ['cell line'],
     'compound': ['candidate drug', 'perturbagen', 'metabolite', 'control compound'],
     'animal_model': ['strain'],
-};
-$ctd2.evidenceTypes = {
+    };
+    var value_type2evidence_type = {
     'numeric': ['measured', 'observed', 'computed', 'background'],
     'label': ['measured', 'observed', 'computed', 'species', 'background'],
     'file': ['literature', 'measured', 'observed', 'computed', 'written', 'background'],
     'url': ['measured', 'computed', 'reference', 'resource', 'link'],
-};
+    };
 
-$ctd2.showPage = function (page_name, menu_item) {
+    var showPage = function (page_name, menu_item) {
     $("#step1").fadeOut();
     $("#step2").fadeOut();
     $("#step3").fadeOut();
@@ -978,23 +957,23 @@ $ctd2.showPage = function (page_name, menu_item) {
     $("#menu_summary").removeClass('current-page');
     $("#menu_preview").removeClass('current-page');
     $(menu_item).addClass("current-page"); // if menu_item is null, it is OK
-};
+    };
 
-$ctd2.showTemplateMenu = function () {
+    var showTemplateMenu = function () {
     $("#menu_description").show();
     $("#menu_data").show();
     $("#menu_summary").show();
     $("#menu_preview").show();
-};
+    };
 
-$ctd2.hideTemplateMenu = function () {
+    var hideTemplateMenu = function () {
     $("#menu_description").hide();
     $("#menu_data").hide();
     $("#menu_summary").hide();
     $("#menu_preview").hide();
-};
+    };
 
-$ctd2.deleteTemplate = function (tobeDeleted) {
+    var deleteTemplate = function (tobeDeleted) {
     $("#confirmed-delete").unbind('click').click(function () {
         $(this).attr("disabled", "disabled");
         $.ajax({
@@ -1014,29 +993,29 @@ $ctd2.deleteTemplate = function (tobeDeleted) {
     });
     $('#confirmation-message').text("Are you sure you want to delete this submission template?");
     $("#confirmation-modal").modal('show');
-};
+    };
 
-$ctd2.getArray = function (searchTag) {
+    var getArray = function (searchTag) {
     var s = [];
     $(searchTag).each(function (i, row) {
         s.push($(row).val().trim());
     });
     return s;
-};
+    };
 
-$ctd2.UPLOAD_SIZE_LIMIT = 10485760; // 10 MB
-$ctd2.UPLOAD_TYPES_ALLOWED = ['image/png', 'image/jpeg', 'application/pdf', 'application/msword',
+    var UPLOAD_SIZE_LIMIT = 10485760; // 10 MB
+    var UPLOAD_TYPES_ALLOWED = ['image/png', 'image/jpeg', 'application/pdf', 'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-$ctd2.observationArray = [];
-$ctd2.file_number = 0;
-$ctd2.finished_file_number = 0;
-$ctd2.getObservations = function () {
+    var observationArray = [];
+    var file_number = 0;
+    var finished_file_number = 0;
+    var getObservations = function () {
     var columns = $(".observation-header").length / 2;
     var rows = $("#template-table tr").length - 4; // two rows for subject/evidence headers, two rows for the headers of each section
-    $ctd2.observationArray = new Array(rows * columns);
+    observationArray = new Array(rows * columns);
 
-    $ctd2.file_number = 0;
-    $ctd2.finished_file_number = 0;
+    file_number = 0;
+    finished_file_number = 0;
 
     $("#template-table tr.template-data-row").each(function (i, row) {
         var row_id = $(row).attr('id');
@@ -1050,70 +1029,70 @@ $ctd2.getObservations = function () {
                 valuetype = $("#value-type-" + columntag).val();
             }
             if (valuetype != 'file') {
-                $ctd2.observationArray[j * rows + i] = $(c).val();
+                observationArray[j * rows + i] = $(c).val();
             } else { // if the value type is 'file', a reading thread would be started
                 var p = $(c).prop('files');
                 if (p != null && p.length > 0) {
                     var file = p[0];
 
                     var isSifFile = file.type=="" && file.name.toLowerCase().endsWith(".sif");
-                    if(file.size>$ctd2.UPLOAD_SIZE_LIMIT) { 
-                        $ctd2.showAlertMessage('Size of file '+file.name+' is '+file.size+' bytes and over the allowed limit, so it is ignored.');
-                        $ctd2.observationArray[j * rows + i] = "";
+                    if(file.size>UPLOAD_SIZE_LIMIT) { 
+                        showAlertMessage('Size of file '+file.name+' is '+file.size+' bytes and over the allowed limit, so it is ignored.');
+                        observationArray[j * rows + i] = "";
                         $(c).val("");
-                    } else if ( !($ctd2.UPLOAD_TYPES_ALLOWED.includes(file.type) || isSifFile) ) {
-                        $ctd2.showAlertMessage('Type of file '+file.name+' is "'+file.type+'" and not allowed to be uploaded, so it is ignored.');
-                        $ctd2.observationArray[j * rows + i] = "";
+                    } else if ( !(UPLOAD_TYPES_ALLOWED.includes(file.type) || isSifFile) ) {
+                        showAlertMessage('Type of file '+file.name+' is "'+file.type+'" and not allowed to be uploaded, so it is ignored.');
+                        observationArray[j * rows + i] = "";
                         $(c).val("");
                     } else {
                         reader = new FileReader();
                         reader.addEventListener("load", function () {
                                 var filecontent = reader.result.replace("base64,", "base64:"); // comma breaks later processing
-                                $ctd2.observationArray[j * rows + i] = file.name + "::" + filecontent;
-                                $ctd2.finished_file_number++;
+                                observationArray[j * rows + i] = file.name + "::" + filecontent;
+                                finished_file_number++;
                             }, false);
                         reader.readAsDataURL(file);
 
-                        $ctd2.file_number++;
+                        file_number++;
                     }
                 } else {
-                    $ctd2.observationArray[j * rows + i] = "";
+                    observationArray[j * rows + i] = "";
                 }
             }
         });
     });
     // when this function returns here, there are possibly multiple background threads started by this function that are reading files
-};
+    };
 
-// on 'Submission Data' page
-$ctd2.disable_saving_buttons = function() {
+    // on 'Submission Data' page
+    var disable_saving_buttons = function() {
     $("#save-template-submission-data").attr("disabled", "disabled");
     $("#apply-template-submission-data").attr("disabled", "disabled");
-};
+    };
 
-// on 'Submission Data' page
-$ctd2.enable_saving_buttons = function() {
+    // on 'Submission Data' page
+    var enable_saving_buttons = function() {
     $("#save-template-submission-data").removeAttr("disabled");
     $("#apply-template-submission-data").removeAttr("disabled");
-};
+    };
 
-$ctd2.update_model_from_submission_data_page = function () {
-    $ctd2.disable_saving_buttons();
-    $ctd2.getObservations(); // this may have started multiple threads reading the evidence files
+    var update_model_from_submission_data_page = function () {
+    disable_saving_buttons();
+    getObservations(); // this may have started multiple threads reading the evidence files
 
-    /* this function's purpose is to keep checking the threads started by $ctd2.getObservations()
-    if finished, it continues to call $ctd2.update_after_all_data_ready(...)
+    /* this function's purpose is to keep checking the threads started by getObservations()
+    if finished, it continues to call update_after_all_data_ready(...)
     if not, wait 1 second and check again. */
     var attempt_to_proceed_updating = function (triggeringButton) {
-        if ($ctd2.file_number === $ctd2.finished_file_number) {
-            $ctd2.update_after_all_data_ready(triggeringButton);
-            $ctd2.enable_saving_buttons(); //re-enable the save button when all reading is done
+        if (file_number === finished_file_number) {
+            update_after_all_data_ready(triggeringButton);
+            enable_saving_buttons(); //re-enable the save button when all reading is done
             if(triggeringButton.hasClass("proceed-to-next-page")) {
-                if($ctd2.saveSuccess) {
-                    $ctd2.populateTagList();
-                    $ctd2.showPage("#step5", "#menu_summary");
+                if(saveSuccess) {
+                    populateTagList();
+                    showPage("#step5", "#menu_summary");
                 } else {
-                    $ctd2.saveSuccess = true; // reset the flag
+                    saveSuccess = true; // reset the flag
                 }
             }
             return;
@@ -1122,9 +1101,9 @@ $ctd2.update_model_from_submission_data_page = function () {
     };
 
     attempt_to_proceed_updating($(this));
-};
+    };
 
-$ctd2.hasDuplicate = function (a) {
+    var hasDuplicate = function (a) {
     if (!Array.isArray(a)) {
         console.log("ERROR: duplicate checking for an object that is not an array");
         return false;
@@ -1138,36 +1117,36 @@ $ctd2.hasDuplicate = function (a) {
         tmp.push(a[i]);
     }
     return false;
-};
+    };
 
-$ctd2.updateTemplate = function (triggeringButton) {
+    var updateTemplate = function (triggeringButton) {
 
     triggeringButton.attr("disabled", "disabled");
     $.ajax({
         url: "template/update",
         type: "POST",
-        data: jQuery.param($ctd2.currentModel.toJSON()),
+        data: jQuery.param(currentModel.toJSON()),
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         success: function (data) {
             console.log("return value: " + data);
             triggeringButton.removeAttr("disabled");
-            $ctd2.refreshTemplateList();
-            $ctd2.updatePreview();
+            refreshTemplateList();
+            updatePreview();
         },
         error: function (response, status) {
             triggeringButton.removeAttr("disabled");
             // response.responseText is an HTML page
             console.log(status + ": " + response.responseText);
-            $ctd2.showInvalidMessage("The template data was NOT saved to the server for some unexpected error. " +
+            showInvalidMessage("The template data was NOT saved to the server for some unexpected error. " +
                 "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
                 "Sorry for the inconvenience.");
         }
     });
-};
+    };
 
-$ctd2.saveNewTemplate = function (sync) {
-    if($ctd2.centerId==0) {
-        console.log('error: unexpected $cdt2.centerId==0');
+    var saveNewTemplate = function (sync) {
+    if(centerId==0) {
+        console.log('error: unexpected centerId==0');
         return;
     }
     var submissionName = $("#template-name").val();
@@ -1186,7 +1165,7 @@ $ctd2.saveNewTemplate = function (sync) {
             submissionName.length == 0) {
         console.log("not saved due to incomplete information");
         $("#save-name-description").removeAttr("disabled");
-        $ctd2.showAlertMessage("new template cannot be created withnot required information: first name, last name, and a submission name");
+        showAlertMessage("new template cannot be created withnot required information: first name, last name, and a submission name");
         return false; // error control
     }
 
@@ -1198,7 +1177,7 @@ $ctd2.saveNewTemplate = function (sync) {
         url: "template/create",
         type: "POST",
         data: jQuery.param({
-            centerId: $ctd2.centerId,
+            centerId: centerId,
             displayName: submissionName,
             firstName: firstName,
             lastName: lastName,
@@ -1216,14 +1195,14 @@ $ctd2.saveNewTemplate = function (sync) {
             $("#save-name-description").removeAttr("disabled");
             result = true;
             $("span#submission-name").text(submissionName);
-            $ctd2.showTemplateMenu();
-            $ctd2.refreshTemplateList();
-            $ctd2.currentModel = $ctd2.templateModels[resultId];
+            showTemplateMenu();
+            refreshTemplateList();
+            currentModel = templateModels[resultId];
        },
         error: function (response, status) {
             $("#save-name-description").removeAttr("disabled");
             console.log(status + ": " + response.responseText);
-            $ctd2.showInvalidMessage("The new template was NOT created for some unexpected error. " +
+            showInvalidMessage("The new template was NOT created for some unexpected error. " +
             "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
             "Sorry for the inconvenience.");
         }
@@ -1232,11 +1211,11 @@ $ctd2.saveNewTemplate = function (sync) {
         return true;
     else
         return false;
-};
+    };
 
-$ctd2.clone = function (templateId) {
-    if($ctd2.centerId==0) {
-        console.log('error: unexpected $cdt2.centerId==0');
+    var clone = function (templateId) {
+    if(centerId==0) {
+        console.log('error: unexpected centerId==0');
         return;
     }
     $("#template-table-row-" + templateId).attr("disabled", "disabled");
@@ -1245,32 +1224,32 @@ $ctd2.clone = function (templateId) {
         url: "template/clone",
         type: "POST",
         data: jQuery.param({
-            centerId: $ctd2.centerId,
+            centerId: centerId,
             templateId: templateId
         }),
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         success: function (resultId) {
             $("#template-table-row-" + templateId).removeAttr("disabled");
             result = true;
-            $ctd2.currentModel = null;
-            $ctd2.showTemplateMenu();
-            $ctd2.refreshTemplateList();
+            currentModel = null;
+            showTemplateMenu();
+            refreshTemplateList();
             console.log('clone succeeded ' + templateId + ' -> ' + resultId);
         },
         error: function (response, status) {
             console.log(status + ": " + response.responseText);
-            $ctd2.showInvalidMessage("The template was NOT cloned successfully for some unexpected error. " +
+            showInvalidMessage("The template was NOT cloned successfully for some unexpected error. " +
             "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
             "Sorry for the inconvenience.");
             $("#template-table-row-" + tmpltModel.id).removeAttr("disabled");
         }
     });
-};
+    };
 
-$ctd2.addNewSubject = function (tag) {
+    var addNewSubject = function (tag) {
     var tagid = $("#template-table-subject tr").length - 1;
     var observationNumber = $(".observation-header").length / 2;
-    (new $ctd2.TemplateSubjectDataRowView({
+    (new TemplateSubjectDataRowView({
         model: {
             columnTagId: tagid, columnTag: tag, subjectClass: null, subjectRole: null, subjectDescription: null,
             observationNumber: observationNumber,
@@ -1278,12 +1257,12 @@ $ctd2.addNewSubject = function (tag) {
         },
         el: $("#template-table-subject")
     })).render();
-};
+    };
 
-$ctd2.addNewEvidence = function (tag) {
+    var addNewEvidence = function (tag) {
     var tagid = $("#template-table-evidence tr").length - 1;
     var observationNumber = $(".observation-header").length / 2;
-    (new $ctd2.TemplateEvidenceDataRowView({
+    (new TemplateEvidenceDataRowView({
         model: {
             columnTagId: tagid, columnTag: tag, evidenceType: null, valueType: null, evidenceDescription: null,
             observationNumber: observationNumber,
@@ -1291,24 +1270,24 @@ $ctd2.addNewEvidence = function (tag) {
         },
         el: $("#template-table-evidence")
     })).render();
-};
+    };
 
-$ctd2.populateOneTemplate = function () {
-    if ($ctd2.currentModel==null || $ctd2.currentModel === undefined) { /* case of new template */
-        $ctd2.currentModel = new $ctd2.SubmissionTemplate();
-        $ctd2.currentModel.set({piName: $ctd2.defaultPis[$ctd2.centerId]});
+    var populateOneTemplate = function () {
+    if (currentModel==null || currentModel === undefined) { /* case of new template */
+        currentModel = new SubmissionTemplate();
+        currentModel.set({piName: defaultPis[centerId]});
     }
-    $("#template-id").val($ctd2.currentModel.id); /* used by download form only */
-    var rowModel = $ctd2.currentModel.toJSON();
+    $("#template-id").val(currentModel.id); /* used by download form only */
+    var rowModel = currentModel.toJSON();
 
     $("span#submission-name").text(rowModel.displayName);
 
-    (new $ctd2.SubmitterInformationView({
-        model: $ctd2.currentModel,
+    (new SubmitterInformationView({
+        model: currentModel,
         el: $("#submitter-information")
     })).render();
-    (new $ctd2.TemplateDescriptionView({
-        model: $ctd2.currentModel,
+    (new TemplateDescriptionView({
+        model: currentModel,
         el: $("#template-description")
     })).render();
 
@@ -1346,7 +1325,7 @@ $ctd2.populateOneTemplate = function () {
             observationsPerSubject[column] = observations[totalRows * column + i];
         }
 
-        (new $ctd2.TemplateSubjectDataRowView({
+        (new TemplateSubjectDataRowView({
             model: {
                 columnTagId: i,
                 columnTag: subjectColumns[i],
@@ -1360,7 +1339,7 @@ $ctd2.populateOneTemplate = function () {
             el: $("#template-table-subject")
         })).render();
     }
-    if (subjectRows == 0) $ctd2.addNewSubject('subject 1');
+    if (subjectRows == 0) addNewSubject('subject 1');
 
     $("#template-table-evidence > .template-data-row").remove();
     var evidenceTypes = rowModel.evidenceTypes;
@@ -1374,7 +1353,7 @@ $ctd2.populateOneTemplate = function () {
         for (column = 0; column < observationNumber; column++) {
             observationsPerEvidence[column] = observations[totalRows * column + i + subjectRows];
         }
-        (new $ctd2.TemplateEvidenceDataRowView({
+        (new TemplateEvidenceDataRowView({
             model: {
                 columnTagId: i,
                 columnTag: evidenceColumns[i],
@@ -1388,29 +1367,29 @@ $ctd2.populateOneTemplate = function () {
             el: $("#template-table-evidence")
         })).render();
     }
-    if (evidenceColumns.length == 0) $ctd2.addNewEvidence('evidence 1');
+    if (evidenceColumns.length == 0) addNewEvidence('evidence 1');
 
     $("#template-obs-summary").val(rowModel.summary);
-    $ctd2.updatePreview();
-};
+    updatePreview();
+    };
 
-$ctd2.updatePreview = function () { // this should be called when the template data (model) changes
+    var updatePreview = function () { // this should be called when the template data (model) changes
     $("#preview-select").empty();
     $("#step6 [id^=observation-preview-]").remove();
-    var observationNumber = $ctd2.currentModel.get('observationNumber');
+    var observationNumber = currentModel.get('observationNumber');
     for (var i = 0; i < observationNumber; i++) {
-        (new $ctd2.ObservationOptionView({
+        (new ObservationOptionView({
             model: { observation_id: i },
             el: $("#preview-select")
         })).render();
     }
 
-    $ctd2.observationPreviewView = new $ctd2.ObservationPreviewView({
+    var observationPreviewView = new ObservationPreviewView({
         el: $("#preview-container")
     });
     if (observationNumber > 0) {
-        $ctd2.observationPreviewView.model = $ctd2.currentModel.getPreviewModel(0);
-        $ctd2.observationPreviewView.render();
+        observationPreviewView.model = currentModel.getPreviewModel(0);
+        observationPreviewView.render();
     }
 
     $("#preview-select").unbind('change').change(function () {
@@ -1419,47 +1398,47 @@ $ctd2.updatePreview = function () { // this should be called when the template d
             console.log('error in preview selected ' + selected);
             return;
         }
-        $ctd2.observationPreviewView.model = $ctd2.currentModel.getPreviewModel(selected);
-        $ctd2.observationPreviewView.render();
+        observationPreviewView.model = currentModel.getPreviewModel(selected);
+        observationPreviewView.render();
     });
-};
+    };
 
-$ctd2.refreshTemplateList = function () {
-    if($ctd2.centerId==0) {
-        console.log('error: unexpected $ctd2.centerId==0');
+    var refreshTemplateList = function () {
+    if(centerId==0) {
+        console.log('error: unexpected centerId==0');
         return;
     }
-    $ctd2.templateModels = {};
-    var storedTemplates = new $ctd2.StoredTemplates({ centerId: $ctd2.centerId });
+    templateModels = {};
+    var storedTemplates = new StoredTemplates({ centerId: centerId });
     $("#existing-template-table > .stored-template-row").remove();
     storedTemplates.fetch({
         async: false,
         success: function () {
             _.each(storedTemplates.models, function (oneTemplateModel) {
                 if(oneTemplateModel.get("piName")==null) {
-                    oneTemplateModel.set({piName: $ctd2.defaultPis[$ctd2.centerId]});
+                    oneTemplateModel.set({piName: defaultPis[centerId]});
                 }
-                $ctd2.templateModels[oneTemplateModel.id] = oneTemplateModel;
+                templateModels[oneTemplateModel.id] = oneTemplateModel;
 
-                (new $ctd2.ExistingTemplateView({
+                (new ExistingTemplateView({
                     model: oneTemplateModel,
                     el: $("#existing-template-table")
                 })).render();
             });
         }
     });
-};
+    };
 
-$ctd2.populateTagList = function () {
+    var populateTagList = function () {
     $("#column-tag-list").empty();
     $('#template-table').find('.subject-columntag').each(function (index, item) {
-        (new $ctd2.ColumnTagView({
+        (new ColumnTagView({
             model: { id: index, tag: $(item).val() },
             el: $("#column-tag-list")
         })).render();
     });
     $('#template-table').find('.evidence-columntag').each(function (index, item) {
-        (new $ctd2.ColumnTagView({
+        (new ColumnTagView({
             model: { id: index, tag: $(item).val() },
             el: $("#column-tag-list")
         })).render();
@@ -1468,20 +1447,20 @@ $ctd2.populateTagList = function () {
         var input = $("#template-obs-summary");
         input.val(input.val() + "<" + $(this).text() + ">");
     });
-};
+    };
 
-$ctd2.showAlertMessage = function(message) {
+    var showAlertMessage = function(message) {
     $("#alertMessage").html(message);
     $("#alertMessage").css('color', '#5a5a5a');   
     $("#alert-message-modal").modal('show');
-};
+    };
 
-$ctd2.showInvalidMessage = function(message) {
+    var showInvalidMessage = function(message) {
     $("#alertMessage").text(message);
     $("#alertMessage").css('color', 'red');
     $("#alert-message-modal").modal('show');
-};
+    };
 
-return $ctd2.TemplateHelperView;
+    return TemplateHelperView;
 
 })(window.jQuery);
