@@ -1,4 +1,4 @@
-var __TemplateHelperView = (function ($) {
+const __TemplateHelperView = (function ($) {
 
     /* the main state variables */
     var centerId = 0; // ID of the center currently selected
