@@ -78,10 +78,10 @@
                       </ul>
                   </li>
               </ul>
-              <ul class="nav ml-auto">
+              <ul class="nav pull-right">
                   <form class="form-search" id="omnisearch">
                       <div class="input-append">
-                          <input type="text" id="omni-input" class="search-query" title="Search" placeholder="e.g. CTNNB1 or ABT-737">
+                          <input type="text" id="omni-input" class="search-query" title="Search" placeholder="e.g. CTNNB1 or dasatinib" aria-label="search">
                           <button type="submit" class="btn search-button">Search</button>
                           <span class="d-none" id="search-help-content">
                               <p>Please enter the keyword you would like to search on the website.</p>
