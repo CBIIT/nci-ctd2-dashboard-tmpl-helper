@@ -311,9 +311,7 @@ const __TemplateHelperView = (function ($) {
                 const subject = observedSubject.subject;
                 const thatEl2 = $("#" + observationId + " #subject-image-" + observedSubject.id);
                 let imgTemplate = $("#search-results-unknown-image-tmpl");
-                if (subject.class == "compound") {
-                    imgTemplate = $("#search-results-compund-image-tmpl");
-                } else if (subject.class == "gene") {
+                if (subject.class == "gene") {
                     imgTemplate = $("#search-results-gene-image-tmpl");
                 } else if (subject.class == "shrna") {
                     imgTemplate = $("#search-results-shrna-image-tmpl");

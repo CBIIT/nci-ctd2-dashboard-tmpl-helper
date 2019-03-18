@@ -483,12 +483,6 @@
         </a>
     </script>
 
-    <script type="text/template" id="search-results-compund-image-tmpl">
-        <a href="#subject/{{id}}">
-            <img class="img-polaroid search-info" title="Compound" alt="Compound" width=50 height=50 src="<%=dataURL%>compounds/{{imageFile}}">
-        </a>
-    </script>
-
     <script type="text/template" id="search-results-animalmodel-image-tmpl">
         <a href="#subject/{{id}}">
             <img src="img/animalmodel.png" title="Animal model" alt="Animal model" class="img-polaroid search-info" height="50" width="50">
