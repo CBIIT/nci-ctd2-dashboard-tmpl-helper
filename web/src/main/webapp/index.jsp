@@ -21,7 +21,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/ctd2.css" type="text/css" />
+    <link rel="stylesheet" href="css/ctd2.css?ts=2019" type="text/css" />
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -40,7 +40,7 @@
       <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
       <div class="container">
 
-        <div class="navbar navbar-inverse">
+        <div class="navbar">
           <div class="navbar-inner">
             <div class="nav-collapse collapse show">
               <ul id="nav" class="nav">
