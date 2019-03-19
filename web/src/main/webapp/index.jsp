@@ -119,7 +119,7 @@
             <div id="attribution" class="collapse">
             <div style="font-size:14px; margin-bottom:10px;">
                Data users must acknowledge and cite the manuscript 
-               <a href= "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5569694/"> Aksoy, Dančík, Smith et al.,</a> Database 2017;1-10
+               <a href= "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5569694/" target="_blank"> Aksoy, Dančík, Smith et al.,</a> Database 2017;1-10
                and provide the URL 
                <a href= "https://ctd2-dashboard.nci.nih.gov/dashboard/"> "https://ctd2-dashboard.nci.nih.gov/dashboard/"</a>.
             </div>
