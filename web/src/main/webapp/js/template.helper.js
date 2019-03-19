@@ -647,7 +647,7 @@ const __TemplateHelperView = (function ($) {
                 },
             }).render();
 
-            $(".collapsed-textarea").click(popupLargeTextfield);
+            $(this.el).find(".collapsed-textarea").click(popupLargeTextfield);
             $("#close-tempoary-text").unbind('click').click(closeLargeTextfield);
 
             return this;
@@ -719,7 +719,7 @@ const __TemplateHelperView = (function ($) {
                 }
             });
 
-            $(".collapsed-textarea").click(popupLargeTextfield);
+            $(this.el).find(".collapsed-textarea").click(popupLargeTextfield);
             $("#close-tempoary-text").unbind('click').click(closeLargeTextfield);
 
             return this;
@@ -925,6 +925,16 @@ const __TemplateHelperView = (function ($) {
     };
 
     const popupLargeTextfield = function () {
+        const trigger = $(this);
+        $('#popup-textarea-modal').on('hidden.bs.modal', function (e) {
+            trigger.prop('disabled', false);
+        });
+        trigger.prop('disabled', true);
+
+        $('#popup-textarea-modal').on('shown.bs.modal', function () {
+            $("#temporary-text").focus();
+        });
+
         $("#invoker-id").text($(this).attr('id'));
         $("#temporary-text").val($(this).val());
         $("#popup-textarea-modal").modal('show');
