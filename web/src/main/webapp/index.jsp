@@ -593,7 +593,7 @@
             <td><input id="first-name" placeholder="first name is required" class="input-xxxlarge" value="{{firstName}}"></td></tr>
         <tr><th>Submitter Last Name *</th><td>
             <input id="last-name" placeholder="last name is required" class="input-xxxlarge" value="{{lastName}}"></td></tr>
-        <tr><th>Contact E-mail</th><td><input id="email" placeholder="email is required" class="input-xxxlarge" value="{{email}}"></td></tr>
+        <tr><th>Contact E-mail</th><td><input id="email" placeholder="email is optional" class="input-xxxlarge" value="{{email}}"></td></tr>
         <tr><th>Contact Phone Number</th>
             <td><input id="phone" placeholder="phone number is optional" class="input-xxxlarge" value="{{phone}}"></td></tr>
     </script>
