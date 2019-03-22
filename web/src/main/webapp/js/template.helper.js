@@ -842,44 +842,71 @@ const __TemplateHelperView = (function ($) {
         });
     };
 
+    const validate_column_tags = function (tags, tag_name) {
+        if (!Array.isArray(tags)) {
+            console.log("ERROR: input object that is not an array");
+            return '';
+        }
+
+        const pattern = /^[a-z0-9]+(_[a-z0-9]+)*$/;
+        const tmp = [];
+
+        for (let i = 0; i < tags.length; i++) {
+            if (tags[i] == null || tags[i] == "") {
+                return tag_name + " is empty";
+            }
+            if (!pattern.test(tags[i])) {
+                return tag_name + " '" + tags[i] + "' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
+            }
+
+            if (tmp.indexOf(tags[i]) >= 0) {
+                return "duplicate item: " + tags[i];
+            }
+            tmp.push(tags[i]);
+        }
+        return '';
+    };
+
+    const validate_description = function (descriptions, description_name) {
+        if (!Array.isArray(descriptions)) {
+            console.log("ERROR: input object that is not an array");
+            return '';
+        }
+
+        const normalCharacaters = /^[ -~\t\n\r]+$/;
+        for (let i = 0; i < descriptions.length; i++) {
+            if (descriptions[i] == null || descriptions[i] == "") {
+                return description_name + " is empty";
+            }
+            if (!normalCharacaters.test(descriptions[i])) {
+                const non_regular = /[^ -~\t\n\r]/.exec(descriptions[i]);
+                return description_name + " contains characters beyond 7-bit ASCII: " + non_regular[0];
+            }
+        }
+        return '';
+    };
+
     /* this is the last step on the 'Submission Data' page after possible background reading is done */
     const update_after_all_data_ready = function (triggeringButton) {
 
         const validate = function () {
-            const pattern = /^[a-z0-9]+(_[a-z0-9]+)*$/;
-            let message = '';
-            for (let i = 0; i < subjects.length; i++) {
-                if (!pattern.test(subjects[i])) {
-                    message += "<li>subject column tag '" + subjects[i] + "' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
-                    subjects[i] = "invalid_tag"; // double safe-guard the list itself not be mis-interpreted as empty
-                    return message;
-                }
+            let message = validate_column_tags(subjects, 'subject column tag');
+            if (message != null && message.length > 0) {
+                return message;
             }
-            if (hasDuplicate(subjects)) {
-                message += "<li>There is duplicate in subject column tags. This is not allowed.";
+            message = validate_column_tags(evidences, 'evidence column tag');
+            if (message != null && message.length > 0) {
+                return message;
             }
-            for (let i = 0; i < evidences.length; i++) {
-                if (!pattern.test(evidences[i])) {
-                    message += "<li>evidence column tag '" + evidences[i] + "' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
-                    evidences[i] = "invalid_tag"; // double safe-guard the list itself not be mis-interpreted as empty
-                    return message;
-                }
+            message = validate_description(subjectDescriptions, 'subject description');
+            if (message != null && message.length > 0) {
+                return message;
             }
-            if (hasDuplicate(evidences)) {
-                message += "<li>There is duplicate in evidence column tags. This is not allowed.";
+            message = validate_description(evidenceDescriptions, 'evidence description');
+            if (message != null && message.length > 0) {
+                return message;
             }
-            const normalCharacaters = /^[ -~\t\n\r]+$/;
-            for (let i = 0; i < subjectDescriptions.length; i++) {
-                if (!normalCharacaters.test(subjectDescriptions[i])) {
-                    return "subject description contains characters beyond 7-bit ASCII";
-                }
-            }
-            for (i = 0; i < evidenceDescriptions.length; i++) {
-                if (!normalCharacaters.test(evidenceDescriptions[i])) {
-                    return "evidence description contains characters beyond 7-bit ASCII";
-                }
-            }
-            return message;
+            return '';
         };
 
         const subjects = getArray('#template-table-subject input.subject-columntag');
@@ -1047,22 +1074,6 @@ const __TemplateHelperView = (function ($) {
         };
 
         attempt_to_proceed_updating($(this));
-    };
-
-    const hasDuplicate = function (a) {
-        if (!Array.isArray(a)) {
-            console.log("ERROR: duplicate checking for an object that is not an array");
-            return false;
-        }
-        const tmp = [];
-        for (let i = 0; i < a.length; i++) {
-            if (tmp.indexOf(a[i]) >= 0) {
-                console.log("duplicate item: " + a[i]);
-                return true;
-            }
-            tmp.push(a[i]);
-        }
-        return false;
     };
 
     const updateTemplate = function (triggeringButton) {
