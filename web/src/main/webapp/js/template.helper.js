@@ -645,8 +645,8 @@ const __TemplateHelperView = (function ($) {
                         3. run the validation script
                         4. create the report
                         */
-                       $('#validation-progress').modal('show');
-                       $.ajax({
+                        $('#validation-progress').modal('show');
+                        $.ajax({
                             async: true,
                             url: "template/validate",
                             type: "GET",
@@ -662,14 +662,15 @@ const __TemplateHelperView = (function ($) {
                                     model: response,
                                 })).render();
                             },
-                            error: function(response, status) {
+                            error: function (response, status) {
                                 $('#validation-progress').modal('hide');
                                 console.log(response);
                                 console.log(status);
                             },
                         });
-                       break;
-                    default: /* this should never happen */
+                        break;
+                    default:
+                        /* this should never happen */
                         alert('template #' + templateId + ': action ' + action + ' clicked');
                 }
                 $(this).val('');
