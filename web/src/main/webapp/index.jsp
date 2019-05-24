@@ -190,12 +190,17 @@
     </div>
 
     <div class="modal hide" id='validation-progress' data-backdrop="static">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
         <div class="modal-body" >
-            <div class="progress progress-striped active">
-                <div class="bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
                 </div>
             </div>
-            The validation is being processed.
+            
+        </div>
+        <div class="modal-footer" >The validation is being processed.</div>
+        </div>
         </div>
     </div>
 
