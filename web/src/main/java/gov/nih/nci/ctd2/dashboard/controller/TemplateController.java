@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.ServletContextAware;
 
 import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
@@ -41,7 +43,7 @@ import gov.nih.nci.ctd2.dashboard.util.TxtFileCreator;
 
 @Controller
 @RequestMapping("/template")
-public class TemplateController {
+public class TemplateController implements ServletContextAware {
     private static final Log log = LogFactory.getLog(TemplateController.class);
 
     @Autowired
@@ -62,7 +64,8 @@ public class TemplateController {
             @RequestParam("project") String project,
             @RequestParam("tier") Integer tier,
             @RequestParam("isStory") Boolean isStory,
-            @RequestParam("storyTitle") String storyTitle
+            @RequestParam("storyTitle") String storyTitle,
+            @RequestParam("piName") String piName
             )
     {
     	SubmissionTemplate template = new SubmissionTemplateImpl();
@@ -75,6 +78,7 @@ public class TemplateController {
         template.setTier(tier);
         template.setIsStory(isStory);
         template.setStoryTitle(storyTitle);
+        template.setPiName(piName);
     	template.setFirstName(firstName);
     	template.setLastName(lastName);
         template.setEmail(email);
@@ -92,7 +96,18 @@ public class TemplateController {
         template.setObservationNumber(0);
         template.setObservations(new String[]{""});
 
-        dashboardDao.save(template);
+        try {
+            dashboardDao.save(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            String msg = "The new submission template was not created successfully. ID="+template.getId();
+            if(template.getId()==null) {
+                msg = "The new submission template to be created does not have a proper ID";
+            }
+            return new ResponseEntity<String>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     	return new ResponseEntity<String>(template.getId().toString(), HttpStatus.OK);
     }
@@ -117,6 +132,7 @@ public class TemplateController {
         template.setTier(existing.getTier());
         template.setIsStory(existing.getIsStory());
         template.setStoryTitle(existing.getStoryTitle());
+        template.setPiName(existing.getPiName());
     	template.setFirstName(existing.getFirstName());
     	template.setLastName(existing.getLastName());
         template.setEmail(existing.getEmail());
@@ -139,7 +155,6 @@ public class TemplateController {
     	return new ResponseEntity<String>(template.getId().toString(), HttpStatus.OK);
     }
 
-    @Autowired
     private ServletContext servletContext;
 
     @Autowired
@@ -166,6 +181,7 @@ public class TemplateController {
             @RequestParam("tier") Integer tier,
             @RequestParam("isStory") Boolean isStory,
             @RequestParam("storyTitle") String storyTitle,
+            @RequestParam("piName") String piName,
             @RequestParam("subjectColumns[]") String[] subjects,
             @RequestParam("subjectClasses[]") String[] subjectClasses,
             @RequestParam("subjectRoles[]") String[] subjectRoles,
@@ -175,11 +191,12 @@ public class TemplateController {
             @RequestParam("valueTypes[]") String[] valueTypes,
             @RequestParam("evidenceDescriptions[]") String[] evidenceDescriptions,
             @RequestParam("observationNumber") Integer observationNumber,
-            @RequestParam("observations[]") String[] observations,
-            @RequestParam("summary") String summary
+            @RequestParam(value="observations[]", required=false, defaultValue="") String[] observations,
+            @RequestParam("summary") String summary,
+            HttpServletRequest request
             )
     {
-        log.debug("update request received");
+        log.info("update request from "+request.getRemoteAddr());
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
     	template.setDisplayName(name);
     	template.setDateLastModified(new Date());
@@ -188,17 +205,18 @@ public class TemplateController {
     	template.setTier(tier);
         template.setIsStory(isStory);
         template.setStoryTitle(storyTitle);
+        template.setPiName(piName);
     	template.setFirstName(firstName);
     	template.setLastName(lastName);
         template.setEmail(email);
         template.setPhone(phone);
 
         if(subjects.length==1) {
-            String x = join(subjectDescriptions);
+            String x = String.join(",", subjectDescriptions);
             subjectDescriptions = new String[]{x};
         }
         if(evidences.length==1) {
-            String x = join(evidenceDescriptions);
+            String x = String.join(",", evidenceDescriptions);
             evidenceDescriptions = new String[]{x};
         }
 
@@ -234,7 +252,8 @@ public class TemplateController {
                         continue;
                     }
                     String obv = observations[index];
-                    if(obv==null || obv.indexOf("::")<=0) {
+                    int base64Mark = obv.indexOf("base64:");
+                    if(obv==null || base64Mark<=0) {
                         log.info("no new observation content for column#="+i+" observation#="+j+" observation="+obv);
                         if(index<previousObservations.length) {
                             log.info("keep previous content at index "+index+":"+previousObservations[index]);
@@ -255,7 +274,7 @@ public class TemplateController {
                     String filename = fileLocation + obv.substring(0, obv.indexOf(":"));
                     FileOutputStream stream = null;
                     try {
-                        byte[] bytes = DatatypeConverter.parseBase64Binary(obv.substring( obv.indexOf("base64:")+7 ));
+                        byte[] bytes = DatatypeConverter.parseBase64Binary(obv.substring( base64Mark + 7 ));
                         stream = new FileOutputStream(filename);
                         stream.write(bytes);
                     } catch (IOException e) {
@@ -270,9 +289,7 @@ public class TemplateController {
                             }
                     }
                     //new File(previousObservations[index]).delete(); // TODO cannot remove the previous upload safely. it may be used for a different observation
-                    int indexEncodedContent = obv.indexOf(";base64");
-                    if(indexEncodedContent<0) indexEncodedContent = obv.length();
-                    String relativePathAndMimeType = obv.substring(0, indexEncodedContent);
+                    String relativePathAndMimeType = obv.substring(0, base64Mark - 1);
                     observations[index] = relativePathAndMimeType;
                 }
             }
@@ -282,19 +299,17 @@ public class TemplateController {
 
         template.setSummary(summary);
 
-        dashboardDao.update(template);
+        try {
+            dashboardDao.update(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            return new ResponseEntity<String>("The submission template was not updated successfully. ID="+template.getId(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         log.debug("ready to respond OK");
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " UPDATED", HttpStatus.OK);
-    }
-
-    private static String join(String[] s) { // join is supported Java 8. this is to make it work for Java 7
-        // assume s is not null
-        if(s.length==0) return "";
-        if(s.length==1) return s[0];
-        StringBuffer sb = new StringBuffer(s[0]);
-        for(int i=1; i<s.length; i++) sb.append(",").append(s[i]);
-        return sb.toString();
     }
 
     @Transactional
@@ -403,5 +418,10 @@ public class TemplateController {
             uploadLocation = uploadLocation + File.separator;
         }
         return uploadLocation + template.getSubmissionCenter().getId() + File.separator + template.getId() + File.separator;
+    }
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 }

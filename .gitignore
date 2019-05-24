@@ -3,11 +3,11 @@ target/
 .svn
 .hg
 .hgtags
-core/src/main/resources/META-INF/spring/dashboard.properties
-core/src/main/resources/log4j.properties
+web/src/main/resources/META-INF/spring/dashboard.properties
+web/src/main/resources/log4j2.properties
 
+application.log
 .vscode
 .settings
 .classpath
 .project
-quickie.bat

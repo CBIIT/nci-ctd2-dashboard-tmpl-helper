@@ -3,13 +3,10 @@ package gov.nih.nci.ctd2.dashboard.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,18 +29,6 @@ public class APIController {
 
     @Autowired
     private DashboardDao dashboardDao;
-
-    @Autowired
-    @Qualifier("maxNumberOfEntities")
-    private Integer maxNumberOfEntities = 100;
-
-    public Integer getMaxNumberOfEntities() {
-        return maxNumberOfEntities;
-    }
-
-    public void setMaxNumberOfEntities(Integer maxNumberOfEntities) {
-        this.maxNumberOfEntities = maxNumberOfEntities;
-    }
 
     @Transactional
     @RequestMapping(value = "centers", method = { RequestMethod.GET }, headers = "Accept=application/json")
@@ -109,24 +94,10 @@ public class APIController {
             submissionTemplate.setObservationNumber(observationNumber);
         }
         String[] observations = submissionTemplate.getObservations();
-        String observationString = submissionTemplate.getObservationString();
-        if(observations==null && observationString!=null ) {
+        if(observations==null) {
+            log.info("observations is null");
             int size = observationNumber * (subjectColumns.length + evidenceColumns.length);
-            String[] tmp = new String[size];
-            Pattern pattern = Pattern.compile("(\".*?\"|[^\",]*)(\\s*,|\\s*$)");
-            Matcher matcher = pattern.matcher(observationString);
-            int index = 0;
-            while (matcher.find()) {
-                if(index<size)
-                    tmp[index] = matcher.group(1);
-                index++;
-            }
-            submissionTemplate.setObservations(tmp);
-            submissionTemplate.setObservationString(null);
-            dashboardDao.update(submissionTemplate);
-            log.info("observations transferred from the old field");
-        } else {
-            log.info("observations in the new field");
+            submissionTemplate.setObservations(new String[size]);
         }
     }
 }

@@ -8,15 +8,62 @@ body {
   background-image: url("../img/bg-gray.png");
 }
 
-.current-page {
-  color: black;
-}
-
 .extra-margin {
     margin-left: 20px;
 }
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
+/* styles copied from the earlier version of bootstrap to retain the basic appearance */
+input.search-query{padding-right:14px;padding-right:4px \9;padding-left:14px;padding-left:4px \9;margin-bottom:0;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;}
+.form-search .input-append .search-query{-webkit-border-radius:14px 0 0 14px;-moz-border-radius:14px 0 0 14px;border-radius:14px 0 0 14px;}
+.form-search .input-append .btn{-webkit-border-radius:0 14px 14px 0;-moz-border-radius:0 14px 14px 0;border-radius:0 14px 14px 0;}
+.nav>li>a{display:block;}
+.navbar-inner{min-height:60px;padding-left:20px;padding-right:20px;background-color:#FDFFC9;
+    border:1px solid #d7d7d7;
+    -webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);*zoom:1;}.navbar-inner:before,.navbar-inner:after{display:table;content:"";line-height:0;}
+.navbar-static-top{position:static;margin-bottom:0;}.navbar-static-top .navbar-inner{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
+.navbar .nav{position:relative;left:0;display:block;float:left;margin:0 10px 0 0;}
+.navbar .nav>li{float:left;}
+.pagination ul>li>a,.pagination ul>li>span{float:left;padding:4px 12px;line-height:26px;text-decoration:none;background-color:#ffffff;border:1px solid #dddddd;border-left-width:0;}
+.pagination ul>li{display:inline;}
+.pull-left{float:left;}
+
+.pull-right{float:right}
+
+/* dropdown style from older bootstrap - only for the top dashboard header */
+.dropdown .caret{margin-top:8px;margin-left:2px;}
+.dropdown-menu{position:absolute;top:100%;left:0;z-index:1000;display:none;float:left;min-width:160px;padding:5px 0;margin:2px 0 0;list-style:none;background-color:#f6f6f6;border:1px solid #ccc;border:1px solid rgba(0, 0, 0, 0.2);*border-right-width:2px;*border-bottom-width:2px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;-webkit-box-shadow:0 5px 10px rgba(0, 0, 0, 0.2);-moz-box-shadow:0 5px 10px rgba(0, 0, 0, 0.2);box-shadow:0 5px 10px rgba(0, 0, 0, 0.2);-webkit-background-clip:padding-box;-moz-background-clip:padding;background-clip:padding-box;}
+.dropdown-menu .divider{*width:100%;height:1px;margin:12px 1px;*margin:-5px 0 5px;overflow:hidden;background-color:#e5e5e5;border-bottom:1px solid #ffffff;}
+.dropdown-menu li>a{display:block;padding:3px 20px;clear:both;font-weight:normal;line-height:26px;color:#333333;white-space:nowrap;}
+.dropdown-menu li>a:hover,.dropdown-menu li>a:focus,.dropdown-submenu:hover>a{text-decoration:none;color:#ffffff;background-color:#920001;background-image:-moz-linear-gradient(top, #9c0001, #830001);background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#9c0001), to(#830001));background-image:-webkit-linear-gradient(top, #9c0001, #830001);background-image:-o-linear-gradient(top, #9c0001, #830001);background-image:linear-gradient(to bottom, #9c0001, #830001);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff9c0001', endColorstr='#ff830001', GradientType=0);}
+.dropdown-menu .active>a,.dropdown-menu .active>a:hover{color:#ffffff;text-decoration:none;outline:0;background-color:#920001;background-image:-moz-linear-gradient(top, #9c0001, #830001);background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#9c0001), to(#830001));background-image:-webkit-linear-gradient(top, #9c0001, #830001);background-image:-o-linear-gradient(top, #9c0001, #830001);background-image:linear-gradient(to bottom, #9c0001, #830001);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff9c0001', endColorstr='#ff830001', GradientType=0);}
+.dropdown-menu .disabled>a,.dropdown-menu .disabled>a:hover{color:#999999;}
+.dropdown-menu .disabled>a:hover{text-decoration:none;background-color:transparent;background-image:none;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);cursor:default;}
+.dropdown-submenu{position:relative;}
+.dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+.dropdown-submenu:hover>.dropdown-menu{display:block;}
+.dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#c3c3c3;margin-top:5px;margin-right:-10px;}
+.dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
+.dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+.dropdown .dropdown-menu .nav-header{padding-left:20px;padding-right:20px;}
+
+/* fine-tune to mimic the looking of previous version */
+.container{width:940px; padding:0px}
+.navbar{padding:0px;}
+.navbar-inner{width:100%}
+.navbar-inner .pull-right{float:right}
+#omni-input{float:left;padding:4px 15px 4px 10px}
+.btn.search-button{padding:2px 15px 2px 10px}
+a,a:not([href]):not([tabindex]),.btn-link{color:#9c0001}
+.row.one-story{text-align:left}
+.one-story .pull-right{float:right}
+.pagination-centered ul{margin:auto}
+
+.hide{display: none;}
+.current-page {color: black;}
+input[type="file"] {height:inherit;}
 
 /* Special class on .container surrounding .navbar, used for positioning it into place. */
 .navbar-wrapper {
@@ -60,7 +107,7 @@ body {
 }
 
 .navbar .nav > li > a.navlink {
-  color: white;
+  color: black;
 }
 
 .navbar .nav > li > a.navlink:hover,
@@ -103,43 +150,6 @@ body {
   padding: 0 20px;
   padding-top: 25px;
 
-}
-
-.marketing .span4 {
-  text-align: center;
-  width: 34%;
-}
-.marketing h2 {
-  font-weight: normal;
-}
-.marketing .span4 p {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.featurette {
-  overflow: hidden; /* Vertically center images part 2: clear their floats. */
-  padding-left: 40px;
-  padding-right: 40px;
-}
-
-/* Give some space on the sides of the floated elements so text doesn't run right into it. */
-.featurette-image.pull-left {
-  margin-right: 40px;
-}
-.featurette-image.pull-right {
-  margin-left: 40px;
-}
-
-/* Thin out the marketing headings */
-.featurette-heading {
-  font-size: 50px;
-  font-weight: 300;
-  letter-spacing: -1px;
-}
-
-.stories {
-    border-top: 15px solid #a70001;
 }
 
 .story-link {
@@ -191,20 +201,6 @@ body {
     font-weight: normal;
 }
 
-.stories-lead {
-    font-weight: bold;
-    padding-bottom: 10px;
-}
-
-.stories-text {
-    font-size: 18px;
-}
-
-.stories-pagination {
-    margin-bottom: 5px;
-    margin-top: 10px;
-}
-
 .browse-by {
     font-size: 16px;
     padding-left: 10px;
@@ -244,15 +240,6 @@ table.table thead .sorting_desc { background: url('../images/sort_desc.png') no-
 table.table thead .sorting_asc_disabled { background: url('../images/sort_asc_disabled.png') no-repeat center right; }
 table.table thead .sorting_desc_disabled { background: url('../images/sort_desc_disabled.png') no-repeat center right; }
 
-div.dataTables_info {
-    padding-top: 8px;
-}
-
-div.dataTables_paginate {
-    float: right;
-    margin: 0;
-}
-
 table {
     margin-bottom: 6px !important;
     clear: both;
@@ -277,6 +264,9 @@ blockquote {
 blockquote p {
     font-size: 22px;
     font-style: italic;
+    line-height: 30px;
+    font-weight: normal;
+    padding: 0 0 0 15px
 }
 
 .img-evidence {
@@ -300,10 +290,6 @@ blockquote p {
 .image-evidence-wrapper {
     max-height: 150px;
     max-width: 150px;
-    overflow: hidden;
-}
-
-.stories-tabs {
     overflow: hidden;
 }
 
@@ -385,17 +371,6 @@ img.fancy-story-img {
     margin: 20px;
 }
 
-.featurette img {
-    margin: 15px 25px 10px 0px;
-    width: 125px;
-    height: 125px;
-}
-
-.featurette p.lead {
-    text-align: justify;
-    line-height: 24px;
-}
-
 .ctd2-boxes .span3 p {
     font-size: 16px;
     height: 230px;
@@ -458,11 +433,6 @@ footer {
     padding-top: 65px;
     background-color: white;
     border-radius: 10px;
-}
-
-.homepage-stories-title {
-    margin-bottom: 10px;
-    margin-top: 0px;
 }
 
 #show-hide-overview {
@@ -588,13 +558,9 @@ body {
     white-space: nowrap;
 }
 
+h3 {margin: 13px 0}
 h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
     color: #777777;
-}
-
-blockquote p {
-    line-height: 30px;
-    font-weight: normal;
 }
 
 .alert, .alert h4 {
@@ -635,10 +601,8 @@ blockquote p {
 .help-navigate-text-container {
     padding-left: 20px;
     padding-right: 20px;
-}
-
-table.dataTable tr.odd {
-    background-color: transparent;
+    width: 80%;
+    height: 95%;
 }
 
 tr.group td {

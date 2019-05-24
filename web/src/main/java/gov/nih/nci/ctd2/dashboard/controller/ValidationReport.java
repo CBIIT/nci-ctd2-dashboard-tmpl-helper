@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 public class ValidationReport {
     final private String title;
@@ -72,7 +72,7 @@ public class ValidationReport {
                 }
                 error = errorReader.readLine();
             }
-            otherError = escapeHtml(otherMessage.toString());
+            otherError = escapeHtml4(otherMessage.toString());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

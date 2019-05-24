@@ -261,7 +261,6 @@ public class TxtFileCreator {
         }
 
         template.setObservations(observations);
-        template.setObservationString(null); // this field is for back-compatible only, so make sure it is null.
     }
 
     public List<String> createTextFiles() {

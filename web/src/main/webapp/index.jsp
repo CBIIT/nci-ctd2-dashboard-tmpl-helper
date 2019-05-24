@@ -7,7 +7,6 @@
     WebApplicationContext context = WebApplicationContextUtils
             .getWebApplicationContext(application);
     String dataURL = (String) context.getBean("dataURL");
-    Integer maxNumOfObservations = (Integer) context.getBean("maxNumberOfEntities");
     String submissionBuilderVersion = (String) context.getBean("submissionBuilderVersion");
 %><!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -21,11 +20,8 @@
 
     <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css" />
-    <link rel="stylesheet" href="css/buttons.dataTables.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/jquery.contextMenu.css" type="text/css" />
-    <link rel="stylesheet" href="css/ctd2.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/ctd2.css?ts=2019" type="text/css" />
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -39,70 +35,14 @@
   <body>
     <!-- NAVBAR
     ================================================== -->
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery.ba-hashchange.min.js"></script>
-    <script>
-    $(function() {
-        // Bind an event to window.onhashchange that, when the hash changes, 
-        // gets the hash and alters class of desired navlinks
-        $(window).hashchange(function() {
-            var hash = location.hash || '#';
-            $('[id^="navlink-"]').each(function() {
-                // navbar regular items
-                if (
-                    $(this).attr('id') == 'navlink-dashboard' ||
-                    $(this).attr('id') == 'navlink-centers'
-                ) {
-                    if ($(this).attr('href') === decodeURIComponent(hash)) {
-                        $(this).removeClass('navlink');
-                        $(this).addClass('navlink-current');
-                    }
-                    else {
-                        $(this).removeClass('navlink-current');
-                        $(this).addClass('navlink');
-                    }
-                }
-                // navbar dropdown menu items
-                else if (
-                    $(this).attr('id') == 'navlink-browse' ||
-                    $(this).attr('id') == 'navlink-genecart'
-                ) {
-                    var id = $(this).attr('id') == 'navlink-browse'
-                           ? 'dropdown-menu-browse'
-                           : 'dropdown-menu-genecart';
-                    var dropdownLink = $(this);
-                    $('#' + id + ' li a').each(function() {
-                        if ($(this).attr('href') === decodeURIComponent(hash)) {
-                            dropdownLink.removeClass('navlink');
-                            dropdownLink.addClass('navlink-current');
-                            return false;
-                        }
-                        else {
-                            dropdownLink.removeClass('navlink-current');
-                            dropdownLink.addClass('navlink');
-                        }
-                    });
-                }
-            });
-        });
-        // Since the event is only triggered when the hash changes, we need to trigger
-        // the event now, to handle the hash the page may have been loaded with.
-        $(window).hashchange();
-    });
-    </script>
+    <script src="js/jquery-3.3.1.min.js"></script>
     <div class="navbar-wrapper">
       <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
       <div class="container">
 
-        <div class="navbar navbar-inverse">
+        <div class="navbar">
           <div class="navbar-inner">
-            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </a>
-            <div class="nav-collapse collapse">
+            <div class="nav-collapse collapse show">
               <ul id="nav" class="nav">
                 <li><a id="navlink-dashboard" class="navlink" href="/dashboard/#">CTD<sup>2</sup> Dashboard</a></li>
                 <li><a id="navlink-centers" class="navlink" href="/dashboard/#centers">Centers</a></li>
@@ -141,15 +81,17 @@
               <ul class="nav pull-right">
                   <form class="form-search" id="omnisearch">
                       <div class="input-append">
-                          <input type="text" id="omni-input" class="span3 search-query" title="Search" placeholder="e.g. CTNNB1 or ABT-737">
+                          <input type="text" id="omni-input" class="search-query" title="Search" placeholder="e.g. CTNNB1 or dasatinib" aria-label="search">
                           <button type="submit" class="btn search-button">Search</button>
-                          <span class="hide" id="search-help-content">
+                          <span class="d-none" id="search-help-content">
                               <p>Please enter the keyword you would like to search on the website.</p>
                               <strong>Examples:</strong>
                               <ul>
-                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a> or <a href="/dashboard/#search/YAP*">YAP*</a></li>
-                                <li><em>Compound: </em> <a href="/dashboard/#search/ABT-737">ABT-737</a></li>
-                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/HPBALL">HPBALL</a></li>
+                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a></li>
+                                <li><em>Gene: </em> <a href="/dashboard/#search/YAP*">YAP*</a></li>
+                                <li><em>Compound: </em> <a href="/dashboard/#search/dasatinib">dasatinib</a></li>
+                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/OVCAR8">OVCAR8</a></li>
+                                <li><em>Multiple: </em> <a href="/dashboard/#search/dexamethasone AKT1">dexamethasone AKT1</a></li>
                               </ul>
                               <br>
                           </span>
@@ -172,12 +114,14 @@
         <footer>
             <div style="font-size:14px; font-weight:bold; margin-bottom:10px;">
                 Submission Builder <%=submissionBuilderVersion%>
+                <a href="#attribution" data-toggle="collapse">attributions</a>
             </div>
+            <div id="attribution" class="collapse">
             <div style="font-size:14px; margin-bottom:10px;">
                Data users must acknowledge and cite the manuscript 
-               <a href= "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5569694/"> Aksoy, Dančík, Smith et al.,</a> Database 2017;1-10
+               <a href= "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5569694/" target="_blank"> Aksoy, Dančík, Smith et al.,</a> Database 2017;1-10
                and provide the URL 
-               <a href= "https://ctd2-dashboard.nci.nih.gov/dashboard/"> "https://ctd2-dashboard.nci.nih.gov/dashboard/"</a>.  
+               <a href= "https://ctd2-dashboard.nci.nih.gov/dashboard/"> "https://ctd2-dashboard.nci.nih.gov/dashboard/"</a>.
             </div>
 
                   
@@ -186,19 +130,7 @@
                 Please send your feedback and comments to 
                 <a href="mailto:ocg@mail.nih.gov?subject=CTD2 Dashboard Feedback">ocg@mail.nih.gov</a>.
             </div>
-            
-            <div style="font-size:14px; margin-bottom:10px;">
-            Google Chrome is the preferred browser; Internet Explorer requires “Compatibility View” be turned off
-            (select the Tools menu and then click on Compatibility View settings).
-            </div>
-            
-            <div style="font-size:14px; margin-bottom:10px;">
-                The CTD<sup>2</sup> Dashboard was created and developed by the CTD<sup>2</sup> Network Centers at the Broad Institute 
-                (Paul A. Clemons, Vlado Dančik, Stuart L. Schreiber),
-                Cold Spring Harbor Laboratories/Memorial Sloan Kettering Cancer Center (Arman B. Aksoy, Benjamin Gross, Chris Sander), 
-                Columbia University (Andrea Califano, Aris Floratos, Zhou Ji, Kenneth Smith), 
-                and the National Cancer Institute (Daniela S. Gerhard, Leandro C. Hermida, Subhashini Jagu)
-            </div>
+
             <div style="font-size:14px; margin-bottom:10px;">
                 <a href="http://cancer.gov"><img src="img/logos/footer_logo_nci.jpg" alt="NCI logo" title="NCI logo"></a><a href="http://www.dhhs.gov/"><img src="img/logos/footer_logo_hhs.jpg" title="HHS logo" alt="HHS logo"></a><a href="http://www.nih.gov/"><img src="img/logos/footer_logo_nih.jpg" title="NIH logo" alt="NIH logo"></a><a href="http://www.firstgov.gov/"><img src="img/logos/footer_logo_firstgov.jpg" title="First Gov logo" alt="First Gov logo"></a>
             </div>
@@ -208,19 +140,26 @@
                 <a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank">Accessibility</a> &middot;
                 <a href="http://www.cancer.gov/global/web/policies/foia" target="_blank">FOIA</a>
             </div>
+            </div>
         </footer>
     </div>
      
-    <div class="modal hide fade" id="alert-message-modal">  <!-- a hidden div for showing alert message -->          
+    <div class="modal hide fade" id="alert-message-modal">  <!-- a hidden div for showing alert message -->
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
         <div class="modal-body" >
             <br><medium id="alertMessage"></medium>
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
+      </div>
+      </div>
     </div>
 
     <div class="modal hide fade" id="popup-textarea-modal">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
         <div class="modal-body" >
             <textarea id="temporary-text" style='width:95%' rows='10' cols='100'></textarea>
         </div>
@@ -228,14 +167,16 @@
             <button class="btn btn-primary" data-dismiss="modal" id="close-tempoary-text">Close</button>
         </div>
         <span id='invoker-id' style='display:none'></span>
+      </div>
+      </div>
     </div>
 
     <div class="modal fade" tabindex="-1" role="dialog" id="confirmation-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Delete Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <p id="confirmation-message">Are you sure you want to delete this?</p>
@@ -263,7 +204,7 @@
         <div class="container common-container" id="observation-container">
 
             <div class="row">
-                <div class="span10">
+                <div class="col-10">
                     <h2>Observation <small>(Tier {{submission.observationTemplate.tier}})</small></h2>
                     <blockquote>
                         <p id="observation-summary"></p>
@@ -552,12 +493,6 @@
         </a>
     </script>
 
-    <script type="text/template" id="search-results-compund-image-tmpl">
-        <a href="#subject/{{id}}">
-            <img class="img-polaroid search-info" title="Compound" alt="Compound" width=50 height=50 src="<%=dataURL%>compounds/{{imageFile}}">
-        </a>
-    </script>
-
     <script type="text/template" id="search-results-animalmodel-image-tmpl">
         <a href="#subject/{{id}}">
             <img src="img/animalmodel.png" title="Animal model" alt="Animal model" class="img-polaroid search-info" height="50" width="50">
@@ -700,14 +635,14 @@
             <td><input id="first-name" placeholder="first name is required" class="input-xxxlarge" value="{{firstName}}"></td></tr>
         <tr><th>Submitter Last Name *</th><td>
             <input id="last-name" placeholder="last name is required" class="input-xxxlarge" value="{{lastName}}"></td></tr>
-        <tr><th>Contact E-mail</th><td><input id="email" placeholder="email is required" class="input-xxxlarge" value="{{email}}"></td></tr>
+        <tr><th>Contact E-mail</th><td><input id="email" placeholder="email is optional" class="input-xxxlarge" value="{{email}}"></td></tr>
         <tr><th>Contact Phone Number</th>
             <td><input id="phone" placeholder="phone number is optional" class="input-xxxlarge" value="{{phone}}"></td></tr>
     </script>
 
     <script type="text/template" id="template-description-tmpl">
         <tr><th>Submission Name *</th>
-            <td><input id="template-name" placeholder="e.g. centername_your_description" class="input-xxlarge" value="{{displayName}}"></td></tr>
+            <td><input id="template-name" placeholder="e.g. centername_your_description" class="input-xxxlarge" value="{{displayName}}"></td></tr>
         <tr><th>Submission Description</th>
             <td><textarea id="template-submission-desc" placeholder="e.g. Down-regulated genes in PTEN-null cell lines" class="input-xxxlarge">{{description}}</textarea></td>
         </tr>
@@ -716,14 +651,15 @@
             </td>
         </tr>
         <tr><th>Request Tier</th>
-            <td><select id="template-tier" style="width:300px">
+            <td><select id="template-tier" class="input-xxxlarge">
                 <option value=1 {{tier==1?'selected=selected':null}}>Tier 1 (initial or screening)</option>
                 <option value=2 {{tier==2?'selected=selected':null}}>Tier 2 (in vitro)</option>
                 <option value=3 {{tier==3?'selected=selected':null}}>Tier 3 (in vivo validation)</option>
-            </slect></td>
+            </select></td>
         </tr>
         <tr><th>Is this submission a story?</th><td><input id="template-is-story" type="checkbox" {{isStory?'checked':''}} /></td></tr>
-        <tr id='story-title-row'><th>Story Title</th><td><input id='story-title' class="input-xxlarge" value='{{storyTitle}}' /></td></tr>
+        <tr id='story-title-row'><th>Story Title</th><td><input id='story-title' class="input-xxxlarge" value='{{storyTitle}}' /></td></tr>
+        <tr><th>PI</th><td><input id="pi-name" class="input-xxxlarge" value='{{piName}}'/></td></tr>
     </script>
 
     <script type="text/template" id="validation-submission-description-tmpl">
@@ -778,7 +714,7 @@
                     </tr>
                     <tr>
                         <td colspan=2 class="next-cell">
-                            <button id="apply-submission-center" class="btn">Continue</button>
+                            <button id="apply-submission-center" class="btn btn-outline-dark">Continue</button>
                         </td>
                     </tr>
                 </table>
@@ -803,10 +739,10 @@
                 <table  class="table">
                     <tr>
                         <td class="next-cell">
-                            <button id="create-new-submission" class="btn">Create New Submission</button>
+                            <button id="create-new-submission" class="btn btn-outline-dark">Create New Submission</button>
                         </td>
                         <td class="next-cell">
-                            <button id="upload-new-submission" class="btn">Upload New Submission</button>
+                            <button id="upload-new-submission" class="btn btn-outline-dark">Upload New Submission</button>
                         </td>
                     </tr>
                 </table>
@@ -916,6 +852,7 @@
                 <b>Submission Name:</b> <span id="submission-name"></span><br/>
                 <select id="preview-select"></select>
                 <div id='preview-container'></div>
+                <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
             </div> <!-- end of step 6 -->
 
         </div><!-- end of template-helper-container -->
@@ -935,10 +872,6 @@
 
     <script type="text/template" id="template-helper-center-tmpl">
         <option value="{{id}}">{{displayName}}</option>
-    </script>
-
-    <script type="text/template" id="maxNumberOfEntites">
-        <%=maxNumOfObservations%>
     </script>
 
     <script type="text/template" id="help-navigate-tmpl">
@@ -991,25 +924,13 @@
     </script>
 
     <!-- end of templates -->
-    
-    <script src="js/jquery.dataTables.min.js"></script>
-    <script src="js/dataTables.buttons.min.js"></script>
-    <script src="js/buttons.html5.min.js"></script>
-    <script src="js/jszip.min.js"></script>
-    <script src="js/paging.js"></script>
-    <script src="js/holder.js"></script>
-    <script src="js/underscore.js"></script>
-    <script src="js/json2.js"></script>
+
+    <script src="js/underscore-min.js"></script>
     <script src="js/backbone-min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.fancybox-1.3.4.pack.js"></script>
-    <script src="js/jquery.easing-1.3.pack.js"></script>
-    <script src="js/jquery.expander.min.js"></script>
-    <script src="js/encoder.js"></script>
-    <script src="js/jquery.contextMenu.js"></script>   
-    <script src="js/jquery.ui.position.js"></script>    
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/ctd2.js"></script>
-    <script src="js/template.helper.js?ts=201807"></script>
+    <script src="js/template.helper.js?ts=2019"></script>
 
   </body>
 </html>

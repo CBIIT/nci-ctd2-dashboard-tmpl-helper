@@ -89,7 +89,7 @@ public class SpreadsheetCreator {
 
         String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(), "",
                 submissionName, template.getDescription(), template.getProject(), template.getIsStory().toString(), "0",
-                template.getSubmissionCenter().getDisplayName(), "" };
+                template.getSubmissionCenter().getDisplayName(), template.getPiName() };
         HSSFRow row0 = sheet.createRow((short) 1);
         for (int i = 0; i < templateInfo.length; i++) {
             Cell c = row0.createCell(i);
@@ -298,6 +298,7 @@ public class SpreadsheetCreator {
                         log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
                         observationData = "";
                     } else {
+                        log.debug("actual path where the fila is stored: "+savedPath);
                         String zippedPath = getZippedPath(filename);
                         files.put(zippedPath, savedPath);
                         observationData = "./" + zippedPath;

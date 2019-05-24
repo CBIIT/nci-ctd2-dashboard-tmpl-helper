@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.ServletContextAware;
 
 import flexjson.JSONSerializer;
 import gov.nih.nci.ctd2.dashboard.dao.DashboardDao;
@@ -35,13 +36,12 @@ import gov.nih.nci.ctd2.dashboard.util.ValidationException;
 
 @Controller
 @RequestMapping("/upload")
-public class UploadController {
+public class UploadController implements ServletContextAware {
     private static final Log log = LogFactory.getLog(UploadController.class);
 
     @Autowired
     private DashboardDao dashboardDao;
 
-    @Autowired
     private ServletContext servletContext;
 
     @Autowired
@@ -149,5 +149,10 @@ public class UploadController {
                 files.toArray(new String[0]));
         report.export();
         return report;
+    }
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 }
