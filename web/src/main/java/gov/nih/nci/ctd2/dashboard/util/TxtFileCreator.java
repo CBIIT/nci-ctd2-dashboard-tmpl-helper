@@ -50,7 +50,8 @@ public class TxtFileCreator {
             "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
             "submission_center", "principal_investigator" };
 
-    private SubmissionTemplate readTemplateFromXsl(final Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
+    private SubmissionTemplate readTemplateFromXsl(final Path xlsFilePath, final DashboardDao dashboardDao)
+            throws IOException, ValidationException {
         FileInputStream excelFile = new FileInputStream(xlsFilePath.toFile());
         Workbook workbook = new HSSFWorkbook(excelFile);
         Sheet metadataSheet = workbook.getSheetAt(0);
@@ -60,7 +61,8 @@ public class TxtFileCreator {
 
         if (!metasheetName.equals(metadataSheetName)) {
             workbook.close();
-            throw new ValidationException("metadata sheet name is " + metadataSheetName + " but it should be " + metasheetName);
+            throw new ValidationException(
+                    "metadata sheet name is " + metadataSheetName + " but it should be " + metasheetName);
         }
 
         int lastRowNumber = metadataSheet.getLastRowNum();
@@ -218,7 +220,7 @@ public class TxtFileCreator {
             evidenceDescription[i] = displayTextRow.getCell(col).getStringCellValue();
             String mimeType = "";
             Cell mimeCell = mimeTypeRow.getCell(col);
-            if(mimeCell != null)
+            if (mimeCell != null)
                 mimeType = mimeCell.getStringCellValue();
             evidenceMimeType[i] = mimeType;
         }
@@ -229,8 +231,8 @@ public class TxtFileCreator {
 
         int observationNumber = lastRowNumber - 6;
         template.setObservationNumber(observationNumber);
-        String[] observations = new String[observationNumber*(subjectCount + evidenceCount)];
-        log.debug("observation array size "+observations.length);
+        String[] observations = new String[observationNumber * (subjectCount + evidenceCount)];
+        log.debug("observation array size " + observations.length);
         int observationIndex = 0;
 
         String templateName = template.getDisplayName();
@@ -259,8 +261,8 @@ public class TxtFileCreator {
             }
 
             for (int col = 4; col < lastEvidenceColumn; col++) {
-                if(observationIndex>=observations.length) {
-                    log.error("observationIndex="+observationIndex);
+                if (observationIndex >= observations.length) {
+                    log.error("observationIndex=" + observationIndex);
                     break;
                 }
                 observations[observationIndex++] = row.getCell(col).getStringCellValue();
@@ -320,43 +322,43 @@ public class TxtFileCreator {
         StringBuffer sb = new StringBuffer();
 
         sb.append("\tsubmission_name\tsubmission_date\ttemplate_name");
-        for(String columnTag: template.getSubjectColumns()) {
+        for (String columnTag : template.getSubjectColumns()) {
             sb.append('\t').append(columnTag);
         }
-        for(String columnTag: template.getEvidenceColumns()) {
+        for (String columnTag : template.getEvidenceColumns()) {
             sb.append('\t').append(columnTag);
         }
         sb.append('\n');
 
         sb.append("subject\t\t\t");
-        for(String subject: template.getSubjectClasses()) {
+        for (String subject : template.getSubjectClasses()) {
             sb.append('\t').append(subject);
         }
-        for(int i=0; i<template.getEvidenceColumns().length; i++) {
+        for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             sb.append('\t');
         }
         sb.append('\n');
 
         sb.append("evidence\t\t\t");
-        for(int i=0; i<template.getSubjectColumns().length; i++) {
+        for (int i = 0; i < template.getSubjectColumns().length; i++) {
             sb.append('\t');
         }
-        for(String evidence: template.getValueTypes()) {
+        for (String evidence : template.getValueTypes()) {
             sb.append('\t').append(evidence);
         }
         sb.append('\n');
 
         sb.append("role\t\t\t");
-        for(String role: template.getSubjectRoles()) {
+        for (String role : template.getSubjectRoles()) {
             sb.append('\t').append(role);
         }
-        for(String role: template.getEvidenceTypes()) {
+        for (String role : template.getEvidenceTypes()) {
             sb.append('\t').append(role);
         }
         sb.append('\n');
 
         sb.append("mime_type\t\t\t");
-        for(int i=0; i<template.getSubjectColumns().length; i++) {
+        for (int i = 0; i < template.getSubjectColumns().length; i++) {
             sb.append('\t');
         }
         String[] observations = template.getObservations();
@@ -378,7 +380,7 @@ public class TxtFileCreator {
         sb.append('\n');
 
         sb.append("numeric_units\t\t\t");
-        for(int i=0; i<template.getSubjectColumns().length; i++) {
+        for (int i = 0; i < template.getSubjectColumns().length; i++) {
             sb.append('\t');
         }
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
@@ -391,10 +393,10 @@ public class TxtFileCreator {
         sb.append('\n');
 
         sb.append("display_text\t\t\t");
-        for(String displayText: template.getSubjectDescriptions()) {
+        for (String displayText : template.getSubjectDescriptions()) {
             sb.append('\t').append(displayText);
         }
-        for(String displayText: template.getEvidenceDescriptions()) {
+        for (String displayText : template.getEvidenceDescriptions()) {
             sb.append('\t').append(displayText);
         }
         sb.append('\n');
@@ -405,31 +407,35 @@ public class TxtFileCreator {
 
         int observationIndex = 0;
         String[] valueType = template.getValueTypes();
-        for(int i=0; i<template.getObservationNumber(); i++) {
-            sb.append('\t').append(submissionName).append('\t').append(new SimpleDateFormat("yyyy.MM.dd").format(date)).
-                append('\t').append(templateName);
-            for(int j=0; j<template.getSubjectColumns().length; j++) {
+        for (int i = 0; i < template.getObservationNumber(); i++) {
+            sb.append('\t').append(submissionName).append('\t').append(new SimpleDateFormat("yyyy.MM.dd").format(date))
+                    .append('\t').append(templateName);
+            for (int j = 0; j < template.getSubjectColumns().length; j++) {
                 String observation = observations[observationIndex++];
                 sb.append('\t').append(observation);
             }
-            for(int j=0; j<template.getEvidenceColumns().length; j++) {
+            for (int j = 0; j < template.getEvidenceColumns().length; j++) {
                 String observation = observations[observationIndex++];
-                if (valueType[j].equalsIgnoreCase("file") && observation.trim().length()>0) {
+                if (valueType[j].equalsIgnoreCase("file") && observation.trim().length() > 0) {
                     int mimeMark = observation.indexOf("::data:");
                     String filename = observation;
                     if (mimeMark > 0) {
-                        filename = observation.substring(0, mimeMark); // the new code only stores the filname without directories
+                        filename = observation.substring(0, mimeMark); // the new code only stores the filname without
+                                                                       // directories
                     }
 
                     // ignore possible subdirectory names
                     int sep = filename.lastIndexOf('/');
-                    if(sep>=0) filename = filename.substring(sep+1);
+                    if (sep >= 0)
+                        filename = filename.substring(sep + 1);
                     sep = filename.lastIndexOf('\\');
-                    if(sep>=0) filename = filename.substring(sep+1);
+                    if (sep >= 0)
+                        filename = filename.substring(sep + 1);
 
                     Path savedPath = topDir.resolve(filename);
-                    if(!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen, but be cautious anyway
-                        log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
+                    if (!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen,
+                                                                                            // but be cautious anyway
+                        log.error("ERROR: uploaded file " + savedPath.toFile() + " not found");
                         observation = "";
                     } else {
                         String zippedPath = getZippedPath(filename, submissionName);
@@ -437,10 +443,11 @@ public class TxtFileCreator {
                         Path sourcePath = topDir.resolve(filename);
                         Path targetPath = topDir.resolve(zippedPath);
                         try {
-                            Files.createDirectories(topDir.resolve("submissions").resolve(submissionName).resolve("images"));
-                            Files.copy(sourcePath, targetPath,
-                                java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
-                                java.nio.file.LinkOption.NOFOLLOW_LINKS);
+                            Files.createDirectories(
+                                    topDir.resolve("submissions").resolve(submissionName).resolve("images"));
+                            Files.copy(sourcePath, targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                                    java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
+                                    java.nio.file.LinkOption.NOFOLLOW_LINKS);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
