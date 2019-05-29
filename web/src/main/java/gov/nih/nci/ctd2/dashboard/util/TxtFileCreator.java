@@ -361,20 +361,12 @@ public class TxtFileCreator {
         for (int i = 0; i < template.getSubjectColumns().length; i++) {
             sb.append('\t');
         }
-        String[] observations = template.getObservations();
+        String[] memeTypes = template.getEvidenceMimeTypes();
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             String evidence = template.getValueTypes()[i];
             sb.append('\t');
             if (evidence.equals("file")) {
-                String mimeType = "";
-                String observationData = observations[i + template.getSubjectColumns().length];
-                int mimeMark = observationData.indexOf("::data:");
-                if (mimeMark > 0) {
-                    mimeType = observationData.substring(mimeMark + 7);
-                } else {
-                    mimeType = "application/octet-stream";
-                }
-                sb.append(mimeType);
+                sb.append(memeTypes[i]);
             }
         }
         sb.append('\n');
@@ -405,6 +397,7 @@ public class TxtFileCreator {
         String templateName = template.getDisplayName();
         String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
 
+        String[] observations = template.getObservations();
         int observationIndex = 0;
         String[] valueType = template.getValueTypes();
         for (int i = 0; i < template.getObservationNumber(); i++) {
