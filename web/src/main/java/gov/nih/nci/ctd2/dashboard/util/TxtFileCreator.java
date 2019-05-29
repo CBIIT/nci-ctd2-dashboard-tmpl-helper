@@ -210,15 +210,22 @@ public class TxtFileCreator {
         String[] evidenceTypes = new String[evidenceCount];
         String[] evidenceRoles = new String[evidenceCount];
         String[] evidenceDescription = new String[evidenceCount];
+        String[] evidenceMimeType = new String[evidenceCount];
         for (int i = 0; i < evidenceCount; i++) {
             int col = lastSubjectColumn + i;
             evidenceTypes[i] = evidenceRow.getCell(col).getStringCellValue();
             evidenceRoles[i] = roleRow.getCell(col).getStringCellValue();
             evidenceDescription[i] = displayTextRow.getCell(col).getStringCellValue();
+            String mimeType = "";
+            Cell mimeCell = mimeTypeRow.getCell(col);
+            if(mimeCell != null)
+                mimeType = mimeCell.getStringCellValue();
+            evidenceMimeType[i] = mimeType;
         }
         template.setEvidenceTypes(evidenceRoles);
         template.setValueTypes(evidenceTypes);
         template.setEvidenceDescriptions(evidenceDescription);
+        template.setEvidenceMimeTypes(evidenceMimeType);
 
         int observationNumber = lastRowNumber - 6;
         template.setObservationNumber(observationNumber);
@@ -485,21 +492,15 @@ public class TxtFileCreator {
         String[] evidenceColumnName = template.getEvidenceColumns();
         String[] evidenceRole = template.getEvidenceTypes(); // cautious: extremely confusing naming
         String[] evidenceValueType = template.getValueTypes();
-        String[] observations = template.getObservations();
         String[] evidenceDescription = template.getEvidenceDescriptions();
+        String[] evidenceMimeType = template.getEvidenceMimeTypes();
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             String mimeType = ""; // applicable only for file evidence type
             String numericUnits = ""; // applicable only for numeric evidence type
             if (evidenceValueType[i].equals("numeric")) {
                 numericUnits = ""; // TODO not implemented
             } else if (evidenceValueType[i].equals("file")) {
-                String observationData = observations[i + template.getSubjectColumns().length];
-                int mimeMark = observationData.indexOf("::data:");
-                if (mimeMark > 0) {
-                    mimeType = observationData.substring(mimeMark + 7);
-                } else {
-                    mimeType = "application/octet-stream";
-                }
+                mimeType = evidenceMimeType[i];
             }
             sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t')
                     .append(evidenceColumnName[i]).append('\t').append('\t').append(evidenceValueType[i]).append('\t')

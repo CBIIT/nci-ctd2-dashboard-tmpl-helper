@@ -36,6 +36,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String[] evidenceTypes = new String[0];
     private String[] valueTypes = new String[0];
     private String[] evidenceDescriptions = new String[0];
+    private String[] evidenceMimeTypes = new String[0];
     private Integer observationNumber;
     private String[] observations = new String[0];
     private String summary;
@@ -263,5 +264,15 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setPiName(String piName) {
         this.piName = piName;
+    }
+
+    @Override
+    public String[] getEvidenceMimeTypes() {
+        return evidenceMimeTypes;
+    }
+
+    @Override
+    public void setEvidenceMimeTypes(String[] evidenceMimeTypes) {
+        this.evidenceMimeTypes = evidenceMimeTypes;
     }
 }
