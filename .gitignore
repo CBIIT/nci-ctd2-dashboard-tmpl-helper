@@ -11,3 +11,9 @@ application.log
 .settings
 .classpath
 .project
+
+build.bat
+deploy.bat
+deploy_index.bat
+deploy_js.bat
+start-tomcat.bat
