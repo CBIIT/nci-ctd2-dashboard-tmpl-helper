@@ -525,7 +525,8 @@ public class TxtFileCreator {
         String templateName = template.getDisplayName();
         Date date = template.getDateLastModified();
         String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
-        String summary = template.getSummary().replace('\n', ' '); // assuming \n is not intended
+        String summary = template.getSummary();
+        if(summary!=null) summary = summary.replace('\n', ' '); // assuming \n is not intended
         String templateDescription = template.getDescription();
         String submissionDescription = template.getStoryTitle(); // Totally confusing name!
         String project = template.getProject();

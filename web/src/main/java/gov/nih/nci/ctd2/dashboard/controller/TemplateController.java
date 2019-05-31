@@ -49,6 +49,9 @@ public class TemplateController implements ServletContextAware {
     @Autowired
     private DashboardDao dashboardDao;
 
+    @Autowired
+    private String pythonCommand = "python";
+
     @Transactional
     @RequestMapping(value="create", method = {RequestMethod.POST}, headers = "Accept=application/text")
     public 
@@ -330,6 +333,7 @@ public class TemplateController implements ServletContextAware {
     public ResponseEntity<String> validate(
             @RequestParam("templateId") Integer templateId)
     {
+        log.debug("request received for templateId=" + templateId);
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
         String fileLocation = getFileLocationPerTemplate(template);
@@ -363,7 +367,7 @@ public class TemplateController implements ServletContextAware {
 
         // run python script to validate
         String validationScript = servletContext.getRealPath("submissionCheck.py");
-        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]));
+        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]), pythonCommand);
         report.export();
         log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");

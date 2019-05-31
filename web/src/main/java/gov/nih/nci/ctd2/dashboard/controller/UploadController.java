@@ -52,6 +52,9 @@ public class UploadController implements ServletContextAware {
     @Qualifier("subjectDataLocation")
     private String subjectDataLocation = "";
 
+    @Autowired
+    private String pythonCommand = "python";
+
     @Transactional
     @RequestMapping(value = "zip", method = { RequestMethod.POST }, headers = "Accept=application/text")
     public ResponseEntity<String> uploadZip(@RequestParam("filename") String filename,
@@ -146,7 +149,7 @@ public class UploadController implements ServletContextAware {
         // run python script to validate
         String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
-                files.toArray(new String[0]));
+                files.toArray(new String[0]), pythonCommand);
         report.export();
         return report;
     }

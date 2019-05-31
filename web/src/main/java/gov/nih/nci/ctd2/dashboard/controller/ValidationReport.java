@@ -33,9 +33,14 @@ public class ValidationReport {
         this.topDir = null;
     }
 
-    public ValidationReport(String validationScript, String subjectDataLocation, Path topDir, String[] files) {
+    public ValidationReport(String validationScript, String subjectDataLocation, Path topDir, String[] files,
+            String pythonCommand) {
 
-        ProcessBuilder pb = new ProcessBuilder("python", validationScript, topDir.toString(), subjectDataLocation);
+        log.debug("pythonCommand: " + pythonCommand);
+        log.debug("validationScript: " + validationScript);
+        log.debug("topDir: " + topDir.toString());
+        log.debug("subjectDataLocation: " + subjectDataLocation);
+        ProcessBuilder pb = new ProcessBuilder(pythonCommand, validationScript, topDir.toString(), subjectDataLocation);
         List<ValidationError> errors = new ArrayList<ValidationError>();
         String otherError = "";
         try {
@@ -58,7 +63,7 @@ public class ValidationReport {
             while (error != null) {
                 if (error.startsWith("ERROR:")) {
                     int index = error.indexOf("[");
-                    if(index<0) {
+                    if (index < 0) {
                         index = error.length();
                     }
                     String description = error.substring("ERROR:".length(), index).trim().replaceAll(":$", "");
@@ -75,8 +80,10 @@ public class ValidationReport {
             otherError = escapeHtml4(otherMessage.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            otherError = e.getMessage();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            otherError = e.getMessage();
         }
 
         this.title = "Validation Report";
@@ -102,19 +109,21 @@ public class ValidationReport {
     public String toString() {
         StringBuffer sb = new StringBuffer(title);
         sb.append("\n\n").append(count).append(" error");
-        if(count>1) sb.append('s');
+        if (count > 1)
+            sb.append('s');
         sb.append(" reported by the validation script:").append('\n');
-        if(count>0) {
+        if (count > 0) {
             sb.append("\ttype\tdescription\tdetail\n------------------------------\n");
-            for(int i=0; i< count; i++) {
-                sb.append(i+1).append("\t").append(errors[i]).append('\n');
+            for (int i = 0; i < count; i++) {
+                sb.append(i + 1).append("\t").append(errors[i]).append('\n');
             }
         }
-        if(otherError.length()>0)
+        if (otherError.length() > 0)
             sb.append("\nOther script error:").append(otherError);
 
-        if(count<1 && otherError.length()==0) {
-            sb.append("Your submission has successfully passed the validation. The package as a ZIP file is ready for further processing.");
+        if (count < 1 && otherError.length() == 0) {
+            sb.append(
+                    "Your submission has successfully passed the validation. The package as a ZIP file is ready for further processing.");
         }
 
         return sb.toString();
