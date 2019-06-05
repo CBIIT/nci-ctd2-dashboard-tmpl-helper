@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -349,8 +350,15 @@ public class TemplateController implements ServletContextAware {
             log.error(topDir+" pre-exists but is not a directory.");
         }
 
-        TxtFileCreator txtFileCreator = new TxtFileCreator(template, topDir);
-        List<String> files = txtFileCreator.createTextFiles();
+        List<String> files = new ArrayList<String>();
+        try {
+            TxtFileCreator txtFileCreator = new TxtFileCreator(template, topDir);
+            files = txtFileCreator.createTextFiles();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>(
+                "Error in creating txt files: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); 
+        }
 
         if(log.isDebugEnabled()) { // the Excel file are not needed by the validation script
             SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);

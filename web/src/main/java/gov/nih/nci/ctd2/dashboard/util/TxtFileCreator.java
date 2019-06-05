@@ -365,7 +365,7 @@ public class TxtFileCreator {
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             String evidence = template.getValueTypes()[i];
             sb.append('\t');
-            if (evidence.equals("file")) {
+            if (evidence.equals("file") && memeTypes != null) {
                 sb.append(memeTypes[i]);
             }
         }
@@ -502,7 +502,7 @@ public class TxtFileCreator {
             String numericUnits = ""; // applicable only for numeric evidence type
             if (evidenceValueType[i].equals("numeric")) {
                 numericUnits = ""; // TODO not implemented
-            } else if (evidenceValueType[i].equals("file")) {
+            } else if (evidenceValueType[i].equals("file") && evidenceMimeType != null) {
                 mimeType = evidenceMimeType[i];
             }
             String evidenceDescription_i = evidenceDescription[i];
