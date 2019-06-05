@@ -484,9 +484,12 @@ public class TxtFileCreator {
         String[] subjectRole = template.getSubjectRoles();
         String[] displayText = template.getSubjectDescriptions();
         for (int i = 0; i < template.getSubjectColumns().length; i++) {
+            String displayText_i = displayText[i];
+            if (displayText_i.length() == 0)
+                displayText_i = "NA";
             sb.append(i + 1).append('\t').append(templateName).append('\t').append(columnName[i]).append('\t')
                     .append(subjectClass[i]).append('\t').append('\t').append(subjectRole[i]).append('\t').append('\t')
-                    .append('\t').append(displayText[i]).append('\n');
+                    .append('\t').append(displayText_i).append('\n');
         }
         // evidences
         String[] evidenceColumnName = template.getEvidenceColumns();
@@ -502,10 +505,13 @@ public class TxtFileCreator {
             } else if (evidenceValueType[i].equals("file")) {
                 mimeType = evidenceMimeType[i];
             }
+            String evidenceDescription_i = evidenceDescription[i];
+            if (evidenceDescription_i.length() == 0)
+                evidenceDescription_i = "NA";
             sb.append(template.getSubjectColumns().length + i + 1).append('\t').append(templateName).append('\t')
                     .append(evidenceColumnName[i]).append('\t').append('\t').append(evidenceValueType[i]).append('\t')
                     .append(evidenceRole[i]).append('\t').append(mimeType).append('\t').append(numericUnits)
-                    .append('\t').append(evidenceDescription[i]).append('\n');
+                    .append('\t').append(evidenceDescription_i).append('\n');
         }
         return sb.toString();
     }
@@ -526,7 +532,8 @@ public class TxtFileCreator {
         Date date = template.getDateLastModified();
         String submissionName = new SimpleDateFormat("yyyyMMdd-").format(date) + templateName;
         String summary = template.getSummary();
-        if(summary!=null) summary = summary.replace('\n', ' '); // assuming \n is not intended
+        if (summary != null)
+            summary = summary.replace('\n', ' '); // assuming \n is not intended
         String templateDescription = template.getDescription();
         String submissionDescription = template.getStoryTitle(); // Totally confusing name!
         String project = template.getProject();
