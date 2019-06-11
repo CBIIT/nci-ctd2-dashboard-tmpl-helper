@@ -641,7 +641,7 @@
             <button type="button" class="btn btn-link" id='menu_preview'>Preview</button>
             </div>
 
-            <div id="step1">
+            <div id="center-select-page">
                 <div class="alert alert-warning alert-block">
                   <a href="#" class="close" data-dismiss="alert">&times;</a>
                   <p>
@@ -668,7 +668,7 @@
                 </table>
             </div>
 
-            <div id="step2" class="hide">
+            <div id="submission-list-page" class="hide">
                 <h3>Manage Submission</h3>
                 <b>Center:</b> <span id="center-name"></span>
                 <div class="alert alert-warning alert-block">
@@ -698,7 +698,7 @@
                 </table>
             </div>
 
-            <div id="step3" class="hide">
+            <div id="description-page" class="hide">
                 <h3>Submitter Information</h3>
                 <b>Center:</b> <span id="center-name"></span>
                 <table class="table" id="submitter-information"></table>
@@ -712,7 +712,7 @@
                 </table>
             </div>
 
-            <div id="step4" class="hide">
+            <div id="submission-data-page" class="hide">
                 <h3>Submission Data</h3>
                 <b>Center:</b> <span id="center-name"></span><br/>
                 <b>Submission Name:</b> <span id="submission-name"></span>
@@ -748,7 +748,7 @@
                 </table>
             </div>
 
-            <div id="step5" class="hide">
+            <div id="observation-summary-page" class="hide">
                 <h3>Observation Summary</h3>
                 <b>Center:</b> <span id="center-name"></span><br/>
                 <b>Submission Name:</b> <span id="submission-name"></span><br/>
@@ -781,16 +781,16 @@
                             <input type="hidden" name="template-id" id="template-id">
                             <input type="hidden" name="filename" id="filename-input">
                 </form>
-            </div> <!-- end of step 5 -->
+            </div> <!-- end of observation-summary-page -->
 
-            <div id="step6" class="hide">
+            <div id="preview-page" class="hide">
                 <h3>Preview</h3>
                 <b>Center:</b> <span id="center-name"></span><br/>
                 <b>Submission Name:</b> <span id="submission-name"></span><br/>
                 <select id="preview-select"></select>
                 <div id='preview-container'></div>
                 <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
-            </div> <!-- end of step 6 -->
+            </div> <!-- end of preview-page -->
 
         </div><!-- end of template-helper-container -->
     </script>

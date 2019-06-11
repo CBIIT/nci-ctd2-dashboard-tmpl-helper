@@ -141,25 +141,25 @@ const __TemplateHelperView = (function ($) {
                 currentModel = null;
                 $("#menu_manage").hide();
                 hideTemplateMenu();
-                showPage("#step1");
+                showPage("#center-select-page");
             });
             $("#menu_manage").click(function () {
                 currentModel = null;
                 hideTemplateMenu();
-                showPage("#step2");
+                showPage("#submission-list-page");
             }).hide();
             $("#menu_description").click(function () {
-                showPage("#step3", this);
+                showPage("#description-page", this);
             }).hide();
             $("#menu_data").click(function () {
-                showPage("#step4", this);
+                showPage("#submission-data-page", this);
             }).hide();
             $("#menu_summary").click(function () {
                 populateTagList();
-                showPage("#step5", this);
+                showPage("#observation-summary-page", this);
             }).hide();
             $("#menu_preview").click(function () {
-                showPage("#step6", this);
+                showPage("#preview-page", this);
             }).hide();
 
             const submissionCenters = new SubmissionCenters();
@@ -186,8 +186,8 @@ const __TemplateHelperView = (function ($) {
                 centerId = centerId_selected;
 
                 $("#menu_manage").show();
-                $("#step1").fadeOut();
-                $("#step2").slideDown();
+                $("#center-select-page").fadeOut();
+                $("#submission-list-page").slideDown();
                 $("span#center-name").text($("#template-submission-centers option:selected").text());
                 refreshTemplateList();
             });
@@ -200,8 +200,8 @@ const __TemplateHelperView = (function ($) {
                 }
                 populateOneTemplate(); // TODO maybe use a separate method for the case of new template
 
-                $("#step2").fadeOut();
-                $("#step3").slideDown();
+                $("#submission-list-page").fadeOut();
+                $("#description-page").slideDown();
             });
 
             // although the other button is called #create-new-submission, this is where it is really created back-end
@@ -210,8 +210,7 @@ const __TemplateHelperView = (function ($) {
                     $(this).attr("disabled", "disabled");
                     saveNewTemplate(true);
                 } else {
-                    update_model_from_description_page();
-                    updateTemplate($(this));
+                    update_model_from_description_page($(this));
                 }
             });
             $("#continue-to-main-data").click(function () { // similar to save, additionally moving to the next
@@ -219,12 +218,11 @@ const __TemplateHelperView = (function ($) {
                 if (currentModel.id == 0) {
                     ret = saveNewTemplate(false);
                 } else {
-                    update_model_from_description_page();
-                    updateTemplate($(this));
+                    update_model_from_description_page($(this));
                 }
                 if (ret && saveSuccess) {
-                    $("#step3").fadeOut();
-                    $("#step4").slideDown();
+                    $("#description-page").fadeOut();
+                    $("#submission-data-page").slideDown();
                     $("#menu_description").removeClass("current-page");
                     $("#menu_data").addClass("current-page");
                 } else {
@@ -245,8 +243,8 @@ const __TemplateHelperView = (function ($) {
             $("#continue-from-summary").click(function () {
                 update_model_from_summary_page($(this));
                 if (saveSuccess) {
-                    $("#step5").fadeOut();
-                    $("#step6").slideDown();
+                    $("#observation-summary-page").fadeOut();
+                    $("#preview-page").slideDown();
                     $("#menu_summary").removeClass("current-page");
                     $("#menu_preview").addClass("current-page");
                 } else {
@@ -558,7 +556,7 @@ const __TemplateHelperView = (function ($) {
                         showTemplateMenu();
                         currentModel = templateModels[templateId];
                         populateOneTemplate();
-                        showPage("#step4", "#menu_data");
+                        showPage("#submission-data-page", "#menu_data");
                         break;
                     case 'delete':
                         deleteTemplate(templateId);
@@ -568,7 +566,7 @@ const __TemplateHelperView = (function ($) {
                         showTemplateMenu();
                         currentModel = templateModels[templateId];
                         populateOneTemplate();
-                        showPage("#step6", "#menu_preview");
+                        showPage("#preview-page", "#menu_preview");
                         break;
                     case 'clone':
                         clone(templateId);
@@ -825,7 +823,7 @@ const __TemplateHelperView = (function ($) {
     });
 
     /* support functions */
-    const update_model_from_description_page = function () {
+    const update_model_from_description_page = function (triggeringButton) {
 
         currentModel.set({
             firstName: $("#first-name").val(),
@@ -839,6 +837,29 @@ const __TemplateHelperView = (function ($) {
             isStory: $("#template-is-story").is(':checked'),
             storyTitle: $('#story-title').val(),
             piName: $('#pi-name').val(),
+        });
+
+        triggeringButton.attr("disabled", "disabled");
+        $.ajax({
+            url: "template/update-description",
+            async: false,
+            type: "POST",
+            data: jQuery.param(currentModel.toJSON()),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+                console.log("return value: " + data);
+                triggeringButton.removeAttr("disabled");
+                refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
+                updatePreview();
+            },
+            error: function (response, status) {
+                triggeringButton.removeAttr("disabled");
+                console.log(status + ": " + response.responseText);
+                showInvalidMessage("The template description data was NOT saved to the server for some unexpected error. " +
+                    "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+                    "Sorry for the inconvenience.");
+            }
         });
     };
 
@@ -978,12 +999,12 @@ const __TemplateHelperView = (function ($) {
     };
 
     const showPage = function (page_name, menu_item) {
-        $("#step1").fadeOut();
-        $("#step2").fadeOut();
-        $("#step3").fadeOut();
-        $("#step4").fadeOut();
-        $("#step5").fadeOut();
-        $("#step6").fadeOut();
+        $("#center-select-page").fadeOut();
+        $("#submission-list-page").fadeOut();
+        $("#description-page").fadeOut();
+        $("#submission-data-page").fadeOut();
+        $("#observation-summary-page").fadeOut();
+        $("#preview-page").fadeOut();
         $(page_name).slideDown();
         // set current page indicator
         $("#menu_description").removeClass('current-page');
@@ -1063,7 +1084,7 @@ const __TemplateHelperView = (function ($) {
                 if (triggeringButton.hasClass("proceed-to-next-page")) {
                     if (saveSuccess) {
                         populateTagList();
-                        showPage("#step5", "#menu_summary");
+                        showPage("#observation-summary-page", "#menu_summary");
                     } else {
                         saveSuccess = true; // reset the flag
                     }
@@ -1081,6 +1102,7 @@ const __TemplateHelperView = (function ($) {
         triggeringButton.attr("disabled", "disabled");
         $.ajax({
             url: "template/update",
+            async: false,
             type: "POST",
             data: jQuery.param(currentModel.toJSON()),
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -1088,6 +1110,7 @@ const __TemplateHelperView = (function ($) {
                 console.log("return value: " + data);
                 triggeringButton.removeAttr("disabled");
                 refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
                 updatePreview();
             },
             error: function (response, status) {
@@ -1328,7 +1351,7 @@ const __TemplateHelperView = (function ($) {
 
     const updatePreview = function () { // this should be called when the template data (model) changes
         $("#preview-select").empty();
-        $("#step6 [id^=observation-preview-]").remove();
+        $("#preview-page [id^=observation-preview-]").remove();
         const observationNumber = currentModel.get('observationNumber');
         for (let i = 0; i < observationNumber; i++) {
             (new ObservationOptionView({

@@ -152,6 +152,53 @@ public class TemplateController {
     private String uploadLocation = "";
 
     @Transactional
+    @RequestMapping(value="update-description", method = {RequestMethod.POST}, headers = "Accept=application/text")
+    public 
+    ResponseEntity<String>
+    updateSubmissionDescription(
+            @RequestParam("id") Integer templateId,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("email") String email,
+            @RequestParam("phone") String phone,
+            @RequestParam("displayName") String name,
+            @RequestParam("description") String description,
+            @RequestParam("project") String project,
+            @RequestParam("tier") Integer tier,
+            @RequestParam("isStory") Boolean isStory,
+            @RequestParam("storyTitle") String storyTitle,
+            @RequestParam("piName") String piName,
+            HttpServletRequest request
+            )
+    {
+        log.info("update-description request from "+request.getRemoteAddr());
+        SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
+    	template.setDisplayName(name);
+    	template.setDateLastModified(new Date());
+    	template.setDescription(description);
+    	template.setProject(project);
+    	template.setTier(tier);
+        template.setIsStory(isStory);
+        template.setStoryTitle(storyTitle);
+        template.setPiName(piName);
+    	template.setFirstName(firstName);
+    	template.setLastName(lastName);
+        template.setEmail(email);
+        template.setPhone(phone);
+
+        try {
+            dashboardDao.update(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            return new ResponseEntity<String>("The submission template description was not updated successfully. ID="+template.getId(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<String>("SubmissionTemplate " + templateId + " description UPDATED", HttpStatus.OK);
+    }
+
+    @Transactional
     @RequestMapping(value="update", method = {RequestMethod.POST}, headers = "Accept=application/text")
     public 
     ResponseEntity<String>
