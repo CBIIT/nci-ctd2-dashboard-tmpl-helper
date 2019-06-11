@@ -7,6 +7,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Proxy;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
@@ -17,6 +19,7 @@ import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 @Table(name = "submission_template")
 public class SubmissionTemplateImpl extends DashboardEntityImpl implements SubmissionTemplate {
     private static final long serialVersionUID = -4224162359280232544L;
+    private static Log log = LogFactory.getLog(SubmissionTemplateImpl.class);
 
     private SubmissionCenter submissionCenter;
     private String description;
@@ -42,11 +45,18 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String storyTitle;
     private String piName;
 
+    private static final int DESCRIPTION_LENGTH = 1024;
+
+    @Column(length = DESCRIPTION_LENGTH)
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
+        if(description != null && description.length() > DESCRIPTION_LENGTH) {
+            description = description.substring(0, DESCRIPTION_LENGTH);
+            log.warn("description truncated to " + DESCRIPTION_LENGTH);
+        }
         this.description = description;
     }
 

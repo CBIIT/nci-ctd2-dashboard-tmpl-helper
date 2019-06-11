@@ -823,21 +823,47 @@ const __TemplateHelperView = (function ($) {
     });
 
     /* support functions */
+    const read_description_page = function() {
+        const firstName = $("#first-name").val();
+        const lastName = $("#last-name").val();
+        const email = $("#email").val();
+        const phone = $("#phone").val();
+        const displayName = $("#template-name").val();
+        const description = $("#template-submission-desc").val();
+        const project = $("#template-project-title").val();
+        const tier = $("#template-tier").val();
+        const isStory = $("#template-is-story").is(':checked');
+        const storyTitle = $('#story-title').val();
+        const piName = $('#pi-name').val();
+
+        if(description.length>1024) {
+            return {error: "The description field is too long. Its length is limited to 1024."};
+        }
+
+        return {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            displayName: displayName,
+            description: description,
+            project: project,
+            tier: tier,
+            isStory: isStory,
+            storyTitle: storyTitle,
+            piName: piName,
+        };
+    };
+
     const update_model_from_description_page = function (triggeringButton) {
 
-        currentModel.set({
-            firstName: $("#first-name").val(),
-            lastName: $("#last-name").val(),
-            email: $("#email").val(),
-            phone: $("#phone").val(),
-            displayName: $("#template-name").val(),
-            description: $("#template-submission-desc").val(),
-            project: $("#template-project-title").val(),
-            tier: $("#template-tier").val(),
-            isStory: $("#template-is-story").is(':checked'),
-            storyTitle: $('#story-title').val(),
-            piName: $('#pi-name').val(),
-        });
+        const description_data = read_description_page();
+        if(description_data.error) {
+            showAlertMessage( description_data.error );
+            return;
+        }
+
+        currentModel.set(description_data);
 
         triggeringButton.attr("disabled", "disabled");
         $.ajax({
