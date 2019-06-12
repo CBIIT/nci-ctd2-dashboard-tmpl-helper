@@ -46,6 +46,10 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String piName;
 
     private static final int DESCRIPTION_LENGTH = 1024;
+    private static final int PROJECT_LENGTH = 1024;
+    private static final int SUMMARY_LENGTH = 1024;
+    private static final int STORY_TITLE_LENGTH = 1024;
+    private static final int PI_LENGTH = 64;
 
     @Column(length = DESCRIPTION_LENGTH)
     public String getDescription() {
@@ -69,11 +73,16 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         this.submissionCenter = submissionCenter;
     }
 
+    @Column(length = PROJECT_LENGTH)
     public String getProject() {
         return project;
     }
 
     public void setProject(String project) {
+        if(project != null && project.length() > PROJECT_LENGTH) {
+            project = project.substring(0, PROJECT_LENGTH);
+            log.warn("project truncated to " + PROJECT_LENGTH);
+        }
         this.project = project;
     }
 
@@ -244,34 +253,48 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
         observations = d;
     }
 
-    @Column(length = 1024)
     @Override
+    @Column(length = SUMMARY_LENGTH)
     public String getSummary() {
         return summary;
     }
 
     @Override
     public void setSummary(String s) {
+        if(s != null && s.length() > SUMMARY_LENGTH) {
+            s = s.substring(0, SUMMARY_LENGTH);
+            log.warn("summary truncated to " + SUMMARY_LENGTH);
+        }
         summary = s;
     }
 
     @Override
+    @Column(length = STORY_TITLE_LENGTH)
     public String getStoryTitle() {
         return storyTitle;
     }
 
     @Override
     public void setStoryTitle(String s) {
+        if(s != null && s.length() > STORY_TITLE_LENGTH) {
+            s = s.substring(0, STORY_TITLE_LENGTH);
+            log.warn("Story title truncated to " + STORY_TITLE_LENGTH);
+        }
         storyTitle = s;
     }
 
     @Override
+    @Column(length = PI_LENGTH)
     public String getPiName() {
         return piName;
     }
 
     @Override
     public void setPiName(String piName) {
+        if(piName != null && piName.length() > PI_LENGTH) {
+            piName = piName.substring(0, PI_LENGTH);
+            log.warn("PI name truncated to " + PI_LENGTH);
+        }
         this.piName = piName;
     }
 }

@@ -836,8 +836,33 @@ const __TemplateHelperView = (function ($) {
         const storyTitle = $('#story-title').val();
         const piName = $('#pi-name').val();
 
+        if(firstName.length>255) {
+            return {error: "The first name field is too long. Its length is limited to 255."};
+        }
+        if(lastName.length>255) {
+            return {error: "The last name field is too long. Its length is limited to 255."};
+        }
+        if(email.length>255) {
+            return {error: "The email field is too long. Its length is limited to 255."};
+        }
+        if(phone.length>255) {
+            return {error: "The phone field is too long. Its length is limited to 255."};
+        }
+        if(displayName.length>128) {
+            return {error: "The submission name field is too long. Its length is limited to 128."};
+        }
+
         if(description.length>1024) {
             return {error: "The description field is too long. Its length is limited to 1024."};
+        }
+        if(project.length>1024) {
+            return {error: "The project field is too long. Its length is limited to 1024."};
+        }
+        if(storyTitle.length>1024) {
+            return {error: "The story title field is too long. Its length is limited to 1024."};
+        }
+        if(piName.length>64) {
+            return {error: "The PI name field is too long. Its length is limited to 64."};
         }
 
         return {
