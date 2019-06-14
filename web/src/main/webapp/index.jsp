@@ -536,7 +536,7 @@
         <tr id="template-table-row-{{id}}" class='stored-template-row'>
             <td>{{displayName}}</td><td>{{description}}</td><td>{{project}}</td>
                 <td>{{tier}}</td><td>{{dateLastModified}}</td><td>{{isStory}}</td>
-                <td><select id='template-action-{{id}}'>
+                <td><select id='template-action-{{id}}' class='form-control'>
                     <option value=''>-</option>
                     <option value='edit'>Edit</option>
                     <option value='preview'>Preview</option>
@@ -555,7 +555,7 @@
     <script type="text/template" id="template-subject-data-row-tmpl">
         <tr id="template-subject-row-columntag-{{columnTagId}}" class="template-data-row">
             <td style="text-align:center;"><img src="img/icons/remove.png" style="width:20px;height:20px;" id="delete-subject-{{columnTagId}}" /></td>
-            <td><select id="subject-class-dropdown-{{columnTagId}}" class='subject-classes'>
+            <td><select id="subject-class-dropdown-{{columnTagId}}" class='form-control subject-classes'>
                 <option {{ subjectClass=='gene'?'selected=selected':'' }} >gene</option>
                 <option {{ subjectClass=='shrna'?'selected=selected':'' }} >shrna</option>
                 <option {{ subjectClass=='tissue_sample'?'selected=selected':'' }} >tissue_sample</option>
@@ -563,7 +563,7 @@
                 <option {{ subjectClass=='compound'?'selected=selected':'' }}>compound</option>
                 <option {{ subjectClass=='animal_model'?'selected=selected':'' }} >animal_model</option>
             </select></td>
-            <td><select id="role-dropdown-{{columnTagId}}" class='subject-roles'></select></td>
+            <td><select id="role-dropdown-{{columnTagId}}" class='form-control subject-roles'></select></td>
             <td><input type="text" class="form-control subject-columntag" value="{{columnTag}}" placeholder="column tag"></td>
             <td><input type="text" class="form-control subject-descriptions collapsed-textarea" id="description-{{columnTagId}}" placeholder="subject description" value="{{subjectDescription}}"></td>
         </tr>
@@ -576,13 +576,13 @@
     <script type="text/template" id="template-evidence-data-row-tmpl">
         <tr id="template-evidence-row-columntag-{{columnTagId}}" class="template-data-row">
             <td style="text-align:center;"><img src="img/icons/remove.png" style="width:20px;height:20px;" id="delete-evidence-{{columnTagId}}" /></td>
-            <td><select id="value-type-{{columnTagId}}" class='value-types'>
+            <td><select id="value-type-{{columnTagId}}" class='form-control value-types'>
                 <option {{ valueType=='numeric'?'selected=selected':'' }} >numeric</option>
                 <option {{ valueType=='label'?'selected=selected':'' }} >label</option>
                 <option {{ valueType=='file'?'selected=selected':'' }} >file</option>
                 <option {{ valueType=='url'?'selected=selected':'' }} >url</option>
             </select></td>
-            <td><select id="evidence-type-{{columnTagId}}" class='evidence-types'></select></td>
+            <td><select id="evidence-type-{{columnTagId}}" class='form-control evidence-types'></select></td>
             <td><input type="text" class="form-control evidence-columntag" value="{{columnTag}}" placeholder="column tag"></td>
             <td><input type="text" class="form-control evidence-descriptions collapsed-textarea" id="evd-descr-{{columnTagId}}" placeholder="evidence description" value="{{evidenceDescription}}"></td>
         </tr>
@@ -609,7 +609,7 @@
             </td>
         </tr>
         <tr><th>Request Tier</th>
-            <td><select id="template-tier" class="input-xxxlarge">
+            <td><select id="template-tier" class="form-control input-xxxlarge">
                 <option value=1 {{tier==1?'selected=selected':null}}>Tier 1 (initial or screening)</option>
                 <option value=2 {{tier==2?'selected=selected':null}}>Tier 2 (in vitro)</option>
                 <option value=3 {{tier==3?'selected=selected':null}}>Tier 3 (in vivo validation)</option>
@@ -655,7 +655,7 @@
                     <tr>
                         <th>Please choose your CTD<sup>2</sup> center: </th>
                         <td>
-                            <select id="template-submission-centers" class="input-xxlarge">
+                            <select id="template-submission-centers" class="form-control input-xxlarge">
                                 <option value="">-</option>
                             </select>
                         </td>
@@ -773,23 +773,34 @@
                         </td>
                     </tr>
                 </table>
-                <button id="save-summary">Save</button>
-                <button id="continue-from-summary">Save and Continue</button>
-
-                <form action="template/download" method="POST" id="download-form" style="display:inline">
-                            <button id="download-template">Download template</button>
-                            <input type="hidden" name="template-id" id="template-id">
-                            <input type="hidden" name="filename" id="filename-input">
-                </form>
+                <table class="table">
+                    <tr>
+                        <td><button id="save-summary">Save</button></td>
+                        <td><button id="continue-from-summary">Save and Continue</button></td>
+                        <td>
+                            <form action="template/download" method="POST" id="download-form" style="display:inline">
+                                <button id="download-template">Download template</button>
+                                <input type="hidden" name="template-id" id="template-id">
+                                <input type="hidden" name="filename" id="filename-input">
+                            </form>
+                        </td>
+                    </tr>
+                </table>
             </div> <!-- end of observation-summary-page -->
 
             <div id="preview-page" class="hide">
                 <h3>Preview</h3>
                 <b>Center:</b> <span id="center-name"></span><br/>
                 <b>Submission Name:</b> <span id="submission-name"></span><br/>
-                <select id="preview-select"></select>
+                <select id="preview-select" class="form-control"></select>
                 <div id='preview-container'></div>
-                <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
+                <table class="table">
+                    <tr>
+                        <td>
+                            <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
+                        </td>
+                    </tr>
+                </table>
             </div> <!-- end of preview-page -->
 
         </div><!-- end of template-helper-container -->
