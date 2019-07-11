@@ -1,16 +1,16 @@
 const __TemplateHelperView = (function ($) {
 
     /* the main state variables */
-    var centerId = 0; // ID of the center currently selected
-    var templateModels = {}; // data of all templates, keyed by their ID's
-    var currentModel = null; // currently selected submission template, or null meaning no template selected
-    var saveSuccess = true;
-    var defaultPis = {};
+    let centerId = 0; // ID of the center currently selected
+    let templateModels = {}; // data of all templates, keyed by their ID's
+    let currentModel = null; // currently selected submission template, or null meaning no template selected
+    let saveSuccess = true;
+    let defaultPis = {};
 
     /* variables supporting observation data, especially file attachment */
-    var observationArray = [];
-    var file_number = 0;
-    var finished_file_number = 0;
+    let observationArray = [];
+    let file_number = 0;
+    let finished_file_number = 0;
 
     /* models */
     const SubmissionCenters = Backbone.Collection.extend({
@@ -823,7 +823,7 @@ const __TemplateHelperView = (function ($) {
     });
 
     /* support functions */
-    const read_description_page = function() {
+    const read_description_page = function () {
         const firstName = $("#first-name").val();
         const lastName = $("#last-name").val();
         const email = $("#email").val();
@@ -836,33 +836,51 @@ const __TemplateHelperView = (function ($) {
         const storyTitle = $('#story-title').val();
         const piName = $('#pi-name').val();
 
-        if(firstName.length>255) {
-            return {error: "The first name field is too long. Its length is limited to 255."};
+        if (firstName.length > 255) {
+            return {
+                error: "The first name field is too long. Its length is limited to 255."
+            };
         }
-        if(lastName.length>255) {
-            return {error: "The last name field is too long. Its length is limited to 255."};
+        if (lastName.length > 255) {
+            return {
+                error: "The last name field is too long. Its length is limited to 255."
+            };
         }
-        if(email.length>255) {
-            return {error: "The email field is too long. Its length is limited to 255."};
+        if (email.length > 255) {
+            return {
+                error: "The email field is too long. Its length is limited to 255."
+            };
         }
-        if(phone.length>255) {
-            return {error: "The phone field is too long. Its length is limited to 255."};
+        if (phone.length > 255) {
+            return {
+                error: "The phone field is too long. Its length is limited to 255."
+            };
         }
-        if(displayName.length>128) {
-            return {error: "The submission name field is too long. Its length is limited to 128."};
+        if (displayName.length > 128) {
+            return {
+                error: "The submission name field is too long. Its length is limited to 128."
+            };
         }
 
-        if(description.length>1024) {
-            return {error: "The description field is too long. Its length is limited to 1024."};
+        if (description.length > 1024) {
+            return {
+                error: "The description field is too long. Its length is limited to 1024."
+            };
         }
-        if(project.length>1024) {
-            return {error: "The project field is too long. Its length is limited to 1024."};
+        if (project.length > 1024) {
+            return {
+                error: "The project field is too long. Its length is limited to 1024."
+            };
         }
-        if(storyTitle.length>1024) {
-            return {error: "The story title field is too long. Its length is limited to 1024."};
+        if (storyTitle.length > 1024) {
+            return {
+                error: "The story title field is too long. Its length is limited to 1024."
+            };
         }
-        if(piName.length>64) {
-            return {error: "The PI name field is too long. Its length is limited to 64."};
+        if (piName.length > 64) {
+            return {
+                error: "The PI name field is too long. Its length is limited to 64."
+            };
         }
 
         return {
@@ -883,8 +901,8 @@ const __TemplateHelperView = (function ($) {
     const update_model_from_description_page = function (triggeringButton) {
 
         const description_data = read_description_page();
-        if(description_data.error) {
-            showAlertMessage( description_data.error );
+        if (description_data.error) {
+            showAlertMessage(description_data.error);
             return;
         }
 
@@ -1123,7 +1141,13 @@ const __TemplateHelperView = (function ($) {
 
     const update_model_from_submission_data_page = function () {
         disable_saving_buttons();
+        saveSuccess = true;
         getObservations(); // this may have started multiple threads reading the evidence files
+        if (!saveSuccess) {
+            saveSuccess = true; // reset. this does not really mean 'success'
+            enable_saving_buttons();
+            return;
+        }
 
         /* this function's purpose is to keep checking the threads started by getObservations()
         if finished, it continues to call update_after_all_data_ready(...)
@@ -1522,8 +1546,21 @@ const __TemplateHelperView = (function ($) {
                     const columntag = cell_id.substring(cell_id.indexOf('-', 12) + 1); // skip the first dash
                     valuetype = $("#value-type-" + columntag).val();
                 }
+
+                const value = $(c).val();
+                // check the lengths
+                if (valuetype === 'url' && value.length > 2048) {
+                    showAlertMessage("URL is too long (longer than 2048)");
+                    saveSuccess = false;
+                    return;
+                } else if (valuetype === "file" && value.length > 1024) { // file name including fake path
+                    showAlertMessage("file name is too long (longer than 1024)");
+                    saveSuccess = false;
+                    return;
+                }
+
                 if (valuetype != 'file') {
-                    observationArray[j * rows + i] = $(c).val();
+                    observationArray[j * rows + i] = value;
                 } else { // if the value type is 'file', a reading thread would be started
                     const p = $(c).prop('files');
                     if (p != null && p.length > 0) {
