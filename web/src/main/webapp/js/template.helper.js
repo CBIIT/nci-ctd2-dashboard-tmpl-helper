@@ -982,6 +982,23 @@ const __TemplateHelperView = (function ($) {
         return '';
     };
 
+    /* this only checks length of gene symbol for now. nonetheless, it is complicated because of using observationArray */
+    const validate_observation = function (subject_classes, observation_number) {
+        const rows = $("#template-table tr").length - 4; // subjects + evidences
+        for (let i = 0; i < subject_classes.length; i++) {
+            if (subject_classes[i] == 'gene') {
+                for (let j = 0; j < observation_number; j++) {
+                    const gene = observationArray[j * rows + i];
+                    if (gene.length > 32) {
+                        return 'gene symbol "' + gene + '" is longer than 32 for observation ' + (j + 1) + " at row " + (i + 1);
+                    }
+                }
+            }
+        }
+
+        return '';
+    };
+
     /* this is the last step on the 'Submission Data' page after possible background reading is done */
     const update_after_all_data_ready = function (triggeringButton) {
 
@@ -1017,16 +1034,25 @@ const __TemplateHelperView = (function ($) {
             return;
         }
 
+        const subject_classes = getArray('#template-table-subject select.subject-classes');
+        const observation_number = $(".observation-header").length / 2;
+        const observation_validation_message = validate_observation(subject_classes, observation_number);
+        if (observation_validation_message != null && observation_validation_message.length > 0) {
+            showAlertMessage("<ul>" + observation_validation_message + "</ul>");
+            saveSuccess = false;
+            return;
+        }
+
         currentModel.set({
             subjectColumns: subjects,
-            subjectClasses: getArray('#template-table-subject select.subject-classes'),
+            subjectClasses: subject_classes,
             subjectRoles: getArray('#template-table-subject select.subject-roles'),
             subjectDescriptions: subjectDescriptions,
             evidenceColumns: evidences,
             evidenceTypes: getArray('#template-table-evidence select.evidence-types'),
             valueTypes: getArray('#template-table-evidence select.value-types'),
             evidenceDescriptions: evidenceDescriptions,
-            observationNumber: $(".observation-header").length / 2,
+            observationNumber: observation_number,
             observations: observationArray,
         });
         updateTemplate(triggeringButton);
