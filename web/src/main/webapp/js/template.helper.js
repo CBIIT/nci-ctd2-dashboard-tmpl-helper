@@ -945,6 +945,9 @@ const __TemplateHelperView = (function ($) {
             if (tags[i] == null || tags[i] == "") {
                 return tag_name + " is empty";
             }
+            if (tags[i].length > 1024) {
+                return tag_name + " (" + tags[i].length + " characters) is longer than allowed 1024 characters";
+            }
             if (!pattern.test(tags[i])) {
                 return tag_name + " '" + tags[i] + "' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
             }
@@ -967,6 +970,9 @@ const __TemplateHelperView = (function ($) {
         for (let i = 0; i < descriptions.length; i++) {
             if (descriptions[i] == null || descriptions[i] == "") {
                 return description_name + " is empty";
+            }
+            if (descriptions[i].length > 10240) {
+                return description_name + " (" + descriptions[i].length + " characters) is longer than allowed 10240 characters";
             }
             if (!normalCharacaters.test(descriptions[i])) {
                 const non_regular = /[^ -~\t\n\r]/.exec(descriptions[i]);
