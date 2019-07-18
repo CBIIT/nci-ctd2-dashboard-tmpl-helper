@@ -387,7 +387,7 @@ const __TemplateHelperView = (function ($) {
         }
     });
 
-    // this is the same as the one in dashboard ctd2.js for now
+    // this is the similar to the one in dashboard ctd2.js
     const ObservedSubjectSummaryRowView = Backbone.View.extend({
         template: _.template($("#observedsubject-summary-row-tmpl").html()),
         render: function () {
@@ -397,19 +397,12 @@ const __TemplateHelperView = (function ($) {
                 result.subject.type = result.subject.class;
             }
 
-            if (result.subject.class != "Gene") {
+            if (result.subject.class != "gene") {
                 this.template = _.template($("#observedsubject-summary-row-tmpl").html());
                 $(this.el).append(this.template(result));
             } else {
                 this.template = _.template($("#observedsubject-gene-summary-row-tmpl").html());
                 $(this.el).append(this.template(result));
-                const currentGene = result.subject.displayName;
-
-                $(".addGene-" + currentGene).click(function (e) {
-                    e.preventDefault();
-                    updateGeneList(currentGene);
-                    return this;
-                }); //end addGene
             }
 
             return this;

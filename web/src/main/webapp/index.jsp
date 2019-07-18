@@ -235,7 +235,7 @@
                         <th>Description</th>
                         <td>
                             {{submission.observationTemplate.description}}
-                            <small>(<a href="#submission/{{submission.id}}">details &raquo;</a>)</small>
+                            <small>(<a href="#submission/{{submission.id}}" class=no-preview>details &raquo;</a>)</small>
                         </td>
                     </tr>
                     <tr id="obs-submission-summary">
@@ -275,7 +275,7 @@
     </script>
 
     <script type="text/template" id="summary-subject-replacement-tmpl">
-        <a class="summary-replacement" href="#/subject/{{id}}">{{displayName}}</a>
+        <a class="summary-replacement no-preview" href="#/subject/{{id}}">{{displayName}}</a>
     </script>
 
     <script type="text/template" id="summary-evidence-replacement-tmpl">
@@ -446,7 +446,7 @@
         <tr>
             <td id="subject-image-{{id}}"></td>
             <td>
-                <a href="#/subject/{{subject.id}}">
+                <a href="#/subject/{{subject.id}}" class=no-preview>
                     {{subject.displayName}}
                 </a>
             </td>
@@ -460,7 +460,7 @@
         <tr>
             <td id="subject-image-{{id}}"></td>
             <td id="subject.displayName-{{id}}">
-                <a href="#/subject/{{subject.id}}">
+                <a href="#/subject/{{subject.id}}" class=no-preview>
                     {{subject.displayName}}
                 </a>  &nbsp;
                 <a href="#" class="addGene-{{subject.displayName}} greenColor" title="Add gene to cart" >+</a>			  				 
@@ -472,37 +472,37 @@
     </script>
 
     <script type="text/template" id="search-results-gene-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/gene.png" class="img-polaroid search-info" title="Gene" alt="Gene" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-shrna-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/shrna.png" class="img-polaroid search-info" title="shRNA" alt="shRNA" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-animalmodel-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/animalmodel.png" title="Animal model" alt="Animal model" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-cellsample-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/cellsample.png" title="Cell sample" alt="Cell sample" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-tissuesample-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/tissuesample.png" title="Tissue sample" alt="Tissue sample" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-unknown-image-tmpl">
-        <a href="#subject/{{id}}">
+        <a href="#subject/{{id}}" class=no-preview>
             <img src="img/unknown.png" title="{{type}}" class="img-polaroid search-info" alt="{{type}}" height="50" width="50">
         </a>
     </script>
