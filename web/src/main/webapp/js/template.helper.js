@@ -968,8 +968,8 @@ const __TemplateHelperView = (function ($) {
                 return description_name + " (" + descriptions[i].length + " characters) is longer than allowed 10240 characters";
             }
             if (!normalCharacaters.test(descriptions[i])) {
-                const non_regular = /[^ -~\t\n\r]/.exec(descriptions[i]);
-                return description_name + " contains characters beyond 7-bit ASCII: " + non_regular[0];
+                const non_regular = /([ -~\t\n\r]{0,5})([^ -~\t\n\r])(.{0,5})/.exec(descriptions[i]);
+                return description_name + " contains characters beyond 7-bit ASCII: " + non_regular[1] + "<font color=red>" + non_regular[2] + "</font>" + non_regular[3];
             }
         }
         return '';
