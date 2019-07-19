@@ -17,9 +17,7 @@ public class AdminTool {
 
     static private void removeSubmission(DashboardDao dashboardDao) {
         List<SubmissionTemplate> submissionTemplates = dashboardDao.findEntities(SubmissionTemplate.class);
-        for(SubmissionTemplate t : submissionTemplates) {
-            dashboardDao.delete(t);
-        }
+        submissionTemplates.forEach(t -> dashboardDao.delete(t));
     }
 
     public static void main(String[] args) {
@@ -28,7 +26,7 @@ public class AdminTool {
                 "classpath*:META-INF/spring/applicationContext.xml");
         DashboardDao dashboardDao = (DashboardDao) appContext.getBean("dashboardDao");
 
-        if(args.length>0 && args[0].equalsIgnoreCase("remove-submission")) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("remove-submission")) {
             removeSubmission(dashboardDao);
             return;
         }
@@ -50,11 +48,12 @@ public class AdminTool {
         centerPIs.put("Johns Hopkins University", "Joel S. Bader, Ph.D.");
         centerPIs.put("Oregon Health and Science University", "Brian J. Druker, M.D.");
         centerPIs.put("University of California San Diego", "Pablo Tamayo, Ph.D.");
-        for (String c : centerPIs.keySet()) {
+        centerPIs.forEach((c, pi) -> {
             SubmissionCenter center = new SubmissionCenterImpl();
             center.setDisplayName(c);
+            center.setPiName(pi);
             dashboardDao.save(center);
-        }
+        });
         System.out.println("done.");
     }
 }
