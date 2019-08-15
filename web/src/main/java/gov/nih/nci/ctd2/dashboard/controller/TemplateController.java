@@ -87,6 +87,7 @@ public class TemplateController {
 
         template.setObservationNumber(0);
         template.setObservations(new String[]{""});
+        template.setSummary("");
 
         try {
             dashboardDao.save(template);

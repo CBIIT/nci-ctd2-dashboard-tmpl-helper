@@ -3,6 +3,7 @@ package gov.nih.nci.ctd2.dashboard.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +50,7 @@ public class APIController {
         SubmissionCenter submissionCenter = dashboardDao.getEntityById(SubmissionCenter.class, centerId);
         for (SubmissionTemplate submissionTemplate : dashboardDao.findEntities(SubmissionTemplate.class)) {
             if (submissionTemplate.getSubmissionCenter().equals(submissionCenter)) {
-                forceConsistency(submissionTemplate);
+                checkNull(submissionTemplate);
                 templates.add(submissionTemplate);
             }
         }
@@ -58,46 +59,18 @@ public class APIController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         JSONSerializer jsonSerializer = new JSONSerializer().transform(new DateTransformer(), Date.class);
         String s = jsonSerializer.deepSerialize(templates);
+        log.debug("returning all templates for center " + centerId);
         return new ResponseEntity<String>(s, headers, HttpStatus.OK);
     }
 
-    /*
-     * safe-guard the data for the client in case it is inconsistent for some reason
-     */
-    private void forceConsistency(SubmissionTemplate submissionTemplate) {
-        // TODO complete this for all relevant fields
-        String[] subjectColumns = submissionTemplate.getSubjectColumns();
-        if (subjectColumns == null) {
-            subjectColumns = new String[0];
-            submissionTemplate.setSubjectColumns(subjectColumns);
-        }
-        String[] evidenceColumns = submissionTemplate.getEvidenceColumns();
-        if (evidenceColumns == null) {
-            evidenceColumns = new String[0];
-            submissionTemplate.setEvidenceColumns(evidenceColumns);
-        }
-        String[] evidenceTypes = submissionTemplate.getEvidenceTypes();
-        if (evidenceTypes == null) {
-            submissionTemplate.setEvidenceTypes(new String[0]);
-        }
-        String[] valueTypes = submissionTemplate.getValueTypes();
-        if (valueTypes == null) {
-            submissionTemplate.setValueTypes(new String[0]);
-        }
-        String[] evidenceDescription = submissionTemplate.getEvidenceDescriptions();
-        if (evidenceDescription == null) {
-            submissionTemplate.setEvidenceDescriptions(new String[0]);
-        }
-        Integer observationNumber = submissionTemplate.getObservationNumber();
-        if (observationNumber == null) {
-            observationNumber = 0;
-            submissionTemplate.setObservationNumber(observationNumber);
-        }
-        String[] observations = submissionTemplate.getObservations();
-        if(observations==null) {
-            log.info("observations is null");
-            int size = observationNumber * (subjectColumns.length + evidenceColumns.length);
-            submissionTemplate.setObservations(new String[size]);
-        }
+    static private void checkNull(final SubmissionTemplate submissionTemplate) {
+        Objects.requireNonNull(submissionTemplate.getSubjectColumns(), "subjectColumns is null");
+        Objects.requireNonNull(submissionTemplate.getEvidenceColumns(), "evidenceColumns is null");
+        Objects.requireNonNull(submissionTemplate.getEvidenceTypes(), "evidenceTypes is null");
+        Objects.requireNonNull(submissionTemplate.getValueTypes(), "valueTypes is null");
+        Objects.requireNonNull(submissionTemplate.getEvidenceDescriptions(), "evidenceDescription is null");
+        Objects.requireNonNull(submissionTemplate.getObservationNumber(), "observationNumber ia null");
+        Objects.requireNonNull(submissionTemplate.getObservations(), "observations ia null");
+        Objects.requireNonNull(submissionTemplate.getEvidenceDescriptions(), "subjectColumns ia null");
     }
 }
