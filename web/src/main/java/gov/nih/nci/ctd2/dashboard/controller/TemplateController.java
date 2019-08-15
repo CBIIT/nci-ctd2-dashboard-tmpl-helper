@@ -226,7 +226,6 @@ public class TemplateController {
             @RequestParam("evidenceDescriptions[]") String[] evidenceDescriptions,
             @RequestParam("observationNumber") Integer observationNumber,
             @RequestParam(value="observations[]", required=false, defaultValue="") String[] observations,
-            @RequestParam("summary") String summary,
             HttpServletRequest request
             )
     {
@@ -330,8 +329,6 @@ public class TemplateController {
         }
         template.setObservations(observations);
 
-        template.setSummary(summary);
-
         try {
             dashboardDao.update(template);
         } catch(Exception e) {
@@ -342,6 +339,32 @@ public class TemplateController {
         }
 
         return new ResponseEntity<String>("SubmissionTemplate " + templateId + " UPDATED", HttpStatus.OK);
+    }
+
+    @Transactional
+    @RequestMapping(value="update-summary", method = {RequestMethod.POST}, headers = "Accept=application/text")
+    public 
+    ResponseEntity<String>
+    updateObservationSummary(
+            @RequestParam("id") Integer templateId,
+            @RequestParam("summary") String summary,
+            HttpServletRequest request
+            )
+    {
+        log.info("update request from "+request.getRemoteAddr());
+        SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
+        template.setSummary(summary);
+
+        try {
+            dashboardDao.update(template);
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("template.getId()="+template.getId());
+            log.error(e.getMessage());
+            return new ResponseEntity<String>("The observation summary was not updated successfully. ID="+template.getId(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<String>("SubmissionTemplate " + templateId + " observation summary UPDATED", HttpStatus.OK);
     }
 
     @Transactional

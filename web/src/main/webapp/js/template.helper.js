@@ -1052,7 +1052,7 @@ const __TemplateHelperView = (function ($) {
     };
 
     // update model from the observation summary page
-    const update_model_from_summary_page = function (triggerButton) {
+    const update_model_from_summary_page = function (triggeringButton) {
         const summary = $("#template-obs-summary").val();
         if (summary.length > 1024) {
             showAlertMessage("<ul>The summary that you entered has " + summary.length + " characters. 1024 characters is the designed limit of this field. Please modify it before trying to save again.</ul>");
@@ -1063,7 +1063,30 @@ const __TemplateHelperView = (function ($) {
         currentModel.set({
             summary: summary,
         });
-        updateTemplate(triggerButton);
+
+        triggeringButton.attr("disabled", "disabled");
+        $.ajax({
+            url: "template/update-summary",
+            async: false,
+            type: "POST",
+            data: jQuery.param(currentModel.toJSON()),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+                console.log("return value: " + data);
+                triggeringButton.removeAttr("disabled");
+                refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
+                updatePreview();
+            },
+            error: function (response, status) {
+                triggeringButton.removeAttr("disabled");
+                // response.responseText is an HTML page
+                console.log(status + ": " + response.responseText);
+                showInvalidMessage("The template data was NOT saved to the server for some unexpected error. " +
+                    "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+                    "Sorry for the inconvenience.");
+            }
+        });
     };
 
     const popupLargeTextfield = function () {
