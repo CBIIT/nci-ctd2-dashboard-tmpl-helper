@@ -2,7 +2,6 @@ package gov.nih.nci.ctd2.dashboard.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
@@ -16,7 +15,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -278,21 +276,10 @@ public class TemplateController {
                                 HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                     String filename = fileLocation + obv.substring(0, obv.indexOf(":"));
-                    FileOutputStream stream = null;
-                    try {
-                        byte[] bytes = DatatypeConverter.parseBase64Binary(obv.substring(base64Mark + 7));
-                        stream = new FileOutputStream(filename);
-                        stream.write(bytes);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    try (FileOutputStream stream = new FileOutputStream(filename)) {
+                        stream.write(DatatypeConverter.parseBase64Binary(obv.substring(base64Mark + 7)));
                     } catch (Exception e) {
                         e.printStackTrace();
-                    } finally {
-                        if (stream != null)
-                            try {
-                                stream.close();
-                            } catch (IOException e) {
-                            }
                     }
                     // new File(previousObservations[index]).delete(); // TODO cannot remove the
                     // previous upload safely. it may be used for a different observation
@@ -361,12 +348,9 @@ public class TemplateController {
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + ".zip\"");
         response.addHeader("Content-Transfer-Encoding", "binary");
 
-        try {
-            byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
-
-            ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream())) {
             zipOutputStream.putNextEntry(new ZipEntry("template" + templateId + ".xls"));
-            zipOutputStream.write(workbookAsByteArray);
+            zipOutputStream.write(creator.createWorkbookAsByteArray());
             zipOutputStream.closeEntry();
 
             Map<String, Path> files = creator.getUploadedFiles();
@@ -377,9 +361,6 @@ public class TemplateController {
                 zipOutputStream.closeEntry();
             }
 
-            zipOutputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
