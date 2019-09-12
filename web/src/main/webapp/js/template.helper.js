@@ -1,16 +1,16 @@
 const __TemplateHelperView = (function ($) {
 
     /* the main state variables */
-    var centerId = 0; // ID of the center currently selected
-    var templateModels = {}; // data of all templates, keyed by their ID's
-    var currentModel = null; // currently selected submission template, or null meaning no template selected
-    var saveSuccess = true;
-    var defaultPis = {};
+    let centerId = 0; // ID of the center currently selected
+    let templateModels = {}; // data of all templates, keyed by their ID's
+    let currentModel = null; // currently selected submission template, or null meaning no template selected
+    let saveSuccess = true;
+    let defaultPis = {};
 
     /* variables supporting observation data, especially file attachment */
-    var observationArray = [];
-    var file_number = 0;
-    var finished_file_number = 0;
+    let observationArray = [];
+    let file_number = 0;
+    let finished_file_number = 0;
 
     /* models */
     const SubmissionCenters = Backbone.Collection.extend({
@@ -141,25 +141,25 @@ const __TemplateHelperView = (function ($) {
                 currentModel = null;
                 $("#menu_manage").hide();
                 hideTemplateMenu();
-                showPage("#step1");
+                showPage("#center-select-page");
             });
             $("#menu_manage").click(function () {
                 currentModel = null;
                 hideTemplateMenu();
-                showPage("#step2");
+                showPage("#submission-list-page");
             }).hide();
             $("#menu_description").click(function () {
-                showPage("#step3", this);
+                showPage("#description-page", this);
             }).hide();
             $("#menu_data").click(function () {
-                showPage("#step4", this);
+                showPage("#submission-data-page", this);
             }).hide();
             $("#menu_summary").click(function () {
                 populateTagList();
-                showPage("#step5", this);
+                showPage("#observation-summary-page", this);
             }).hide();
             $("#menu_preview").click(function () {
-                showPage("#step6", this);
+                showPage("#preview-page", this);
             }).hide();
 
             const submissionCenters = new SubmissionCenters();
@@ -196,7 +196,7 @@ const __TemplateHelperView = (function ($) {
                     el: $("#validation-submission-description")
                 })).render();
 
-                $("#step2").fadeOut();
+                $("#submission-list-page").fadeOut();
                 $("#upload-view").slideDown();
             });
 
@@ -209,8 +209,8 @@ const __TemplateHelperView = (function ($) {
                 centerId = centerId_selected;
 
                 $("#menu_manage").show();
-                $("#step1").fadeOut();
-                $("#step2").slideDown();
+                $("#center-select-page").fadeOut();
+                $("#submission-list-page").slideDown();
                 $("span#center-name").text($("#template-submission-centers option:selected").text());
                 refreshTemplateList();
             });
@@ -223,8 +223,8 @@ const __TemplateHelperView = (function ($) {
                 }
                 populateOneTemplate(); // TODO maybe use a separate method for the case of new template
 
-                $("#step2").fadeOut();
-                $("#step3").slideDown();
+                $("#submission-list-page").fadeOut();
+                $("#description-page").slideDown();
             });
 
             // although the other button is called #create-new-submission, this is where it is really created back-end
@@ -233,8 +233,7 @@ const __TemplateHelperView = (function ($) {
                     $(this).attr("disabled", "disabled");
                     saveNewTemplate(true);
                 } else {
-                    update_model_from_description_page();
-                    updateTemplate($(this));
+                    update_model_from_description_page($(this));
                 }
             });
             $("#continue-to-main-data").click(function () { // similar to save, additionally moving to the next
@@ -242,12 +241,11 @@ const __TemplateHelperView = (function ($) {
                 if (currentModel.id == 0) {
                     ret = saveNewTemplate(false);
                 } else {
-                    update_model_from_description_page();
-                    updateTemplate($(this));
+                    update_model_from_description_page($(this));
                 }
                 if (ret && saveSuccess) {
-                    $("#step3").fadeOut();
-                    $("#step4").slideDown();
+                    $("#description-page").fadeOut();
+                    $("#submission-data-page").slideDown();
                     $("#menu_description").removeClass("current-page");
                     $("#menu_data").addClass("current-page");
                 } else {
@@ -268,8 +266,8 @@ const __TemplateHelperView = (function ($) {
             $("#continue-from-summary").click(function () {
                 update_model_from_summary_page($(this));
                 if (saveSuccess) {
-                    $("#step5").fadeOut();
-                    $("#step6").slideDown();
+                    $("#observation-summary-page").fadeOut();
+                    $("#preview-page").slideDown();
                     $("#menu_summary").removeClass("current-page");
                     $("#menu_preview").addClass("current-page");
                 } else {
@@ -412,7 +410,7 @@ const __TemplateHelperView = (function ($) {
         }
     });
 
-    // this is the same as the one in dashboard ctd2.js for now
+    // this is the similar to the one in dashboard ctd2.js
     const ObservedSubjectSummaryRowView = Backbone.View.extend({
         template: _.template($("#observedsubject-summary-row-tmpl").html()),
         render: function () {
@@ -422,19 +420,12 @@ const __TemplateHelperView = (function ($) {
                 result.subject.type = result.subject.class;
             }
 
-            if (result.subject.class != "Gene") {
+            if (result.subject.class != "gene") {
                 this.template = _.template($("#observedsubject-summary-row-tmpl").html());
                 $(this.el).append(this.template(result));
             } else {
                 this.template = _.template($("#observedsubject-gene-summary-row-tmpl").html());
                 $(this.el).append(this.template(result));
-                const currentGene = result.subject.displayName;
-
-                $(".addGene-" + currentGene).click(function (e) {
-                    e.preventDefault();
-                    updateGeneList(currentGene);
-                    return this;
-                }); //end addGene
             }
 
             return this;
@@ -619,7 +610,7 @@ const __TemplateHelperView = (function ($) {
                         showTemplateMenu();
                         currentModel = templateModels[templateId];
                         populateOneTemplate();
-                        showPage("#step4", "#menu_data");
+                        showPage("#submission-data-page", "#menu_data");
                         break;
                     case 'delete':
                         deleteTemplate(templateId);
@@ -629,7 +620,7 @@ const __TemplateHelperView = (function ($) {
                         showTemplateMenu();
                         currentModel = templateModels[templateId];
                         populateOneTemplate();
-                        showPage("#step6", "#menu_preview");
+                        showPage("#preview-page", "#menu_preview");
                         break;
                     case 'clone':
                         clone(templateId);
@@ -917,20 +908,112 @@ const __TemplateHelperView = (function ($) {
     });
 
     /* support functions */
-    const update_model_from_description_page = function () {
+    const read_description_page = function () {
+        const firstName = $("#first-name").val();
+        const lastName = $("#last-name").val();
+        const email = $("#email").val();
+        const phone = $("#phone").val();
+        const displayName = $("#template-name").val();
+        const description = $("#template-submission-desc").val();
+        const project = $("#template-project-title").val();
+        const tier = $("#template-tier").val();
+        const isStory = $("#template-is-story").is(':checked');
+        const storyTitle = $('#story-title').val();
+        const piName = $('#pi-name').val();
 
-        currentModel.set({
-            firstName: $("#first-name").val(),
-            lastName: $("#last-name").val(),
-            email: $("#email").val(),
-            phone: $("#phone").val(),
-            displayName: $("#template-name").val(),
-            description: $("#template-submission-desc").val(),
-            project: $("#template-project-title").val(),
-            tier: $("#template-tier").val(),
-            isStory: $("#template-is-story").is(':checked'),
-            storyTitle: $('#story-title').val(),
-            piName: $('#pi-name').val(),
+        if (firstName.length > 255) {
+            return {
+                error: "The first name field is too long. Its length is limited to 255."
+            };
+        }
+        if (lastName.length > 255) {
+            return {
+                error: "The last name field is too long. Its length is limited to 255."
+            };
+        }
+        if (email.length > 255) {
+            return {
+                error: "The email field is too long. Its length is limited to 255."
+            };
+        }
+        if (phone.length > 255) {
+            return {
+                error: "The phone field is too long. Its length is limited to 255."
+            };
+        }
+        if (displayName.length > 128) {
+            return {
+                error: "The submission name field is too long. Its length is limited to 128."
+            };
+        }
+
+        if (description.length > 1024) {
+            return {
+                error: "The description field is too long. Its length is limited to 1024."
+            };
+        }
+        if (project.length > 1024) {
+            return {
+                error: "The project field is too long. Its length is limited to 1024."
+            };
+        }
+        if (storyTitle.length > 1024) {
+            return {
+                error: "The story title field is too long. Its length is limited to 1024."
+            };
+        }
+        if (piName.length > 64) {
+            return {
+                error: "The PI name field is too long. Its length is limited to 64."
+            };
+        }
+
+        return {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            displayName: displayName,
+            description: description,
+            project: project,
+            tier: tier,
+            isStory: isStory,
+            storyTitle: storyTitle,
+            piName: piName,
+        };
+    };
+
+    const update_model_from_description_page = function (triggeringButton) {
+
+        const description_data = read_description_page();
+        if (description_data.error) {
+            showAlertMessage(description_data.error);
+            return;
+        }
+
+        currentModel.set(description_data);
+
+        triggeringButton.attr("disabled", "disabled");
+        $.ajax({
+            url: "template/update-description",
+            async: false,
+            type: "POST",
+            data: jQuery.param(currentModel.toJSON()),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+                console.log("return value: " + data);
+                triggeringButton.removeAttr("disabled");
+                refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
+                updatePreview();
+            },
+            error: function (response, status) {
+                triggeringButton.removeAttr("disabled");
+                console.log(status + ": " + response.responseText);
+                showInvalidMessage("The template description data was NOT saved to the server for some unexpected error. " +
+                    "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+                    "Sorry for the inconvenience.");
+            }
         });
 
     };
@@ -960,6 +1043,9 @@ const __TemplateHelperView = (function ($) {
             if (tags[i] == null || tags[i] == "") {
                 return tag_name + " is empty";
             }
+            if (tags[i].length > 1024) {
+                return tag_name + " (" + tags[i].length + " characters) is longer than allowed 1024 characters";
+            }
             if (!pattern.test(tags[i])) {
                 return tag_name + " '" + tags[i] + "' does not follow the convention of underscore-separated lowercase letters or digits)</li>";
             }
@@ -983,11 +1069,31 @@ const __TemplateHelperView = (function ($) {
             if (descriptions[i] == null || descriptions[i] == "") {
                 return description_name + " is empty";
             }
+            if (descriptions[i].length > 10240) {
+                return description_name + " (" + descriptions[i].length + " characters) is longer than allowed 10240 characters";
+            }
             if (!normalCharacaters.test(descriptions[i])) {
-                const non_regular = /[^ -~\t\n\r]/.exec(descriptions[i]);
-                return description_name + " contains characters beyond 7-bit ASCII: " + non_regular[0];
+                const non_regular = /([ -~\t\n\r]{0,5})([^ -~\t\n\r])(.{0,5})/.exec(descriptions[i]);
+                return description_name + " contains characters beyond 7-bit ASCII: " + non_regular[1] + "<font color=red>" + non_regular[2] + "</font>" + non_regular[3];
             }
         }
+        return '';
+    };
+
+    /* this only checks length of gene symbol for now. nonetheless, it is complicated because of using observationArray */
+    const validate_observation = function (subject_classes, observation_number) {
+        const rows = $("#template-table tr").length - 4; // subjects + evidences
+        for (let i = 0; i < subject_classes.length; i++) {
+            if (subject_classes[i] == 'gene') {
+                for (let j = 0; j < observation_number; j++) {
+                    const gene = observationArray[j * rows + i];
+                    if (gene.length > 32) {
+                        return 'gene symbol "' + gene + '" is longer than 32 for observation ' + (j + 1) + " at row " + (i + 1);
+                    }
+                }
+            }
+        }
+
         return '';
     };
 
@@ -1078,23 +1184,32 @@ const __TemplateHelperView = (function ($) {
             return;
         }
 
+        const subject_classes = getArray('#template-table-subject select.subject-classes');
+        const observation_number = $(".observation-header").length / 2;
+        const observation_validation_message = validate_observation(subject_classes, observation_number);
+        if (observation_validation_message != null && observation_validation_message.length > 0) {
+            showAlertMessage("<ul>" + observation_validation_message + "</ul>");
+            saveSuccess = false;
+            return;
+        }
+
         currentModel.set({
             subjectColumns: subjects,
-            subjectClasses: getArray('#template-table-subject select.subject-classes'),
+            subjectClasses: subject_classes,
             subjectRoles: getArray('#template-table-subject select.subject-roles'),
             subjectDescriptions: subjectDescriptions,
             evidenceColumns: evidences,
             evidenceTypes: getArray('#template-table-evidence select.evidence-types'),
             valueTypes: getArray('#template-table-evidence select.value-types'),
             evidenceDescriptions: evidenceDescriptions,
-            observationNumber: $(".observation-header").length / 2,
+            observationNumber: observation_number,
             observations: observationArray,
         });
         updateTemplate(triggeringButton);
     };
 
     // update model from the observation summary page
-    const update_model_from_summary_page = function (triggerButton) {
+    const update_model_from_summary_page = function (triggeringButton) {
         const summary = $("#template-obs-summary").val();
         if (summary.length > 1024) {
             showAlertMessage("<ul>The summary that you entered has " + summary.length + " characters. 1024 characters is the designed limit of this field. Please modify it before trying to save again.</ul>");
@@ -1105,7 +1220,30 @@ const __TemplateHelperView = (function ($) {
         currentModel.set({
             summary: summary,
         });
-        updateTemplate(triggerButton);
+
+        triggeringButton.attr("disabled", "disabled");
+        $.ajax({
+            url: "template/update-summary",
+            async: false,
+            type: "POST",
+            data: jQuery.param(currentModel.toJSON()),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+                console.log("return value: " + data);
+                triggeringButton.removeAttr("disabled");
+                refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
+                updatePreview();
+            },
+            error: function (response, status) {
+                triggeringButton.removeAttr("disabled");
+                // response.responseText is an HTML page
+                console.log(status + ": " + response.responseText);
+                showInvalidMessage("The template data was NOT saved to the server for some unexpected error. " +
+                    "Please contact the administrator of this application to help finding out the specific cause and fixing it. " +
+                    "Sorry for the inconvenience.");
+            }
+        });
     };
 
     const popupLargeTextfield = function () {
@@ -1135,12 +1273,12 @@ const __TemplateHelperView = (function ($) {
     };
 
     const showPage = function (page_name, menu_item) {
-        $("#step1").fadeOut();
-        $("#step2").fadeOut();
-        $("#step3").fadeOut();
-        $("#step4").fadeOut();
-        $("#step5").fadeOut();
-        $("#step6").fadeOut();
+        $("#center-select-page").fadeOut();
+        $("#submission-list-page").fadeOut();
+        $("#description-page").fadeOut();
+        $("#submission-data-page").fadeOut();
+        $("#observation-summary-page").fadeOut();
+        $("#preview-page").fadeOut();
         $("#upload-view").fadeOut();
         $(page_name).slideDown();
         // set current page indicator
@@ -1209,7 +1347,13 @@ const __TemplateHelperView = (function ($) {
 
     const update_model_from_submission_data_page = function () {
         disable_saving_buttons();
+        saveSuccess = true;
         getObservations(); // this may have started multiple threads reading the evidence files
+        if (!saveSuccess) {
+            saveSuccess = true; // reset. this does not really mean 'success'
+            enable_saving_buttons();
+            return;
+        }
 
         /* this function's purpose is to keep checking the threads started by getObservations()
         if finished, it continues to call update_after_all_data_ready(...)
@@ -1221,7 +1365,7 @@ const __TemplateHelperView = (function ($) {
                 if (triggeringButton.hasClass("proceed-to-next-page")) {
                     if (saveSuccess) {
                         populateTagList();
-                        showPage("#step5", "#menu_summary");
+                        showPage("#observation-summary-page", "#menu_summary");
                     } else {
                         saveSuccess = true; // reset the flag
                     }
@@ -1239,6 +1383,7 @@ const __TemplateHelperView = (function ($) {
         triggeringButton.attr("disabled", "disabled");
         $.ajax({
             url: "template/update",
+            async: false,
             type: "POST",
             data: jQuery.param(currentModel.toJSON()),
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -1246,6 +1391,7 @@ const __TemplateHelperView = (function ($) {
                 console.log("return value: " + data);
                 triggeringButton.removeAttr("disabled");
                 refreshTemplateList();
+                currentModel = templateModels[currentModel.id]; // the values are not changed but it is a different object after refreshing
                 updatePreview();
             },
             error: function (response, status) {
@@ -1486,7 +1632,7 @@ const __TemplateHelperView = (function ($) {
 
     const updatePreview = function () { // this should be called when the template data (model) changes
         $("#preview-select").empty();
-        $("#step6 [id^=observation-preview-]").remove();
+        $("#preview-page [id^=observation-preview-]").remove();
         const observationNumber = currentModel.get('observationNumber');
         for (let i = 0; i < observationNumber; i++) {
             (new ObservationOptionView({
@@ -1605,8 +1751,21 @@ const __TemplateHelperView = (function ($) {
                     const columntag = cell_id.substring(cell_id.indexOf('-', 12) + 1); // skip the first dash
                     valuetype = $("#value-type-" + columntag).val();
                 }
+
+                const value = $(c).val();
+                // check the lengths
+                if (valuetype === 'url' && value.length > 2048) {
+                    showAlertMessage("URL is too long (longer than 2048)");
+                    saveSuccess = false;
+                    return;
+                } else if (valuetype === "file" && value.length > 1024) { // file name including fake path
+                    showAlertMessage("file name is too long (longer than 1024)");
+                    saveSuccess = false;
+                    return;
+                }
+
                 if (valuetype != 'file') {
-                    observationArray[j * rows + i] = $(c).val();
+                    observationArray[j * rows + i] = value;
                 } else { // if the value type is 'file', a reading thread would be started
                     const p = $(c).prop('files');
                     if (p != null && p.length > 0) {

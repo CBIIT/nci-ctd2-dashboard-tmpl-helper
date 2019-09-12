@@ -11,10 +11,12 @@ application.log
 .settings
 .classpath
 .project
+.vscode
 
 build.bat
 build_for_docker.bat
 deploy.bat
 deploy_index.bat
 deploy_js.bat
+deploy_css.bat
 start-tomcat.bat

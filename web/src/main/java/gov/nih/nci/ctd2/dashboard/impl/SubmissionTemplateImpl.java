@@ -1,12 +1,15 @@
 package gov.nih.nci.ctd2.dashboard.impl;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Proxy;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionCenter;
@@ -17,6 +20,7 @@ import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 @Table(name = "submission_template")
 public class SubmissionTemplateImpl extends DashboardEntityImpl implements SubmissionTemplate {
     private static final long serialVersionUID = -4224162359280232544L;
+    private static Log log = LogFactory.getLog(SubmissionTemplateImpl.class);
 
     private SubmissionCenter submissionCenter;
     private String description;
@@ -43,12 +47,23 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String storyTitle;
     private String piName;
 
+    private static final int DESCRIPTION_LENGTH = 1024;
+    private static final int PROJECT_LENGTH = 1024;
+    private static final int SUMMARY_LENGTH = 1024;
+    private static final int STORY_TITLE_LENGTH = 1024;
+    private static final int PI_LENGTH = 64;
+
+    @Column(length = DESCRIPTION_LENGTH)
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        if (description != null && description.length() > DESCRIPTION_LENGTH) {
+            description = description.substring(0, DESCRIPTION_LENGTH);
+            log.warn("description truncated to " + DESCRIPTION_LENGTH);
+        }
+        this.description = Objects.requireNonNull(description);
     }
 
     @ManyToOne(targetEntity = SubmissionCenterImpl.class)
@@ -57,15 +72,20 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setSubmissionCenter(SubmissionCenter submissionCenter) {
-        this.submissionCenter = submissionCenter;
+        this.submissionCenter = Objects.requireNonNull(submissionCenter);
     }
 
+    @Column(length = PROJECT_LENGTH)
     public String getProject() {
         return project;
     }
 
     public void setProject(String project) {
-        this.project = project;
+        if (project != null && project.length() > PROJECT_LENGTH) {
+            project = project.substring(0, PROJECT_LENGTH);
+            log.warn("project truncated to " + PROJECT_LENGTH);
+        }
+        this.project = Objects.requireNonNull(project);
     }
 
     public Integer getTier() {
@@ -73,7 +93,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setTier(Integer tier) {
-        this.tier = tier;
+        this.tier = Objects.requireNonNull(tier);
     }
 
     @Override
@@ -83,7 +103,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setIsStory(Boolean isStory) {
-        this.isStory = isStory;
+        this.isStory = Objects.requireNonNull(isStory);
     }
 
     public Date getDateLastModified() {
@@ -91,7 +111,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setDateLastModified(Date dateLastModified) {
-        this.dateLastModified = dateLastModified;
+        this.dateLastModified = Objects.requireNonNull(dateLastModified);
     }
 
     public String getFirstName() {
@@ -99,7 +119,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = Objects.requireNonNull(firstName);
     }
 
     public String getLastName() {
@@ -107,7 +127,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = Objects.requireNonNull(lastName);
     }
 
     public String getEmail() {
@@ -115,7 +135,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = Objects.requireNonNull(email);
     }
 
     public String getPhone() {
@@ -123,7 +143,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone = Objects.requireNonNull(phone);
     }
 
     @Column(columnDefinition = "mediumblob")
@@ -134,7 +154,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setSubjectColumns(String[] subjects) {
-        subjectColumns = subjects;
+        subjectColumns = Objects.requireNonNull(subjects);
     }
 
     @Column(columnDefinition = "blob")
@@ -145,7 +165,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setEvidenceColumns(String[] evidences) {
-        evidenceColumns = evidences;
+        evidenceColumns = Objects.requireNonNull(evidences);
     }
 
     @Column(columnDefinition = "blob")
@@ -156,7 +176,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setSubjectClasses(String[] c) {
-        subjectClasses = c;
+        subjectClasses = Objects.requireNonNull(c);
     }
 
     @Column(columnDefinition = "blob")
@@ -167,7 +187,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setSubjectRoles(String[] r) {
-        subjectRoles = r;
+        subjectRoles = Objects.requireNonNull(r);
     }
 
     @Column(columnDefinition = "mediumblob")
@@ -178,7 +198,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setSubjectDescriptions(String[] d) {
-        subjectDescriptions = d;
+        subjectDescriptions = Objects.requireNonNull(d);
     }
 
     @Column(columnDefinition = "blob")
@@ -189,7 +209,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setEvidenceTypes(String[] t) {
-        evidenceTypes = t;
+        evidenceTypes = Objects.requireNonNull(t);
     }
 
     @Column(columnDefinition = "blob")
@@ -200,7 +220,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setValueTypes(String[] v) {
-        valueTypes = v;
+        valueTypes = Objects.requireNonNull(v);
     }
 
     @Column(columnDefinition = "mediumblob")
@@ -211,7 +231,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setEvidenceDescriptions(String[] d) {
-        evidenceDescriptions = d;
+        evidenceDescriptions = Objects.requireNonNull(d);
     }
 
     @Override
@@ -221,10 +241,10 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setObservationNumber(Integer observationNumber) {
-        this.observationNumber = observationNumber;
+        this.observationNumber = Objects.requireNonNull(observationNumber);
     }
 
-    @Column(name ="observation_array", columnDefinition = "blob")
+    @Column(name = "observation_array", columnDefinition = "blob")
     @Override
     public String[] getObservations() {
         return observations;
@@ -232,38 +252,54 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
 
     @Override
     public void setObservations(String[] d) {
-        observations = d;
+        observations = Objects.requireNonNull(d);
     }
 
-    @Column(length = 1024)
     @Override
+    @Column(length = SUMMARY_LENGTH)
     public String getSummary() {
         return summary;
     }
 
     @Override
     public void setSummary(String s) {
-        summary = s;
+        if(s == null) s = ""; // necessary only for existing unchecked data
+        if (s != null && s.length() > SUMMARY_LENGTH) {
+            s = s.substring(0, SUMMARY_LENGTH);
+            log.warn("summary truncated to " + SUMMARY_LENGTH);
+        }
+        summary = Objects.requireNonNull(s);
     }
 
     @Override
+    @Column(length = STORY_TITLE_LENGTH)
     public String getStoryTitle() {
         return storyTitle;
     }
 
     @Override
     public void setStoryTitle(String s) {
-        storyTitle = s;
+        if (s != null && s.length() > STORY_TITLE_LENGTH) {
+            s = s.substring(0, STORY_TITLE_LENGTH);
+            log.warn("Story title truncated to " + STORY_TITLE_LENGTH);
+        }
+        storyTitle = Objects.requireNonNull(s);
     }
 
     @Override
+    @Column(length = PI_LENGTH)
     public String getPiName() {
         return piName;
     }
 
     @Override
     public void setPiName(String piName) {
-        this.piName = piName;
+        if(piName == null) piName = ""; // necessary only for existing unchecked data
+        if (piName != null && piName.length() > PI_LENGTH) {
+            piName = piName.substring(0, PI_LENGTH);
+            log.warn("PI name truncated to " + PI_LENGTH);
+        }
+        this.piName = Objects.requireNonNull(piName);
     }
 
     @Override
