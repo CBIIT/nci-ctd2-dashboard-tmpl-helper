@@ -38,6 +38,27 @@ public class TxtFileCreator {
     public TxtFileCreator(SubmissionTemplate template, Path topDir) {
         this.template = template;
         this.topDir = topDir;
+
+        /*
+         * this is a temporary, not ideal approach. We should create and enforce the
+         * mine type fields in the original data
+         */
+        String[] evidenceMimeTypes = new String[template.getEvidenceColumns().length];
+        int subjectCount = template.getSubjectColumns().length;
+        String[] valueTypes = template.getValueTypes();
+        String[] observations = template.getObservations();
+        if (template.getObservationNumber() > 0) {
+            for (int i = 0; i < valueTypes.length; i++) {
+                if (valueTypes[i].equals("file")) {
+                    String observation = observations[i + subjectCount]; // only first obervation used
+                    int mimeMark = observation.indexOf("::data:");
+                    if (mimeMark > 0) {
+                        evidenceMimeTypes[i] = observation.substring(mimeMark + "::data:".length());
+                    }
+                }
+            }
+        }
+        template.setEvidenceMimeTypes(evidenceMimeTypes);
     }
 
     public TxtFileCreator(Path xlsFilePath, final DashboardDao dashboardDao) throws IOException, ValidationException {
@@ -361,12 +382,12 @@ public class TxtFileCreator {
         for (int i = 0; i < template.getSubjectColumns().length; i++) {
             sb.append('\t');
         }
-        String[] memeTypes = template.getEvidenceMimeTypes();
+        String[] mimeTypes = template.getEvidenceMimeTypes();
         for (int i = 0; i < template.getEvidenceColumns().length; i++) {
             String evidence = template.getValueTypes()[i];
             sb.append('\t');
-            if (evidence.equals("file") && memeTypes != null) {
-                sb.append(memeTypes[i]);
+            if (evidence.equals("file") && mimeTypes != null) {
+                sb.append(mimeTypes[i]);
             }
         }
         sb.append('\n');
