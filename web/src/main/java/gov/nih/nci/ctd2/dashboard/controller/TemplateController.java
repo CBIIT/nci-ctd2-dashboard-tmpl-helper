@@ -366,7 +366,7 @@ public class TemplateController implements ServletContextAware {
         Path topDir = Paths.get(fileLocation); // this may not exist if there is no attachment
         if (!topDir.toFile().exists()) {
             try {
-                Files.createDirectory(topDir);
+                Files.createDirectories(topDir);
             } catch (IOException e) {
                 e.printStackTrace();
             }
