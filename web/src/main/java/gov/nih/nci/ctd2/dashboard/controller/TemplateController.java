@@ -266,8 +266,7 @@ public class TemplateController implements ServletContextAware {
                 for (int j = 0; j < observationNumber; j++) {
                     int index = columnTagCount * j + subjectColumnCount + i;
                     if (index >= observations.length) {
-                        log.error(
-                                "ERROR: observation index=" + index + ">= observation length=" + observations.length);
+                        log.error("ERROR: observation index=" + index + ">= observation length=" + observations.length);
                         continue;
                     }
                     String obv = observations[index];
@@ -357,24 +356,22 @@ public class TemplateController implements ServletContextAware {
     }
 
     @Transactional
-    @RequestMapping(value="validate", method = {RequestMethod.GET})
-    public ResponseEntity<String> validate(
-            @RequestParam("templateId") Integer templateId)
-    {
+    @RequestMapping(value = "validate", method = { RequestMethod.GET })
+    public ResponseEntity<String> validate(@RequestParam("templateId") Integer templateId) {
         log.debug("request received for templateId=" + templateId);
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
 
         String fileLocation = getFileLocationPerTemplate(template);
 
         Path topDir = Paths.get(fileLocation); // this may not exist if there is no attachment
-        if(!topDir.toFile().exists()) {
+        if (!topDir.toFile().exists()) {
             try {
                 Files.createDirectory(topDir);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if(!topDir.toFile().isDirectory()) {
-            log.error(topDir+" pre-exists but is not a directory.");
+        } else if (!topDir.toFile().isDirectory()) {
+            log.error(topDir + " pre-exists but is not a directory.");
         }
 
         List<String> files = new ArrayList<String>();
@@ -383,15 +380,15 @@ public class TemplateController implements ServletContextAware {
             files = txtFileCreator.createTextFiles();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<String>(
-                "Error in creating txt files: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); 
+            return new ResponseEntity<String>("Error in creating txt files: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if(log.isDebugEnabled()) { // the Excel file are not needed by the validation script
+        if (log.isDebugEnabled()) { // the Excel file are not needed by the validation script
             SpreadsheetCreator creator = new SpreadsheetCreator(template, fileLocation);
             try {
                 byte[] workbookAsByteArray = creator.createWorkbookAsByteArray();
-                Files.write(Paths.get(fileLocation+"dashboard-CV-master.xls"), workbookAsByteArray);
+                Files.write(Paths.get(fileLocation + "dashboard-CV-master.xls"), workbookAsByteArray);
                 files.add("dashboard-CV-master.xls");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -402,7 +399,8 @@ public class TemplateController implements ServletContextAware {
 
         // run python script to validate
         String validationScript = servletContext.getRealPath("submissionCheck.py");
-        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir, files.toArray(new String[0]), pythonCommand);
+        ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
+                files.toArray(new String[0]), pythonCommand);
         report.export();
         log.debug("finished running python script");
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
