@@ -864,6 +864,7 @@
                 <div id='preview-container'></div>
                 <table class="table">
                     <tr>
+                        <td><button id="validate-from-preview" style="display: block; margin: auto">Validate</button></td>
                         <td>
                             <button id="download-from-preview" style="display: block; margin: auto">Download template</button>
                         </td>

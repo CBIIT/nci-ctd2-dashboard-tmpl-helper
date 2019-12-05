@@ -302,6 +302,10 @@ const __TemplateHelperView = (function ($) {
                 $("#download-form").submit();
             });
 
+            $("#validate-from-preview").click(function () {
+                validate_interal_template(currentModel.id);
+            });
+
             return this;
         } // end render function
     }); // end of TemplateHelperView
@@ -630,35 +634,7 @@ const __TemplateHelperView = (function ($) {
                         $("#download-form").submit();
                         break;
                     case 'validate':
-                        /* 
-                        1. create ZIP file (asked by requirement document, but why?) 
-                        2. create "submission package" (as in the text files required by the validation Python script)
-                        3. run the validation script
-                        4. create the report
-                        */
-                        $('#validation-progress').modal('show');
-                        $.ajax({
-                            async: true,
-                            url: "template/validate",
-                            type: "GET",
-                            data: jQuery.param({
-                                templateId: templateId,
-                            }),
-                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                            success: function (response) {
-                                $('#validation-progress').modal('hide');
-                                response.templateId = templateId;
-                                console.log(response);
-                                (new ValidationReportView({
-                                    model: response,
-                                })).render();
-                            },
-                            error: function (response, status) {
-                                $('#validation-progress').modal('hide');
-                                console.log(response);
-                                console.log(status);
-                            },
-                        });
+                        validate_interal_template(templateId);
                         break;
                     default:
                         /* this should never happen */
@@ -908,6 +884,37 @@ const __TemplateHelperView = (function ($) {
     });
 
     /* support functions */
+    const validate_interal_template = function (templateId) {
+        /* 
+        1. create ZIP file (asked by requirement document, but why?) 
+        2. create "submission package" (as in the text files required by the validation Python script)
+        3. run the validation script
+        4. create the report
+        */
+        $('#validation-progress').modal('show');
+        $.ajax({
+            async: true,
+            url: "template/validate",
+            type: "GET",
+            data: jQuery.param({
+                templateId: templateId,
+            }),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (response) {
+                $('#validation-progress').modal('hide');
+                response.templateId = templateId;
+                (new ValidationReportView({
+                    model: response,
+                })).render();
+            },
+            error: function (response, status) {
+                $('#validation-progress').modal('hide');
+                console.log(response);
+                console.log(status);
+            },
+        });
+    };
+
     const read_description_page = function () {
         const firstName = $("#first-name").val();
         const lastName = $("#last-name").val();
@@ -1459,7 +1466,7 @@ const __TemplateHelperView = (function ($) {
                     "Sorry for the inconvenience.");
             }
         });
-        if (async ||result)
+        if (async || result)
             return true;
         else
             return false;
