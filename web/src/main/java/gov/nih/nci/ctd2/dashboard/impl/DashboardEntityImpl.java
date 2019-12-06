@@ -15,7 +15,7 @@ import org.hibernate.annotations.Proxy;
 import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
 
 @Entity
-@Proxy(proxyClass= DashboardEntity.class)
+@Proxy(proxyClass = DashboardEntity.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DynamicUpdate
 @DynamicInsert
@@ -23,7 +23,7 @@ import gov.nih.nci.ctd2.dashboard.model.DashboardEntity;
 public class DashboardEntityImpl implements DashboardEntity {
 
     private static final long serialVersionUID = 6953675960325146562L;
-	private Integer id;
+    private Integer id;
     private String displayName;
 
     public String getDisplayName() {
@@ -35,7 +35,7 @@ public class DashboardEntityImpl implements DashboardEntity {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer getId() {
         return id;
     }
@@ -46,14 +46,17 @@ public class DashboardEntityImpl implements DashboardEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DashboardEntityImpl that = (DashboardEntityImpl) o;
-        if(this.getId() == null || that.getId() == null)
+        if (this.getId() == null || that.getId() == null)
             return super.equals(o);
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null)
+            return false;
 
         return true;
     }
