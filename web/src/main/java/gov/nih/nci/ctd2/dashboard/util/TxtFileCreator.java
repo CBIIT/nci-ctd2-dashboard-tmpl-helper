@@ -78,7 +78,7 @@ public class TxtFileCreator {
         Sheet metadataSheet = workbook.getSheetAt(0);
         String metadataSheetName = metadataSheet.getSheetName();
         Sheet dataSheet = workbook.getSheetAt(1);
-        String templateName = dataSheet.getSheetName();
+        String sheetName = dataSheet.getSheetName();
 
         if (!metasheetName.equals(metadataSheetName)) {
             workbook.close();
@@ -112,7 +112,8 @@ public class TxtFileCreator {
             log.debug(index + " " + v);
         }
 
-        if (!templateName.equals(row1.getCell(1).getStringCellValue())) {
+        String templateName = row1.getCell(1).getStringCellValue();
+        if (!templateName.startsWith(sheetName)) {
             workbook.close();
             throw new ValidationException("incorrect template_name " + row1.getCell(1).getStringCellValue());
         }
