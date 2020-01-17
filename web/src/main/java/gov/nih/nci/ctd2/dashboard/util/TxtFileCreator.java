@@ -447,25 +447,22 @@ public class TxtFileCreator {
                     if (sep >= 0)
                         filename = filename.substring(sep + 1);
 
-                    Path savedPath = topDir.resolve(filename);
-                    if (!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen,
-                                                                                            // but be cautious anyway
-                        log.error("ERROR: uploaded file " + savedPath.toFile() + " not found");
-                        observation = "";
-                    } else {
-                        String zippedPath = getZippedPath(filename, submissionName);
-                        observation = "./" + zippedPath;
-                        Path sourcePath = topDir.resolve(filename);
-                        Path targetPath = topDir.resolve(zippedPath);
-                        try {
-                            Files.createDirectories(
-                                    topDir.resolve("submissions").resolve(submissionName).resolve("images"));
+                    String zippedPath = getZippedPath(filename, submissionName);
+                    observation = "./" + zippedPath;
+                    Path sourcePath = topDir.resolve(filename);
+                    Path targetPath = topDir.resolve(zippedPath);
+                    try {
+                        Files.createDirectories(
+                                topDir.resolve("submissions").resolve(submissionName).resolve("images"));
+                        if (!targetPath.toFile().exists()) {
+                            // this is necessary for validate app-internal template,
+                            // but uncessary for vali dating uploaded package
                             Files.copy(sourcePath, targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING,
                                     java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
                                     java.nio.file.LinkOption.NOFOLLOW_LINKS);
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
                 sb.append('\t').append(observation);
