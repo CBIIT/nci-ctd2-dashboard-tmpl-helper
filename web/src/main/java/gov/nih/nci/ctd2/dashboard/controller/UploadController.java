@@ -103,15 +103,17 @@ public class UploadController implements ServletContextAware {
         ValidationReport report = null;
         try {
             report = validate(excelFilePath);
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
+            log.info(e.getMessage());
+            report = new ValidationReport("file " + filename + ":" + e.getMessage(), excelFilePath.getParent());
+        } catch (Exception e) {
             e.printStackTrace();
-            report = new ValidationReport("file " + filename + ":"+e.getMessage());
-        } catch(Exception e) {
-            e.printStackTrace();
-            report = new ValidationReport("Unexpected exception: " + filename + " "+e.getMessage());
+            report = new ValidationReport("Unexpected exception: " + filename + " " + e.getMessage(),
+                    excelFilePath.getParent());
         }
 
         log.info(filename + " uploaded and unzipped");
+        report.export();
 
         JSONSerializer jsonSerializer = new JSONSerializer().exclude("class");
         String response = jsonSerializer.deepSerialize(report);
@@ -121,9 +123,10 @@ public class UploadController implements ServletContextAware {
     }
 
     private ValidationReport validate(Path excelFilePath) throws IOException, ValidationException {
+        final Path topDir = excelFilePath.getParent();
         if (!excelFilePath.toFile().exists()) {
             log.error("expected file " + excelFilePath.toFile() + " not existing");
-            return new ValidationReport("expected file " + excelFilePath.toFile() + " not existing");
+            return new ValidationReport("expected file " + excelFilePath.toFile() + " not existing", topDir);
         }
 
         TxtFileCreator txtFileCreator = new TxtFileCreator(excelFilePath, dashboardDao);
@@ -132,7 +135,6 @@ public class UploadController implements ServletContextAware {
          * overlapping the original Excel file and uploaded attachment. This is
          * confusing but follows the existing convention how these files are handled.
          */
-        Path topDir = excelFilePath.getParent();
         if (!topDir.toFile().exists()) {
             try {
                 Files.createDirectory(topDir);
@@ -150,7 +152,6 @@ public class UploadController implements ServletContextAware {
         String validationScript = servletContext.getRealPath("submissionCheck.py");
         ValidationReport report = new ValidationReport(validationScript, subjectDataLocation, topDir,
                 files.toArray(new String[0]), pythonCommand);
-        report.export();
         return report;
     }
 

@@ -23,14 +23,14 @@ public class ValidationReport {
 
     private static final Log log = LogFactory.getLog(ValidationReport.class);
 
-    public ValidationReport(String message) {
+    public ValidationReport(String message, final Path topDir) {
         this.title = "Generic Validation Report";
         this.count = 0;
         this.errors = new ValidationError[0];
         this.files = new String[0];
         this.otherError = message;
 
-        this.topDir = null;
+        this.topDir = topDir;
     }
 
     public ValidationReport(String validationScript, String subjectDataLocation, Path topDir, String[] files,
