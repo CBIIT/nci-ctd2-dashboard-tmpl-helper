@@ -28,6 +28,10 @@ CENTERS = {
 'University of California San Francisco (2)':'William A. Weiss, M.D., Ph.D.',
 'University of Texas MD Anderson Cancer Center':'Gordon B. Mills, M.D., Ph.D.',
 'University of Texas Southwestern Medical Center':'Michael Roth, Ph.D.',
+'Johns Hopkins University':'Joel S. Bader, Ph.D.',
+'Oregon Health and Science University':'Brian J. Druker, M.D.',
+'University of California San Diego':'Pablo Tamayo, Ph.D.',
+'Oregon Health and Science University (2)':'Gordon B. Mills, M.D., Ph.D.'
 }
 
 ROLES = {
@@ -142,7 +146,7 @@ def checkTemplates(submissionFolder, columns):
                 checkSubmissionDescription(row, submissionDescriptionIndex, storyIndex, submissionNameIndex)
                 checkSubmissionName(row, submissionNameIndex, templateNameIndex, submissionNameIndex)
                 checkProject(row, projectIndex, submissionNameIndex)
-                checkStory(row, storyIndex, submissionNameIndex)
+                checkStory(row, storyIndex, columns.get(templateName, set()), submissionNameIndex)
                 rank = checkStoryRank(row, storyIndex, storyRankIndex, submissionNameIndex)
                 if (rank > 0):
                     storyRanks.append(rank)
@@ -240,7 +244,7 @@ def checkProject(row, index, submissionNameIndex):
             print('ERROR: The length of project @ ' + row[submissionNameIndex] + ' exceeds threshold ('+str(maxLen)+')', file=sys.stderr)
 
 
-def checkStory(row, index, submissionNameIndex):
+def checkStory(row, index, columnSet, submissionNameIndex):
     if index >= 0:
         story = row[index]
         if story == '':
@@ -248,6 +252,9 @@ def checkStory(row, index, submissionNameIndex):
             return
         if story != 'TRUE' and story != 'FALSE':
             print('ERROR: Wrong submission_story @' + row[submissionNameIndex] + ': ' + story, file=sys.stderr)
+            return
+        if story == 'TRUE' and not 'story_location' in columnSet:
+            print('ERROR: No story_location column in story submission @' + row[submissionNameIndex], file=sys.stderr)
 
 
 def checkStoryRank(row, storyIndex, index, submissionNameIndex):
@@ -1027,9 +1034,10 @@ class StoryParser(HTMLParser):
             else:
                 if href[0] == '#':
                     href = href[1:]
+                    self.links.append(href)
                 else:
-                    print('ERROR: Wrong format of href attribute "'+href+'" in: '+self.filename, file=sys.stderr)
-                self.links.append(href)
+                    print('WARNING: Wrong format of href attribute "'+href+'" in: '+self.filename, file=sys.stderr)
+
         if tag == 'p':
             self.pTag = True
             self.pTagCount = self.pTagCount + 1
