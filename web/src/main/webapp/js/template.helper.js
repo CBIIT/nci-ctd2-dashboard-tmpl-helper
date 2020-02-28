@@ -289,6 +289,29 @@ const __TemplateHelperView = (function ($) {
                 }).render();
             });
 
+            const common_ecoterms = [
+                ['X', 'ECO:0000360 biological target-disease association via drug evidence', 'link'],
+                ['X', 'ECO:0007006 high-throughput gene expression', 'link'],
+                ['X', 'ECO:0006053 pharmacological assay evidence', 'link'],
+            ];
+            $("#common-ecoterms").DataTable({
+                data: common_ecoterms,
+                columns: [
+                    { title: "Select", },
+                    { title: "Evidence Ontology code and name", },
+                    { title: "Details", },
+                ],
+                "paging":   false,
+                "ordering": false,
+                "info":     false,
+                "searching": false,
+                "autoWidth": false,
+            });
+
+            $("#open-additional-ecoterms").click(function() {
+                $("#additional-ecoterms").show();
+            });
+
             $("#download-form").submit(function () {
                 if (!$("#template-id").val() || $("#template-id").val() == "0") {
                     $("#template-id").val(currentModel.id);

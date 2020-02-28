@@ -20,6 +20,7 @@
 
     <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/datatables.min.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="css/ctd2.css?ts=2019" type="text/css" />
 
@@ -841,17 +842,20 @@
                         </td>
                     </tr>
                 </table>
-                Experiment Annotation
-
-                Please select one or more Evidence & Conclusion Ontology (ECO, http://www.evidenceontology.org/) terms from the list below to describe the experimental or computational method used to generate the observations in this submission.
-                <table id="common-ecoterms">
+                <h4>Experiment Annotation</h4>
+                <p>Please select one or more Evidence & Conclusion Ontology (ECO, http://www.evidenceontology.org/) terms from the list below to describe the experimental or computational method used to generate the observations in this submission.</p>
+                <div id=common-ecoterms-container>
+                <table id="common-ecoterms" class=table>
                 </table>
+                </div>
                 <p id="ecoterm-definition"></p>
-                <p>It is strongly suggested the only ECO terms from the list above are used. However, if no term is appropriate for your submission, please click <a href="">here</a>.</p>
-                <p id="additional-ecoterms" class='initially-hidden'>Additional terms can be found using ECO term resources at <a href="https://www.ebi.ac.uk/ols/ontologies/eco">EMBL-EBI (https://www.ebi.ac.uk/ols/ontologies/eco)</a> 
-                    or <a href="http://evidenceontology.org/">evidenceontology.org</a>.  After finding a new term, please copy the code as displayed into the box below.  Multiple terms can be separated by commas.
-                    <textarea id="ecoterms-list"></textarea>
-                </p>
+                <p>It is strongly suggested the only ECO terms from the list above are used. However, if no term is appropriate for your submission, please click <a id=open-additional-ecoterms>here</a>.</p>
+                <div id="additional-ecoterms" style='display:none'>Additional terms can be found using ECO term resources at <a href="https://www.ebi.ac.uk/ols/ontologies/eco" target="_blank">EMBL-EBI (https://www.ebi.ac.uk/ols/ontologies/eco)</a> 
+                    or <a href="http://evidenceontology.org/" target="_blank">evidenceontology.org</a>.  After finding a new term, please copy the code as displayed into the box below.  Multiple terms can be separated by commas.
+                    <p id="ecoterms-list">
+                    <textarea></textarea>
+                    </p>
+                </div>
                 <table class="table">
                     <tr>
                         <td><button id="save-summary">Save</button></td>
@@ -957,6 +961,7 @@
     <script src="js/backbone-min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.fancybox.min.js"></script>
+    <script src="js/datatables.min.js"></script>
     <script src="js/ctd2.js"></script>
     <script src="js/template.helper.js?ts=2019"></script>
 

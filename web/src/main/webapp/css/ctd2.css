@@ -640,3 +640,12 @@ div.center-link-container {
 .story-details, .center-image-column {
     text-align: center !important;
 }
+
+#ecoterms-list, #common-ecoterms-container {
+    margin:auto;
+    width: 80%;
+}
+
+#ecoterms-list textarea {
+    width: 100%;
+}
