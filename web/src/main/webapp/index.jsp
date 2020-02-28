@@ -841,6 +841,17 @@
                         </td>
                     </tr>
                 </table>
+                Experiment Annotation
+
+                Please select one or more Evidence & Conclusion Ontology (ECO, http://www.evidenceontology.org/) terms from the list below to describe the experimental or computational method used to generate the observations in this submission.
+                <table id="common-ecoterms">
+                </table>
+                <p id="ecoterm-definition"></p>
+                <p>It is strongly suggested the only ECO terms from the list above are used. However, if no term is appropriate for your submission, please click <a href="">here</a>.</p>
+                <p id="additional-ecoterms" class='initially-hidden'>Additional terms can be found using ECO term resources at <a href="https://www.ebi.ac.uk/ols/ontologies/eco">EMBL-EBI (https://www.ebi.ac.uk/ols/ontologies/eco)</a> 
+                    or <a href="http://evidenceontology.org/">evidenceontology.org</a>.  After finding a new term, please copy the code as displayed into the box below.  Multiple terms can be separated by commas.
+                    <textarea id="ecoterms-list"></textarea>
+                </p>
                 <table class="table">
                     <tr>
                         <td><button id="save-summary">Save</button></td>
