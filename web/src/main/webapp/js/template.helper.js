@@ -290,34 +290,42 @@ const __TemplateHelperView = (function ($) {
             });
 
             const common_ecoterms = [
-                ['', 'ECO:0000360 biological target-disease association via drug evidence', '<a href="http://www.evidenceontology.org">link</a>'],
-                ['', 'ECO:0007006 high-throughput gene expression', 'link'],
-                ['', 'ECO:0006053 pharmacological assay evidence', 'link'],
+                ['', 'ECO:0000360 biological target-disease association via drug evidence', '<a href="http://www.evidenceontology.org" target="_blank">link</a>', 'test definition for 0000360'],
+                ['', 'ECO:0007006 high-throughput gene expression', 'link', 'test definition for 00070006'],
+                ['', 'ECO:0006053 pharmacological assay evidence', 'link', 'test definition for 0006053'],
             ];
-            $("#common-ecoterms").DataTable({
+            $('#definition-box').hide();
+            const table = $("#common-ecoterms").DataTable({
                 data: common_ecoterms,
                 columns: [
                     { title: "Select", },
                     { title: "Evidence Ontology code and name", },
                     { title: "Details", },
                 ],
-                "paging":   false,
+                "paging": false,
                 "ordering": false,
-                "info":     false,
+                "info": false,
                 "searching": false,
                 "autoWidth": false,
-                columnDefs: [ {
+                columnDefs: [{
                     orderable: false,
                     className: 'select-checkbox',
-                    targets:   0
-                } ],
+                    targets: 0
+                }],
                 select: {
-                    style:    'multi',
+                    style: 'multi',
                     selector: 'td:first-child'
                 },
+            }).on('click', 'tbody td', function () {
+                if (this.cellIndex == 1) {
+                    const row = this.parentNode.rowIndex - 1;
+                    $('#ecoterm-name').text(this.textContent);
+                    $('#ecoterm-definition').text(table.data()[row][3]);
+                    $('#definition-box').show();
+                }
             });
 
-            $("#open-additional-ecoterms").click(function() {
+            $("#open-additional-ecoterms").click(function () {
                 $("#additional-ecoterms").show();
             });
 

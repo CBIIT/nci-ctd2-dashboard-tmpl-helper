@@ -849,7 +849,9 @@
                 <table id="common-ecoterms" class=table>
                 </table>
                 </div>
-                <p id="ecoterm-definition"></p>
+                <div id=definition-box><b><span id=ecoterm-name></span>:</b>
+                <span id="ecoterm-definition"></span>
+                </div>
                 <p>It is strongly suggested the only ECO terms from the list above are used. However, if no term is appropriate for your submission, please click <a id=open-additional-ecoterms>here</a>.</p>
                 <div id="additional-ecoterms" style='display:none'>Additional terms can be found using ECO term resources at <a href="https://www.ebi.ac.uk/ols/ontologies/eco" target="_blank">EMBL-EBI (https://www.ebi.ac.uk/ols/ontologies/eco)</a> 
                     or <a href="http://evidenceontology.org/" target="_blank">evidenceontology.org</a>.  After finding a new term, please copy the code as displayed into the box below.  Multiple terms can be separated by commas.

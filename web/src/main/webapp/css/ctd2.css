@@ -649,3 +649,10 @@ div.center-link-container {
 #ecoterms-list textarea {
     width: 100%;
 }
+
+#definition-box {
+    padding:10px;
+    margin:auto;
+    width: 80%;
+    border:1px solid red;
+}
