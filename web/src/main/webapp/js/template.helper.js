@@ -290,9 +290,9 @@ const __TemplateHelperView = (function ($) {
             });
 
             const common_ecoterms = [
-                ['X', 'ECO:0000360 biological target-disease association via drug evidence', 'link'],
-                ['X', 'ECO:0007006 high-throughput gene expression', 'link'],
-                ['X', 'ECO:0006053 pharmacological assay evidence', 'link'],
+                ['', 'ECO:0000360 biological target-disease association via drug evidence', '<a href="http://www.evidenceontology.org">link</a>'],
+                ['', 'ECO:0007006 high-throughput gene expression', 'link'],
+                ['', 'ECO:0006053 pharmacological assay evidence', 'link'],
             ];
             $("#common-ecoterms").DataTable({
                 data: common_ecoterms,
@@ -306,6 +306,15 @@ const __TemplateHelperView = (function ($) {
                 "info":     false,
                 "searching": false,
                 "autoWidth": false,
+                columnDefs: [ {
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets:   0
+                } ],
+                select: {
+                    style:    'multi',
+                    selector: 'td:first-child'
+                },
             });
 
             $("#open-additional-ecoterms").click(function() {

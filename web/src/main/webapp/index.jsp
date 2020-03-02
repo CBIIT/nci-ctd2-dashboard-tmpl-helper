@@ -21,6 +21,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="css/datatables.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/select.dataTables.min.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="css/ctd2.css?ts=2019" type="text/css" />
 
@@ -962,6 +963,7 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/datatables.min.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
     <script src="js/ctd2.js"></script>
     <script src="js/template.helper.js?ts=2019"></script>
 
