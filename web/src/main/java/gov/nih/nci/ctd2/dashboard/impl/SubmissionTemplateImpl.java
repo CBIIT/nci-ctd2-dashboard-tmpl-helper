@@ -46,6 +46,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String summary;
     private String storyTitle;
     private String piName;
+    private String ecocodes;
 
     private static final int DESCRIPTION_LENGTH = 1024;
     private static final int PROJECT_LENGTH = 1024;
@@ -310,5 +311,15 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setEvidenceMimeTypes(String[] evidenceMimeTypes) {
         this.evidenceMimeTypes = evidenceMimeTypes;
+    }
+
+    @Override
+    public String getEcoCodes() {
+        return ecocodes;
+    }
+
+    @Override
+    public void setEcoCodes(String ecocodes) {
+        this.ecocodes = ecocodes;
     }
 }

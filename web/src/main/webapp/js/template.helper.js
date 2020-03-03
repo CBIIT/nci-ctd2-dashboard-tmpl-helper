@@ -1263,9 +1263,16 @@ const __TemplateHelperView = (function ($) {
             saveSuccess = false;
             return;
         }
+        const ecos = $("#common-ecoterms").DataTable().rows({ selected: true }).data();
+        let ecocodes = '';
+        for (var i = 0; i < ecos.length; i++) {
+            if (i > 0) ecocodes += '|';
+            ecocodes += ecos[i][1].split(' ')[0];
+        }
 
         currentModel.set({
             summary: summary,
+            ecocodes: ecocodes,
         });
 
         triggeringButton.attr("disabled", "disabled");

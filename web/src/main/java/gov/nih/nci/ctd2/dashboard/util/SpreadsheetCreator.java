@@ -74,7 +74,7 @@ public class SpreadsheetCreator {
 
         String[] headers = { "observation_tier", "template_name", "observation_summary", "story_title",
                 "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
-                "submission_center", "principal_investigator" };
+                "submission_center", "principal_investigator", "eco_codes" };
 
         for (int i = 0; i < headers.length; i++) {
             Cell c = rowhead0.createCell(i);
@@ -89,7 +89,7 @@ public class SpreadsheetCreator {
 
         String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(), "",
                 submissionName, template.getDescription(), template.getProject(), template.getIsStory().toString(), "0",
-                template.getSubmissionCenter().getDisplayName(), template.getPiName() };
+                template.getSubmissionCenter().getDisplayName(), template.getPiName(), template.getEcoCodes() };
         HSSFRow row0 = sheet.createRow((short) 1);
         for (int i = 0; i < templateInfo.length; i++) {
             Cell c = row0.createCell(i);

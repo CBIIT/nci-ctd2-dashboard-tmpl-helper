@@ -326,10 +326,13 @@ public class TemplateController implements ServletContextAware {
     @Transactional
     @RequestMapping(value = "update-summary", method = { RequestMethod.POST }, headers = "Accept=application/text")
     public ResponseEntity<String> updateObservationSummary(@RequestParam("id") Integer templateId,
-            @RequestParam("summary") String summary, HttpServletRequest request) {
+            @RequestParam("summary") String summary, 
+            @RequestParam(value = "ecocodes", required = false, defaultValue = "") String ecocodes,
+            HttpServletRequest request) {
         log.info("update request from " + request.getRemoteAddr());
         SubmissionTemplate template = dashboardDao.getEntityById(SubmissionTemplate.class, templateId);
         template.setSummary(summary);
+        template.setEcoCodes(ecocodes);
 
         try {
             dashboardDao.update(template);
