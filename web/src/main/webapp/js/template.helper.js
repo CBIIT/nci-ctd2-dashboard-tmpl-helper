@@ -289,11 +289,11 @@ const __TemplateHelperView = (function ($) {
                 }).render();
             });
 
-            const common_ecoterms = [
-                ['', 'ECO:0000360 biological target-disease association via drug evidence', '<a href="http://www.evidenceontology.org" target="_blank">link</a>', 'test definition for 0000360'],
-                ['', 'ECO:0007006 high-throughput gene expression', 'link', 'test definition for 00070006'],
-                ['', 'ECO:0006053 pharmacological assay evidence', 'link', 'test definition for 0006053'],
-            ];
+            const common_ecoterms = [];
+            for (let i = 0; i < ecoterms.length; i++) {
+                const e = ecoterms[i];
+                common_ecoterms.push(['', e[0] + ' ' + e[1], '<a href="http://www.evidenceontology.org/browse/#' + e[0] + '" target="_blank">link</a>', e[2]]);
+            }
             $('#definition-box').hide();
             const table = $("#common-ecoterms").DataTable({
                 data: common_ecoterms,
