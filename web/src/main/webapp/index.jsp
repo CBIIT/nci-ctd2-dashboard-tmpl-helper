@@ -967,6 +967,7 @@
     <script src="js/datatables.min.js"></script>
     <script src="js/dataTables.select.min.js"></script>
     <script src="js/ctd2.js"></script>
+    <script src="js/common-ecoterms.js"></script>
     <script src="js/template.helper.js?ts=2019"></script>
 
   </body>
