@@ -1681,6 +1681,18 @@ const __TemplateHelperView = (function ($) {
         if (evidenceColumns.length == 0) addNewEvidence('evidence 1');
 
         $("#template-obs-summary").val(rowModel.summary);
+        const ecos = $("#common-ecoterms").DataTable().rows();
+        ecos.rows().deselect();
+        if (rowModel.ecoCodes != null) {
+            const x = rowModel.ecoCodes.split('|');
+            const ecos_d = ecos.data();
+            for (var i = 0; i < ecos.count(); i++) {
+                const y = ecos_d[i][1].split(' ')[0];
+                if (x.includes(y)) {
+                    ecos.row(i).select();
+                }
+            }
+        }
         updatePreview();
     };
 
