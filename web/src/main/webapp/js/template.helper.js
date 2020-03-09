@@ -302,6 +302,8 @@ const __TemplateHelperView = (function ($) {
                     { title: "Evidence Ontology code and name", },
                     { title: "Details", },
                 ],
+                "scrollY": "200px",
+                "scrollCollapse": true,
                 "paging": false,
                 "ordering": false,
                 "info": false,
@@ -324,6 +326,10 @@ const __TemplateHelperView = (function ($) {
                     $('#definition-box').show();
                 }
             });
+            // trick to get dataTables head width right
+            const header = $("#common-ecoterms").parent().parent().find('table');
+            header.parent().width("100%");
+            header.width("100%");
 
             $("#open-additional-ecoterms").click(function () {
                 $("#additional-ecoterms").show();
@@ -1692,6 +1698,7 @@ const __TemplateHelperView = (function ($) {
         $("#template-obs-summary").val(rowModel.summary);
         const ecos = $("#common-ecoterms").DataTable().rows();
         ecos.rows().deselect();
+        $("#eco-code-open-entries").val('');
         if (rowModel.ecoCodes != null) {
             const x = rowModel.ecoCodes.split('|');
             const common_codes = [];

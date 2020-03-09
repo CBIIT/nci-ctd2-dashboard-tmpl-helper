@@ -1,0 +1,28 @@
+Term	Name	Definition
+ECO:0000179	animal model system study evidence	A type of experimental evidence arising from the investigation of an animal model system.
+ECO:0000360	biological target-disease association via drug evidence	A type of experimental evidence resulting from the prediction of drug-target interactions by computational means
+ECO:0005004	cell viability assay evidence	A type of cell-based assay evidence resulting from analyzing the ability of cells to survive or live successfully
+ECO:0000226	chromatin immunoprecipitation evidence	A type of immunoprecipitation evidence that is used to identify a protein binding site on a genomic DNA sequence
+ECO:0000229	chromatin immunoprecipitation-seq evidence	A type of chromatin immunoprecipitation evidence that uses high-throughput sequencing where immunoprecipitated DNA fragments are funnelled into a massively parallel sequencer to produce multiple short reads for locating binding sites of DNA-associated proteins
+ECO:0000180	clinical study evidence	A type of experimental evidence arising from a controlled investigation that uses human subjects
+ECO:0000070	co-immunoprecipitation evidence	"A type of immunoprecipitation evidence that involves precipitating two or more proteins via binding to an antibody specific to a single protein, followed by protein identification"
+ECO:0001027	colony counting evidence	A type of direct assay evidence resulting from the counting of microbial colonies that arise from viable cells grown on a plate or dish
+ECO:0007672	computational evidence	"A type of evidence in which data are produced, and/or generated, and/or analyzed on a computer"
+ECO:0005502	ex vivo assay evidence	"A type of direct assay evidence derived by studying an organ, tissues, or cells taken from an organism and studied in an external environment with the minimum alteration of natural conditions"
+ECO:0000059	experimental phenotypic evidence	"A type of experimental evidence that is based on an observable characteristic trait, which is the result of the expression of an organisms genotype in an environment"
+ECO:0000058	expression microarray evidence	A type of transcript expression evidence resulting from simultaneous profiling of the expression levels of thousands of genes in a single experiment allowing analysis of genes and their networks
+ECO:0000177	genomic context evidence	A type of similarity evidence in which the location of the gene within the genome provides insight into the gene's function or evolutionary insight
+ECO:0006055	high throughput evidence	A type of evidence where data generation is automated with equipment to allow for assaying samples or molecules in parallel
+ECO:0007006	high throughput expression pattern evidence	A type of high throughput evidence derived from the high throughput characterization of gene expression
+ECO:0000040	immunological assay evidence	A type of affinity evidence resulting from quantitation of the analyte which depends on the reaction of an antigen (analyte) and an antibody
+ECO:0000181	in vitro assay evidence	"A type of direct assay evidence resulting from a process performed outside the living organism, where the components of an organism have been isolated from their usual biological context, to permit a more detailed or more convenient analysis in an artificial setting"
+ECO:0000178	in vivo assay evidence	A type of direct assay evidence resulting from a sample of microorganisms or living tissue grown in a medium
+ECO:0000016	loss-of-function mutant phenotype evidence	A type of mutant phenotype evidence where a phenotype is associated with altered gene product which lacks the molecular function of the wild-type gene
+ECO:0006053	pharmacological assay evidence	"A type of experimental phenotypic evidence that arises from assaying the response of a cell, tissue, organ or organism following exposure to a receptor agonist or antagonist"
+ECO:0000024	protein binding evidence	A type of affinity evidence resulting from the binding of a molecule to a protein or protein complex.
+ECO:0000046	protein expression level evidence	A type of protein expression evidence resulting from the quantification of protein production in a sample.
+ECO:0000231	quantitative polymerase chain reaction evidence	A type of DNA detection assay evidence where the reaction product is quantified in real-time across cycles by means of fluorescent dyes or fluorescent probes for detection and quantification of specific sequences in a DNA sample
+ECO:0000019	RNAi evidence	A type of mutant phenotype evidence where an RNA construct is introduced into a cell and the expression of the gene bearing its complementary sequence is suppressed
+ECO:0000295	RNA-sequencing evidence	A type of transcript evidence based on high-throughput (HT) sequencing of fragmented cDNA molecules
+ECO:0000243	tissue grafting phenotypic evidence	A type of anatomical perturbation phenotypic evidence resulting from the addition of tissue to an organism through a graft procedure
+ECO:0001137	xenotransplantation phenotypic evidence	"A type of anatomical perturbation phenotypic evidence resulting from the transplantation, implantation, or infusion of live cells, tissues, or organs between individuals of different species"
