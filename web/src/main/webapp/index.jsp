@@ -856,7 +856,7 @@
                 <div id="additional-ecoterms" style='display:none'>Additional terms can be found using ECO term resources at <a href="https://www.ebi.ac.uk/ols/ontologies/eco" target="_blank">EMBL-EBI (https://www.ebi.ac.uk/ols/ontologies/eco)</a> 
                     or <a href="http://evidenceontology.org/" target="_blank">evidenceontology.org</a>.  After finding a new term, please copy the code as displayed into the box below.  Multiple terms can be separated by commas.
                     <p id="ecoterms-list">
-                    <textarea></textarea>
+                    <textarea id=eco-code-open-entries></textarea>
                     </p>
                 </div>
                 <table class="table">

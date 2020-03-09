@@ -1269,6 +1269,15 @@ const __TemplateHelperView = (function ($) {
             if (i > 0) ecocodes += '|';
             ecocodes += ecos[i][1].split(' ')[0];
         }
+        // get the 'open' entries of ECO codes
+        const x = $("#eco-code-open-entries").val();
+        const matches = x.matchAll(/ECO(:|_)\d{7}/g);
+        for (const match of matches) {
+            let eco_code = match[0];
+            if (match[1] == '_') eco_code = match[0].replace('_', ':');
+            if (ecocodes.length > 0) ecocodes += '|';
+            ecocodes += eco_code;
+        }
 
         currentModel.set({
             summary: summary,
@@ -1685,13 +1694,17 @@ const __TemplateHelperView = (function ($) {
         ecos.rows().deselect();
         if (rowModel.ecoCodes != null) {
             const x = rowModel.ecoCodes.split('|');
+            const common_codes = [];
             const ecos_d = ecos.data();
             for (var i = 0; i < ecos.count(); i++) {
                 const y = ecos_d[i][1].split(' ')[0];
                 if (x.includes(y)) {
                     ecos.row(i).select();
+                    common_codes.push(y)
                 }
             }
+            const open_codes = x.filter(function (value) { return !common_codes.includes(value); });
+            $("#eco-code-open-entries").val(open_codes);
         }
         updatePreview();
     };
