@@ -502,22 +502,7 @@ const __TemplateHelperView = (function ($) {
             let isHtmlStory = false;
             if (type == "file") {
                 result.evidence.filePath = result.evidence.filePath.replace(/\\/g, "/");
-                if (result.evidence.mimeType.toLowerCase().search("image") > -1) {
-                    templateId = "#observedimageevidence-row-tmpl";
-                } else if (result.evidence.mimeType.toLowerCase().search("gct") > -1) {
-                    templateId = "#observedgctfileevidence-row-tmpl";
-                } else if (result.evidence.mimeType.toLowerCase().search("pdf") > -1) {
-                    templateId = "#observedpdffileevidence-row-tmpl";
-                } else if (result.evidence.mimeType.toLowerCase().search("sif") > -1) {
-                    templateId = "#observedsiffileevidence-row-tmpl";
-                } else if (result.evidence.mimeType.toLowerCase().search("mra") > -1) {
-                    templateId = "#observedmrafileevidence-row-tmpl";
-                } else if (result.evidence.mimeType.toLowerCase().search("html") > -1) {
-                    templateId = "#observedhtmlfileevidence-row-tmpl";
-                    isHtmlStory = true;
-                } else {
-                    templateId = "#observedfileevidence-row-tmpl";
-                }
+                templateId = "#observedfileevidence-row-tmpl";
             } else if (type == "url") {
                 templateId = "#observedurlevidence-row-tmpl";
             } else if (type == "label") {

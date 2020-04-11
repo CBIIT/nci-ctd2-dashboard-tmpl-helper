@@ -6,7 +6,6 @@
 <%
     WebApplicationContext context = WebApplicationContextUtils
             .getWebApplicationContext(application);
-    String dataURL = (String) context.getBean("dataURL");
     String submissionBuilderVersion = (String) context.getBean("submissionBuilderVersion");
 %><!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -265,7 +264,7 @@
                     </tr>
                     <tr>
                         <th>Source Data</th>
-                        <td><a href="<%=dataURL%>submissions/{{submission.displayName}}.zip" class=no-preview>download</a></td>
+                        <td><a href="" class=no-preview>download</a></td>
                     </tr>
 
 
@@ -316,107 +315,12 @@
             <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
             <td>{{observedEvidenceRole.displayText}}</td>
             <td>(
-                <a href="<%=dataURL%>{{evidence.filePath}}" target="_blank" title="Download file ({{evidence.mimeType}})" class="desc-tooltip  no-preview" title="Download File">
+                <a href="" target="_blank" title="Download file ({{evidence.mimeType}})" class="desc-tooltip  no-preview" title="Download File">
                     download file
                 </a>
             )</td>
         </tr>
     </script>
-
-    <script type="text/template" id="observedhtmlfileevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>(
-                <a href="<%=dataURL%>{{evidence.filePath}}" title="View file ({{evidence.mimeType}})" class="desc-tooltip html-story-link" title="Download File">
-                    view
-                </a>
-                )</td>
-        </tr>
-    </script>
-
-
-    <script type="text/template" id="observedpdffileevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>(
-                <a href="<%=dataURL%>{{evidence.filePath}}" target="_blank" title="{{observedEvidenceRole.displayText}}" class="desc-tooltip pdf-file-link">
-                    view PDF
-                </a>
-                )</td>
-        </tr>
-    </script>
-
-    <script type="text/template" id="observedgctfileevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>
-                <div class="dropdown">
-                    ( <a class="dropdown-toggle" data-toggle="dropdown" href="#">view file <b class="caret"></b></a> )
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <li>
-                            <a href="http://www.broadinstitute.org/cancer/software/GENE-E/dynamic.php?data=<%=dataURL%>{{evidence.filePath}}" target="_blank" title="open in GENE-E (Java Web-start)" class="desc-tooltip">
-                                open with GENE-E
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<%=dataURL%>{{evidence.filePath}}" class="desc-tooltip" target="_blank" title="type: ({{evidence.mimeType}})">view in browser</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    </script>
-
-    <script type="text/template" id="observedsiffileevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>
-                <div class="dropdown">
-                    ( <a class="dropdown-toggle" data-toggle="dropdown" href="#">view file <b class="caret"></b></a> )
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <li>
-                            <a href="<%=dataURL%>{{evidence.filePath}}" class="desc-tooltip" target="_blank" title="type: ({{evidence.mimeType}})">view in browser</a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    </script>
-
-    <script type="text/template" id="observedimageevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>
-                <div class="image-evidence-wrapper">
-                    <a href="<%=dataURL%>{{evidence.filePath}}" target="_blank" title="{{observedEvidenceRole.displayText}}" rel="evidence-images" class="evidence-images">
-                        <img src="<%=dataURL%>{{evidence.filePath}}" class="img-polaroid img-evidence" height="140" title="File" alt="File">
-                    </a>
-                </div>
-            </td>
-        </tr>
-    </script>
-
 
     <script type="text/template" id="observedlabelevidence-row-tmpl">
         <tr>
@@ -523,31 +427,6 @@
             <img src="img/unknown.png" title="{{type}}" class="img-polaroid search-info" alt="{{type}}" height="50" width="50">
         </a>
     </script>
-
-    <script type="text/template" id="observedmrafileevidence-row-tmpl">
-        <tr>
-            <td>
-                <img src="img/icons/{{observedEvidenceRole.evidenceRole.displayName}}.png" class="img-rounded" title="{{observedEvidenceRole.evidenceRole.displayName}}" alt="{{observedEvidenceRole.evidenceRole.displayName}}">
-            </td>
-            <td>{{observedEvidenceRole.evidenceRole.displayName}}</td>
-            <td>{{observedEvidenceRole.displayText}}</td>
-            <td>
-                <div class="dropdown">
-                    ( <a class="dropdown-toggle" data-toggle="dropdown" href="#">view mra file<b class="caret"></b></a> )
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <li>
-                            <a href="#/evidence/{{id}}" title="Open Master Regulator View" class="desc-tooltip">
-                                mra view
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<%=dataURL%>{{evidence.filePath}}" class="desc-tooltip" target="_blank" title="type: ({{evidence.mimeType}})">view in browser</a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    </script>  
 
     <script type="text/template" id="validation-report-tmpl">
         <h3 align=center>{{title}}</h3>

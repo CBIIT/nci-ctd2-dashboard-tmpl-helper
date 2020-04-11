@@ -13,12 +13,6 @@ hibernate.hbm2ddl.auto=update
 hibernate.hbm2ddl.auto.test=create
 hibernate.connection.charSet=UTF-8
 
-# when proxying files through dashboard, these hosts will be allowed to serve resource
-allowed.hosts=http://cbio.mskcc.org,http://localhost
-
-# this is the URL of where the downloadable data files are located
-web.data.url=http://cbio.mskcc.org/cancergenomics/ctd2-dashboard/
-
 submission.builder.version=v1.0
 
 # location where uploaded files are stored
@@ -26,3 +20,6 @@ upload.location=/ctd2upload/
 
 # parent directory of the subject data
 subject.data.location=SUBJECT_DATA_LOCATION
+
+# python path
+python.command=python3
