@@ -232,15 +232,27 @@
                     </table>
 
                 </div>
-                <div class="span2">
+                <div class="col-2">
                     <a href="#/center/{{submission.observationTemplate.submissionCenter.id}}"><img src="img/{{submission.observationTemplate.submissionCenter.displayName}}.png" class="img-polaroid" width="120" alt="{{submission.observationTemplate.submissionCenter.displayName}}"></a>
                     <br><br>
                     <img src="img/observation.png" alt="Observation" class="img-polaroid" width=120 height=120><br>
                 </div>
             </div>
 
-
             <h3>Submission <small>(<a href="#" id="small-show-sub-details">show details</a><a href="#" id="small-hide-sub-details" class="hide">hide details</a>)</small></h3>
+            <div>
+                <table id="eco-grid" class="table table-bordered table-striped" style='width:80%;margin:unset'>
+                    <thead>
+                    <tr>
+                        <th>Evidence Ontology Code</th>
+                        <th>Term Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- ECO term content goes here -->
+                    </tbody>
+                </table>
+            </div>
             <div id="obs-submission-details" class="hide">
                 <table id="obs-submission-details-grid" class="table table-bordered table-striped">
                     <tr>

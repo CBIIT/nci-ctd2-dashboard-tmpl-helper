@@ -11,6 +11,6 @@ xhr.onreadystatechange = function () {
             }
         }
     }
-}
+};
 xhr.open('GET', './common_eco_terms.txt', async = false);
 xhr.send();

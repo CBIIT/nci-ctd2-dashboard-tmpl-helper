@@ -50,6 +50,7 @@ const __TemplateHelperView = (function ($) {
                 project: obj.project,
                 submissionDescription: obj.description,
                 observationSummary: obj.summary,
+                ECOCode: obj.ecoCodes,
             };
 
             const subjectColumns = obj.subjectColumns;
@@ -404,6 +405,34 @@ const __TemplateHelperView = (function ($) {
                     _.template($("#summary-subject-replacement-tmpl").html())(observedSubject.subject)
                 );
             });
+
+            const ecoTable = $("#eco-grid");
+            const ecocodes = thisModel.submission.observationTemplate.ECOCode;
+            if (ecocodes.length == 0) {
+                ecoTable.hide();
+            } else {
+                const ecos = ecocodes.split('|');
+                const ecodata = [];
+                ecos.forEach(function (ecocode) {
+                    if (ecocode == '') return;
+                    const econame = function(code) {
+                        for (let i = 0; i < ecoterms.length; i++) {
+                            const e = ecoterms[i];
+                            if(code==e[0]) return e[1];
+                        }
+                        return "(<i>name not available</i>)";
+                    };
+                    ecodata.push(['<a>' + ecocode + '</a>', econame(ecocode)]);
+                });
+
+                ecoTable.DataTable({
+                    data: ecodata,
+                    paging: false,
+                    ordering: false,
+                    info: false,
+                    searching: false,
+                });
+            }
 
             // Load evidences
             const thatEl2 = $("#" + observationId + " #observed-evidences-grid");
