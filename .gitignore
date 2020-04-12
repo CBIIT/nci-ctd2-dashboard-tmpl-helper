@@ -14,15 +14,4 @@ application.log
 .vscode
 
 ctd2_dashboard_tmpl_helper.sql
-.build.sh
-.deploy.sh
-.deploy_index.sh
-.deploy_js.sh
-.deploy_css.sh
-build.bat
-build_for_docker.bat
-deploy.bat
-deploy_index.bat
-deploy_js.bat
-deploy_css.bat
-start-tomcat.bat
+dev/*
