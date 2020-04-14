@@ -735,7 +735,7 @@
                     </tr>
                 </table>
                 <h4>Experiment Annotation</h4>
-                <p><a href='http://www.evidenceontology.org/' target='_blank'>Please select one or more Evidence & Conclusion Ontology (ECO)</a> terms from the list below to describe the experimental or computational method used to generate the observations in this submission.</p>
+                <p>Please select one or more <a href='http://www.evidenceontology.org/' target='_blank'>Evidence & Conclusion Ontology (ECO)</a> terms from the list below to describe the experimental or computational method used to generate the observations in this submission.</p>
                 <div id=common-ecoterms-container>
                 <table id="common-ecoterms" class=table>
                 </table>
