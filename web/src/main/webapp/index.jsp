@@ -756,7 +756,7 @@
                         <td><button id="continue-from-summary">Save and Continue</button></td>
                         <td>
                             <form action="template/download" method="POST" id="download-form" style="display:inline">
-                                <button id="download-template">Download template</button>
+                                <button id="download-template">Download template</button> Please save any changes first.
                                 <input type="hidden" name="template-id" id="template-id">
                                 <input type="hidden" name="filename" id="filename-input">
                             </form>
