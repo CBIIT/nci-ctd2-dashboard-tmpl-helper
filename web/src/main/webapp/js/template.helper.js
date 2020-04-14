@@ -298,10 +298,15 @@ const __TemplateHelperView = (function ($) {
             $('#definition-box').hide();
             const table = $("#common-ecoterms").DataTable({
                 data: common_ecoterms,
-                columns: [
-                    { title: "Select", },
-                    { title: "Evidence Ontology code and name", },
-                    { title: "Details", },
+                columns: [{
+                        title: "Select",
+                    },
+                    {
+                        title: "Evidence Ontology code and name",
+                    },
+                    {
+                        title: "Details",
+                    },
                 ],
                 "scrollY": "200px",
                 "scrollCollapse": true,
@@ -415,14 +420,19 @@ const __TemplateHelperView = (function ($) {
                 const ecodata = [];
                 ecos.forEach(function (ecocode) {
                     if (ecocode == '') return;
-                    const econame = function(code) {
-                        for (let i = 0; i < ecoterms.length; i++) {
-                            const e = ecoterms[i];
-                            if(code==e[0]) return e[1];
-                        }
-                        return "(<i>name not available</i>)";
-                    };
-                    ecodata.push(['<a>' + ecocode + '</a>', econame(ecocode)]);
+                    $.ajax({
+                        async: false,
+                        url: "/dashboard/api/eco/name/" + ecocode,
+                        type: "GET",
+                        success: function (response) {
+                            ecodata.push(['<a>' + ecocode + '</a>', response.name]);
+                        },
+                        error: function (response, status) {
+                            $('#validation-progress').modal('hide');
+                            console.log(response);
+                            console.log(status);
+                        },
+                    });
                 });
 
                 ecoTable.DataTable({
@@ -1283,7 +1293,9 @@ const __TemplateHelperView = (function ($) {
             saveSuccess = false;
             return;
         }
-        const ecos = $("#common-ecoterms").DataTable().rows({ selected: true }).data();
+        const ecos = $("#common-ecoterms").DataTable().rows({
+            selected: true
+        }).data();
         let ecocodes = '';
         for (var i = 0; i < ecos.length; i++) {
             if (i > 0) ecocodes += '|';
@@ -1542,7 +1554,7 @@ const __TemplateHelperView = (function ($) {
                     "Sorry for the inconvenience.");
             }
         });
-        if (async || result)
+        if (async ||result)
             return true;
         else
             return false;
@@ -1724,7 +1736,9 @@ const __TemplateHelperView = (function ($) {
                     common_codes.push(y)
                 }
             }
-            const open_codes = x.filter(function (value) { return !common_codes.includes(value); });
+            const open_codes = x.filter(function (value) {
+                return !common_codes.includes(value);
+            });
             $("#eco-code-open-entries").val(open_codes);
         }
         updatePreview();
