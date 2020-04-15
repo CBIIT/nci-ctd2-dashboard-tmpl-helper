@@ -422,7 +422,7 @@ const __TemplateHelperView = (function ($) {
                     if (ecocode == '') return;
                     $.ajax({
                         async: false,
-                        url: "/dashboard/api/eco/name/" + ecocode,
+                        url: "/dashboard/api/eco/" + ecocode,
                         type: "GET",
                         success: function (response) {
                             ecodata.push(['<a>' + ecocode + '</a>', response.name]);
