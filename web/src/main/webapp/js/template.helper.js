@@ -413,7 +413,7 @@ const __TemplateHelperView = (function ($) {
 
             const ecoTable = $("#eco-grid");
             const ecocodes = thisModel.submission.observationTemplate.ECOCode;
-            if (ecocodes.length == 0) {
+            if (ecocodes == null || ecocodes.length == 0) {
                 ecoTable.hide();
             } else {
                 const ecos = ecocodes.split('|');
