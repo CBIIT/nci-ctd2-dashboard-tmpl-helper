@@ -1,19 +1,19 @@
 package gov.nih.nci.ctd2.dashboard.controller;
 
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletContext;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,8 +66,8 @@ public class UploadController implements ServletContextAware {
         String directory = uploadLocation + centerId + File.separator + "unzipped" + File.separator + filename
                 + File.separator;
         Path outDir = Paths.get(directory);
-        byte[] bytes = DatatypeConverter
-                .parseBase64Binary(filecontent.substring(filecontent.indexOf("base64,") + "base64,".length()));
+        byte[] bytes = Base64.getDecoder()
+                .decode(filecontent.substring(filecontent.indexOf("base64,") + "base64,".length()));
         ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(bytes));
         ZipEntry entry;
 

@@ -8,6 +8,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -295,7 +295,7 @@ public class TemplateController implements ServletContextAware {
                     }
                     String filename = fileLocation + obv.substring(0, obv.indexOf(":"));
                     try (FileOutputStream stream = new FileOutputStream(filename)) {
-                        stream.write(DatatypeConverter.parseBase64Binary(obv.substring(base64Mark + 7)));
+                        stream.write(Base64.getDecoder().decode(obv.substring(base64Mark + 7)));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -326,7 +326,7 @@ public class TemplateController implements ServletContextAware {
     @Transactional
     @RequestMapping(value = "update-summary", method = { RequestMethod.POST }, headers = "Accept=application/text")
     public ResponseEntity<String> updateObservationSummary(@RequestParam("id") Integer templateId,
-            @RequestParam("summary") String summary, 
+            @RequestParam("summary") String summary,
             @RequestParam(value = "ecocodes", required = false, defaultValue = "") String ecocodes,
             HttpServletRequest request) {
         log.info("update request from " + request.getRemoteAddr());
