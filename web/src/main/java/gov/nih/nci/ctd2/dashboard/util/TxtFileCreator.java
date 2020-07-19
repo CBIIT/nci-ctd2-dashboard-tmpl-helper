@@ -67,12 +67,12 @@ public class TxtFileCreator {
     }
 
     final static String metasheetName = "dashboard-CV-per-template";
-    final static String[] headers = { "observation_tier", "template_name", "observation_summary", "story_title",
-            "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
-            "submission_center", "principal_investigator" };
 
     private SubmissionTemplate readTemplateFromXsl(final Path xlsFilePath, final DashboardDao dashboardDao)
             throws IOException, ValidationException {
+        final String[] headers = { "observation_tier", "template_name", "observation_summary", "story_title",
+                "submission_name", "submission_description", "project", "submission_story", "submission_story_rank",
+                "submission_center", "principal_investigator", "eco_codes" };
         FileInputStream excelFile = new FileInputStream(xlsFilePath.toFile());
         Workbook workbook = new HSSFWorkbook(excelFile);
         Sheet metadataSheet = workbook.getSheetAt(0);
