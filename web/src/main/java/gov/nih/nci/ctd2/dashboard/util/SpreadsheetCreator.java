@@ -87,9 +87,10 @@ public class SpreadsheetCreator {
         HSSFCellStyle infoStyle = workbook.createCellStyle();
         infoStyle.setFont(infoFont);
 
-        String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(), "",
-                submissionName, template.getDescription(), template.getProject(), template.getIsStory().toString(), "0",
-                template.getSubmissionCenter().getDisplayName(), template.getPiName(), template.getEcoCodes() };
+        String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(),
+                template.getStoryTitle(), submissionName, template.getDescription(), template.getProject(),
+                template.getIsStory().toString(), "0", template.getSubmissionCenter().getDisplayName(),
+                template.getPiName(), template.getEcoCodes() };
         HSSFRow row0 = sheet.createRow((short) 1);
         for (int i = 0; i < templateInfo.length; i++) {
             Cell c = row0.createCell(i);
@@ -104,21 +105,19 @@ public class SpreadsheetCreator {
 
     private void createDataSheet(HSSFWorkbook workbook) {
         HSSFPalette palette = workbook.getCustomPalette();
-        palette.setColorAtIndex(HSSFColor.LIGHT_GREEN.index, (byte) 204,
-            (byte) 255, (byte) 153);
-        palette.setColorAtIndex(HSSFColor.LIGHT_TURQUOISE.index, (byte) 204,
-            (byte) 236, (byte) 255);
+        palette.setColorAtIndex(HSSFColor.LIGHT_GREEN.index, (byte) 204, (byte) 255, (byte) 153);
+        palette.setColorAtIndex(HSSFColor.LIGHT_TURQUOISE.index, (byte) 204, (byte) 236, (byte) 255);
 
         String templateName = template.getDisplayName();
         HSSFSheet sheet = workbook.createSheet(templateName);
 
         HSSFFont calibri = (HSSFFont) workbook.createFont();
         calibri.setFontName("Calibri");
-        calibri.setFontHeightInPoints((short)11);
+        calibri.setFontHeightInPoints((short) 11);
         HSSFFont calibriBold = (HSSFFont) workbook.createFont();
         calibriBold.setFontName("Calibri");
         calibriBold.setBold(true);
-        calibriBold.setFontHeightInPoints((short)11);
+        calibriBold.setFontHeightInPoints((short) 11);
 
         CellStyle header = workbook.createCellStyle();
         header.setBorderBottom(BorderStyle.THIN);
@@ -249,7 +248,10 @@ public class SpreadsheetCreator {
         if (observations == null) { // this should never happen for correct data
             log.error("observtions field is null for template ID " + template.getId());
             return;
-            /* At this point, the spreadsheet is not completely populated or formatted, still available nonetheless.*/
+            /*
+             * At this point, the spreadsheet is not completely populated or formatted,
+             * still available nonetheless.
+             */
         }
         Integer observationNumber = template.getObservationNumber();
         if (observationNumber == null)
@@ -276,7 +278,7 @@ public class SpreadsheetCreator {
             for (int j = 0; j < evd.length; j++) {
                 cell = row.createCell(subjects.length + j + 4);
                 String observationData = observations[index];
-                if (valueType[j].equalsIgnoreCase("file") && observationData.trim().length()>0) {
+                if (valueType[j].equalsIgnoreCase("file") && observationData.trim().length() > 0) {
                     int mimeMark = observationData.indexOf("::data:");
                     String filename = observationData;
                     if (mimeMark > 0) {
@@ -284,21 +286,25 @@ public class SpreadsheetCreator {
                         mimeTypeRowCell.setCellStyle(yellow);
                         mimeTypeRowCell.setCellValue(observationData.substring(mimeMark + 7));
 
-                        filename = observationData.substring(0, mimeMark); // the new code only stores the filname without directories
+                        filename = observationData.substring(0, mimeMark); // the new code only stores the filname
+                                                                           // without directories
                     }
 
                     // ignore possible subdirectory names
                     int sep = filename.lastIndexOf('/');
-                    if(sep>=0) filename = filename.substring(sep+1);
+                    if (sep >= 0)
+                        filename = filename.substring(sep + 1);
                     sep = filename.lastIndexOf('\\');
-                    if(sep>=0) filename = filename.substring(sep+1);
+                    if (sep >= 0)
+                        filename = filename.substring(sep + 1);
 
                     Path savedPath = Paths.get(fileLocation + filename);
-                    if(!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen, but be cautious anyway
-                        log.error("ERROR: uploaded file "+savedPath.toFile()+" not found");
+                    if (!savedPath.toFile().exists() || savedPath.toFile().isDirectory()) { // this should not happen,
+                                                                                            // but be cautious anyway
+                        log.error("ERROR: uploaded file " + savedPath.toFile() + " not found");
                         observationData = "";
                     } else {
-                        log.debug("actual path where the fila is stored: "+savedPath);
+                        log.debug("actual path where the fila is stored: " + savedPath);
                         String zippedPath = getZippedPath(filename);
                         files.put(zippedPath, savedPath);
                         observationData = "./" + zippedPath;
