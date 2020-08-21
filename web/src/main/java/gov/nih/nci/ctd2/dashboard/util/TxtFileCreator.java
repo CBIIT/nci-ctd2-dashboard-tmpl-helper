@@ -104,13 +104,6 @@ public class TxtFileCreator {
 
         log.debug("row1:");
         Row row1 = metadataSheet.getRow(1);
-        short first1 = row1.getFirstCellNum();
-        short last1 = row1.getLastCellNum();
-        for (index = first1; index < last1; index++) {
-            Cell cell = row1.getCell(index);
-            String v = cell.getStringCellValue();
-            log.debug(index + " " + v);
-        }
 
         String templateName = row1.getCell(1).getStringCellValue();
         if (!templateName.startsWith(sheetName)) {
@@ -146,6 +139,7 @@ public class TxtFileCreator {
             e.printStackTrace();
         }
         boolean isStory = Boolean.parseBoolean(row1.getCell(7).getStringCellValue());
+        int storyRank = Integer.valueOf(row1.getCell(8).getStringCellValue());
 
         SubmissionTemplate template = new SubmissionTemplateImpl();
         template.setDisplayName(templateName);
@@ -154,6 +148,7 @@ public class TxtFileCreator {
         template.setSubmissionCenter(submissionCenter);
         template.setTier(tier);
         template.setIsStory(isStory);
+        template.setStoryRank(storyRank);
 
         parseDataSheet(dataSheet, template);
 
@@ -563,7 +558,7 @@ public class TxtFileCreator {
         String submissionDescription = template.getStoryTitle(); // Totally confusing name!
         String project = template.getProject();
         Boolean story = template.getIsStory();
-        Integer rank = 0; // TODO story rank, not implemented in the spreadsheet
+        Integer rank = template.getStoryRank();
         String center = template.getSubmissionCenter().getDisplayName();
         String pi = pis.get(center);
 

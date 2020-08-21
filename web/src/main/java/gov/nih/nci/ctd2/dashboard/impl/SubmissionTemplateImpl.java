@@ -47,6 +47,7 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     private String storyTitle;
     private String piName;
     private String ecocodes;
+    private Integer storyRank;
 
     private static final int DESCRIPTION_LENGTH = 1024;
     private static final int PROJECT_LENGTH = 1024;
@@ -321,5 +322,15 @@ public class SubmissionTemplateImpl extends DashboardEntityImpl implements Submi
     @Override
     public void setEcoCodes(String ecocodes) {
         this.ecocodes = ecocodes;
+    }
+
+    @Override
+    public Integer getStoryRank() {
+        return storyRank;
+    }
+
+    @Override
+    public void setStoryRank(Integer storyRank) {
+        this.storyRank = storyRank;
     }
 }
