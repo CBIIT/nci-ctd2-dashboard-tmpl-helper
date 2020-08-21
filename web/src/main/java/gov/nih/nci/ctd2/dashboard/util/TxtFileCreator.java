@@ -233,6 +233,9 @@ public class TxtFileCreator {
         for (int i = 0; i < evidenceCount; i++) {
             int col = lastSubjectColumn + i;
             evidenceTypes[i] = evidenceRow.getCell(col).getStringCellValue();
+            if(roleRow.getCell(col)==null) {
+                throw new ValidationException("role is empty for " + row0.getCell(col).getStringCellValue());
+            }
             evidenceRoles[i] = roleRow.getCell(col).getStringCellValue();
             evidenceDescription[i] = displayTextRow.getCell(col).getStringCellValue();
             String mimeType = "";
