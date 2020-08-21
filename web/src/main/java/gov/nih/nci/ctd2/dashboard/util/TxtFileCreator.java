@@ -106,9 +106,15 @@ public class TxtFileCreator {
         Row row1 = metadataSheet.getRow(1);
 
         String templateName = row1.getCell(1).getStringCellValue();
-        if (!templateName.startsWith(sheetName)) {
+        if (templateName.length() > 31) {
             workbook.close();
-            throw new ValidationException("incorrect template_name " + row1.getCell(1).getStringCellValue());
+            throw new ValidationException("template_name '" + row1.getCell(1).getStringCellValue() + "' has "
+                    + templateName.length() + " characters. The maximum number allowed is 31.");
+        }
+        if (!templateName.equals(sheetName)) {
+            workbook.close();
+            throw new ValidationException(
+                    "template_name '" + row1.getCell(1).getStringCellValue() + "' does not match the sheet name");
         }
 
         String submissionName = row1.getCell(4).getStringCellValue();
@@ -233,7 +239,7 @@ public class TxtFileCreator {
         for (int i = 0; i < evidenceCount; i++) {
             int col = lastSubjectColumn + i;
             evidenceTypes[i] = evidenceRow.getCell(col).getStringCellValue();
-            if(roleRow.getCell(col)==null) {
+            if (roleRow.getCell(col) == null) {
                 throw new ValidationException("role is empty for " + row0.getCell(col).getStringCellValue());
             }
             evidenceRoles[i] = roleRow.getCell(col).getStringCellValue();
@@ -265,10 +271,10 @@ public class TxtFileCreator {
 
             String submissionName = row.getCell(1).getStringCellValue();
             String submissionDate = row.getCell(2).getStringCellValue();
-            if(submissionName.trim().length()==0) {
+            if (submissionName.trim().length() == 0) {
                 throw new ValidationException("submission_name is empty");
             }
-            if(submissionDate.trim().length()==0) {
+            if (submissionDate.trim().length() == 0) {
                 throw new ValidationException("submission_date is empty");
             }
             String templateName_x = row.getCell(3).getStringCellValue();
