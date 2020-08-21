@@ -267,6 +267,12 @@ public class TxtFileCreator {
 
             String submissionName = row.getCell(1).getStringCellValue();
             String submissionDate = row.getCell(2).getStringCellValue();
+            if(submissionName.trim().length()==0) {
+                throw new ValidationException("submission_name is empty");
+            }
+            if(submissionDate.trim().length()==0) {
+                throw new ValidationException("submission_date is empty");
+            }
             String templateName_x = row.getCell(3).getStringCellValue();
             if (!templateName.equals(templateName_x)) {
                 throw new ValidationException("incorrect template_name " + templateName_x);
