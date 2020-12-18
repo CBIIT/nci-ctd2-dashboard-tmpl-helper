@@ -1,13 +1,11 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%
     WebApplicationContext context = WebApplicationContextUtils
             .getWebApplicationContext(application);
     String submissionBuilderVersion = (String) context.getBean("submissionBuilderVersion");
-%><!DOCTYPE html>
+%>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
     <!-- X-UA-Compatible meta tag to disable IE compatibility view must always be first -->
@@ -22,15 +20,7 @@
     <link rel="stylesheet" href="css/datatables.min.css" type="text/css" />
     <link rel="stylesheet" href="css/select.dataTables.min.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.fancybox.min.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/ctd2.css?ts=2019" type="text/css" />
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="img/favicon.png" />
+    <link rel="stylesheet" href="css/ctd2.css?ts=2020" type="text/css" />
   </head>
 
   <body>
@@ -38,74 +28,94 @@
     ================================================== -->
     <script src="js/jquery-3.3.1.min.js"></script>
     <div class="navbar-wrapper">
-      <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
-      <div class="container">
-
-        <div class="navbar">
-          <div class="navbar-inner">
-            <div class="nav-collapse collapse show">
-              <ul id="nav" class="nav">
-                <li><a id="navlink-dashboard" class="navlink" href="/dashboard/#">CTD<sup>2</sup> Dashboard</a></li>
-                <li><a id="navlink-centers" class="navlink" href="/dashboard/#centers">Centers</a></li>
-                <li class="dropdown">
-                      <a class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Resources <b class="caret"></b></a>
-                      <ul class="dropdown-menu">
-                          <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2">CTD<sup>2</sup> Home Page</a></li>
-                          <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/publications">Publications</a></li>
-                          <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/data-portal">Data Portal - Downloads</a></li>
-                          <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/analytical-tools">Analytical Tools</a></li>
-                          <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/supported-reagents">Supported Reagents</a></li>
-                          <li class="dropdown-submenu"><a tabindex="-1" href="/dashboard/#">Outside Resources</a>
+        <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
+        <div class="container">
+            <a href="https://ocg.cancer.gov/" target="_blank"><img src="img/logos/ocg.png"></a>
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="nav-collapse collapse show">
+                        <ul id="nav" class="nav">
+                            <li><a id="navlink-dashboard" class="navlink" href="/dashboard/#">CTD<sup>2</sup> Dashboard</a></li>
+                            <li><a id="navlink-centers" class="navlink" href="/dashboard/#centers">Centers</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Resources <b
+                                        class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a target="_blank" href="http://www.lincsproject.org/">LINCS</a></li>
+                                    <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2">OCG/CTD² Home Page</a></li>
+                                    <li><a href="#cite">How to Cite</a></li>
+                                    <li><a target="_blank"
+                                            href="https://ocg.cancer.gov/programs/ctd2/publications">Publications</a>
+                                    </li>
+                                    <li><a href="" class="help-navigate">Glossary</a></li>
+                                    <li><a target="_blank" href="https://ocg.cancer.gov/programs/ctd2/data-portal">Data
+                                            Portal - Downloads</a></li>
+                                    <li><a target="_blank"
+                                            href="https://ocg.cancer.gov/programs/ctd2/analytical-tools">Analytical
+                                            Tools</a></li>
+                                    <li><a target="_blank"
+                                            href="https://ocg.cancer.gov/programs/ctd2/supported-reagents">Supported
+                                            Reagents</a></li>
+                                    <li class="dropdown-submenu"><a tabindex="-1" href="/dashboard/#">Outside Resources</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a target="_blank" href="http://www.lincsproject.org/">LINCS</a></li>
+                                        </ul>
+                                    </li>
                                 </ul>
-                           </li>
-                      </ul>
-                  </li>
-                  <li class="dropdown">
-                      <a id="navlink-browse" class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Browse <b class="caret"></b></a>
-                      <ul id="dropdown-menu-browse" class="dropdown-menu">
-                          <li><a href="/dashboard/#stories">Stories</a></li>
-                          <li><a href="/dashboard/#explore/target/Biomarker,Target">Genes (Biomarkers, Targets, etc.)</a></li>
-                          <li><a href="/dashboard/#explore/compound/Perturbagen,Candidate Drug">Compounds and Perturbagens</a></li>
-                          <li><a href="/dashboard/#explore/context/Disease">Disease Contexts</a></li>
-                      </ul>
-                  </li>
-                  <li class="dropdown">
-                      <a id="navlink-genecart" class="dropdown-toggle navlink" href="/dashboard/#" data-toggle="dropdown">Gene Cart <b class="caret"></b></a>
-                      <ul id="dropdown-menu-genecart" class="dropdown-menu">
-                          <li><a href="/dashboard/#genes">Go To Cart</a></li>
-                          <li><a href="/dashboard/#gene-cart-help">Help</a></li>
-                      </ul>
-                  </li>
-              </ul>
-              <ul class="nav pull-right">
-                  <form class="form-search" id="omnisearch">
-                      <div class="input-append">
-                          <input type="text" id="omni-input" class="search-query" title="Search" placeholder="e.g. CTNNB1 or dasatinib" aria-label="search">
-                          <button type="submit" class="btn search-button">Search</button>
-                          <span class="d-none" id="search-help-content">
-                              <p>Please enter the keyword you would like to search on the website.</p>
-                              <strong>Examples:</strong>
-                              <ul>
-                                <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a></li>
-                                <li><em>Gene: </em> <a href="/dashboard/#search/YAP*">YAP*</a></li>
-                                <li><em>Compound: </em> <a href="/dashboard/#search/dasatinib">dasatinib</a></li>
-                                <li><em>Cell Sample: </em> <a href="/dashboard/#search/OVCAR8">OVCAR8</a></li>
-                                <li><em>Multiple: </em> <a href="/dashboard/#search/dexamethasone AKT1">dexamethasone AKT1</a></li>
-                              </ul>
-                              <br>
-                          </span>
-                      </div>
-                  </form>
-              </ul>
-            </div><!--/.nav-collapse -->
-          </div><!-- /.navbar-inner -->
-        </div><!-- /.navbar -->
+                            </li>
+                            <li class="dropdown">
+                                <a id="navlink-browse" class="dropdown-toggle navlink" href="/dashboard/#"
+                                    data-toggle="dropdown">Browse <b class="caret"></b></a>
+                                <ul id="dropdown-menu-browse" class="dropdown-menu">
+                                    <li><a href="/dashboard/#stories">Stories</a></li>
+                                    <li><a href="/dashboard/#explore/target/Biomarker,Target">Genes (Biomarkers, Targets, etc.)</a>
+                                    </li>
+                                    <li><a href="/dashboard/#explore/compound/Perturbagen,Candidate Drug">Compounds and
+                                            Perturbagens</a></li>
+                                    <li><a href="/dashboard/#explore/context/Disease">Disease Context</a></li>
+                                    <li><a href="/dashboard/#explore/cellline/Cell Line">Cell Lines</a></li>
+                                    <li><a href="/dashboard/#eco_browse">Experimental Evidence</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a id="navlink-genecart" class="dropdown-toggle navlink" href="/dashboard/#"
+                                    data-toggle="dropdown">Gene Cart <b class="caret"></b></a>
+                                <ul id="dropdown-menu-genecart" class="dropdown-menu">
+                                    <li><a href="/dashboard/#genes">Go To Cart</a></li>
+                                    <li><a href="/dashboard/#gene-cart-help">Help</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav pull-right">
+                            <form class="form-search" id="omnisearch">
+                                <div class="input-append">
+                                    <input type="text" id="omni-input" class="search-query"
+                                        placeholder="e.g. CTNNB1 or dasatinib" aria-label="search">
+                                    <button type="submit" class="btn search-button">Search</button>
+                                    <span class="d-none" id="search-help-content">
+                                        <p>Please enter the keyword(s) you would like to search on the website. You may
+                                            enter multiple search terms, but do not use "AND" or "OR".</p>
+                                        <strong>Examples:</strong>
+                                        <ul>
+                                            <li><em>Gene: </em> <a href="/dashboard/#search/CTNNB1">CTNNB1</a></li>
+                                            <li><em>Gene: </em> <a href="/dashboard/#search/YAP*">YAP*</a></li>
+                                            <li><em>Compound: </em> <a href="/dashboard/#search/dasatinib">dasatinib</a></li>
+                                            <li><em>Cell Sample: </em> <a href="/dashboard/#search/OVCAR8">OVCAR8</a></li>
+                                            <li><em>Multiple: </em> <a href="/dashboard/#search/dexamethasone AKT1">dexamethasone
+                                                    AKT1</a></li>
+                                            <li><em>Expt. Evidence Code: </em> <a
+                                                    href="/dashboard/#search/ECO_0006053">ECO_0006053</a></li>
+                                            <li><em>Expt. Evidence term: </em> <a href="/dashboard/#search/PCR">PCR</a></li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </form>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div><!-- /.navbar-inner -->
+            </div><!-- /.navbar -->
 
-      </div> <!-- /.container -->
+        </div> <!-- /.container -->
     </div><!-- /.navbar-wrapper -->
-
 
     <!-- all the backbone magic will happen here, right in this div -->
     <div id="main-container"></div>
