@@ -128,29 +128,28 @@
                 <a href="#attribution" data-toggle="collapse">attributions</a>
             </div>
             <div id="attribution" class="collapse">
-            <div style="font-size:14px; margin-bottom:10px;">
-               Data users must acknowledge and cite the manuscript 
-               <a href= "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5569694/" target="_blank"> Aksoy, Dančík, Smith et al.,</a> Database 2017;1-10
-               and provide the URL 
-               <a href= "https://ctd2-dashboard.nci.nih.gov/dashboard/"> "https://ctd2-dashboard.nci.nih.gov/dashboard/"</a>.
+                <div style="font-size:14px; margin-bottom:10px;">
+                    Data users must acknowledge and cite the manuscript <a
+                        href="https://www.ncbi.nlm.nih.gov/pubmed/29220450" target="_blank">Aksoy, Dančík, Smith et
+                        al.</a>, Database 2017;1-10 and provide the URL <a
+                        href="https://ctd2-dashboard.nci.nih.gov/dashboard/">https://ctd2-dashboard.nci.nih.gov/dashboard/</a>.
+                </div>
+                <div style="font-size:14px; margin-bottom:10px;">
+                    As the CTD<sup>2</sup> Network continues to refine the Dashboard, input from the research community
+                    is highly valued to help improve usability.
+                    Please send your feedback and comments to <a
+                        href="mailto:ocg@mail.nih.gov?subject=CTD2 Dashboard Feedback">ocg@mail.nih.gov</a>.
+                </div>
+                <div style="font-size:14px; margin-bottom:10px;">
+                    <a href='' class="help-navigate">Glossary</a> &middot;
+                    <a href="http://www.cancer.gov/global/web/policies" target="_blank">Policies</a> &middot;
+                    <a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank">Accessibility</a>
+                    &middot;
+                    <a href="http://www.cancer.gov/global/web/policies/foia" target="_blank">FOIA</a>
+                </div>
             </div>
-
-                  
             <div style="font-size:14px; margin-bottom:10px;">
-                As the CTD<sup>2</sup> Network continues to refine the Dashboard, input from the research community is highly valued to help improve usability.
-                Please send your feedback and comments to 
-                <a href="mailto:ocg@mail.nih.gov?subject=CTD2 Dashboard Feedback">ocg@mail.nih.gov</a>.
-            </div>
-
-            <div style="font-size:14px; margin-bottom:10px;">
-                <a href="http://cancer.gov"><img src="img/logos/footer_logo_nci.jpg" alt="NCI logo" title="NCI logo"></a><a href="http://www.dhhs.gov/"><img src="img/logos/footer_logo_hhs.jpg" title="HHS logo" alt="HHS logo"></a><a href="http://www.nih.gov/"><img src="img/logos/footer_logo_nih.jpg" title="NIH logo" alt="NIH logo"></a><a href="http://www.firstgov.gov/"><img src="img/logos/footer_logo_firstgov.jpg" title="First Gov logo" alt="First Gov logo"></a>
-            </div>
-            <div style="font-size:14px; margin-bottom:10px;">
-                <a class="help-navigate" href="#help-navigate">Glossary</a> &middot;
-                <a href="http://www.cancer.gov/global/web/policies" target="_blank">Policies</a> &middot;
-                <a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank">Accessibility</a> &middot;
-                <a href="http://www.cancer.gov/global/web/policies/foia" target="_blank">FOIA</a>
-            </div>
+                <a href="http://www.hhs.gov/" target="_blank">U.S. Department of Health and Human Services</a> / <a href="http://www.nih.gov" target="_blank">National Institutes of Health</a> / <a href="http://www.cancer.gov/" target="_blank">National Cancer Institute</a> / <a href="http://usa.gov" target="_blank">USA.gov</a>
             </div>
         </footer>
     </div>
