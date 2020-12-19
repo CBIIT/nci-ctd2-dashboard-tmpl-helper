@@ -460,8 +460,9 @@ const __TemplateHelperView = (function ($) {
             });
             $("#" + observationId + " #observation-summary").html(summary);
 
-            $('.desc-tooltip').tooltip({
-                placement: "left"
+            $('.desc-tooltip').popover({
+                placement: "left",
+                trigger: "hover",
             });
 
             $(".numeric-value").each(function () {
@@ -566,8 +567,9 @@ const __TemplateHelperView = (function ($) {
                 });
             }
 
-            $(".img-rounded").tooltip({
-                placement: "left"
+            $(".img-rounded").popover({
+                placement: "left",
+                trigger: "hover",
             });
             return this;
         }
