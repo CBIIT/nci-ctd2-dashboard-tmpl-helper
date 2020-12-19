@@ -358,6 +358,11 @@ const __TemplateHelperView = (function ($) {
                 validate_interal_template(currentModel.id);
             });
 
+            $('.desc-tooltip').popover({
+                placement: "bottom",
+                trigger: "hover",
+            });
+
             return this;
         } // end render function
     }); // end of TemplateHelperView

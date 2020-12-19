@@ -584,10 +584,10 @@
             <h2>CTD<sup>2</sup> Dashboard Submission Builder</h2>
 
             <div class="pull-right">
-                <a href="https://ocg.cancer.gov/sites/default/files/CTD2-DB-Submission-Builder-Tutorial.pdf" target="_blank" class="btn btn-info" title="Submission Builder Manual">Manual</a>
-                <a href="https://ocg.cancer.gov/ctd2-dashboard-stories-template" target="_blank" class="btn btn-info" title="Preparing a story submission">Stories</a>
-                <a href="https://www.ncbi.nlm.nih.gov/pubmed/29220450" target="_blank" class="btn btn-info" title="CTD² Dashboard publication">Manuscript</a>
-                <a href="https://ocg.cancer.gov/sites/default/files/Glossary-CTD2-Dashboard.pdf" target="_blank" class="btn btn-info" title="CTD² Dashboard term definitions">Glossary</a>
+                <a href="https://ocg.cancer.gov/sites/default/files/CTD2-DB-Submission-Builder-Tutorial.pdf" target="_blank" class="btn btn-info desc-tooltip" data-content="Submission Builder Manual">Manual</a>
+                <a href="https://ocg.cancer.gov/ctd2-dashboard-stories-template" target="_blank" class="btn btn-info desc-tooltip" data-content="Preparing a story submission">Stories</a>
+                <a href="https://www.ncbi.nlm.nih.gov/pubmed/29220450" target="_blank" class="btn btn-info desc-tooltip" data-content="CTD² Dashboard publication">Manuscript</a>
+                <a href="https://ocg.cancer.gov/sites/default/files/Glossary-CTD2-Dashboard.pdf" target="_blank" class="btn btn-info desc-tooltip" data-content="CTD² Dashboard term definitions">Glossary</a>
             </div>
 
             <div class="btn-group" role="group" aria-label="...">
