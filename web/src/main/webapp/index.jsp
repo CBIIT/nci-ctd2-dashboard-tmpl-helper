@@ -415,37 +415,37 @@
 
     <script type="text/template" id="search-results-gene-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/gene.png" class="img-polaroid search-info" title="Gene" alt="Gene" height="50" width="50">
+            <img src="img/gene.png" class="img-polaroid search-info" data-content="Gene" alt="Gene" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-shrna-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/shrna.png" class="img-polaroid search-info" title="shRNA" alt="shRNA" height="50" width="50">
+            <img src="img/shrna.png" class="img-polaroid search-info" data-content="shRNA" alt="shRNA" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-animalmodel-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/animalmodel.png" title="Animal model" alt="Animal model" class="img-polaroid search-info" height="50" width="50">
+            <img src="img/animalmodel.png" data-content="Animal model" alt="Animal model" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-cellsample-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/cellsample.png" title="Cell sample" alt="Cell sample" class="img-polaroid search-info" height="50" width="50">
+            <img src="img/cellsample.png" data-content="Cell sample" alt="Cell sample" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-tissuesample-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/tissuesample.png" title="Tissue sample" alt="Tissue sample" class="img-polaroid search-info" height="50" width="50">
+            <img src="img/tissuesample.png" data-content="Tissue sample" alt="Tissue sample" class="img-polaroid search-info" height="50" width="50">
         </a>
     </script>
 
     <script type="text/template" id="search-results-unknown-image-tmpl">
         <a href="#subject/{{id}}" class=no-preview>
-            <img src="img/unknown.png" title="{{type}}" class="img-polaroid search-info" alt="{{type}}" height="50" width="50">
+            <img src="img/unknown.png" data-content="{{type}}" class="img-polaroid search-info" alt="{{type}}" height="50" width="50">
         </a>
     </script>
 

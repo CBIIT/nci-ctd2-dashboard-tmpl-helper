@@ -401,6 +401,10 @@ const __TemplateHelperView = (function ($) {
                 }
                 /* in the dashboard app, for Compound, this would be set asynchronously and use compound instead of subject */
                 thatEl2.append(_.template(imgTemplate.html())(subject));
+                $('.img-polaroid').popover({
+                    placement: "left",
+                    trigger: "hover",
+                });
 
                 if (observedSubject.observedSubjectRole == null || observedSubject.subject == null)
                     return;
