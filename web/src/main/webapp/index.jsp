@@ -405,7 +405,7 @@
                 <a href="#/subject/{{subject.id}}" class=no-preview>
                     {{subject.displayName}}
                 </a>  &nbsp;
-                <a href="#" class="addGene-{{subject.displayName}} greenColor" title="Add gene to cart" >+</a>			  				 
+                <a class="addGene-{{subject.displayName}} desc-tooltip" style="color: green" data-content="Add gene to cart">+</a>
             </td>
             <td>{{subject.type}}</td>
             <td>{{observedSubjectRole.subjectRole.displayName}}</td>
