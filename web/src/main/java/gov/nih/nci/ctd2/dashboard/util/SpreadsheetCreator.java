@@ -8,20 +8,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
 
 import gov.nih.nci.ctd2.dashboard.model.SubmissionTemplate;
 
@@ -106,10 +105,6 @@ public class SpreadsheetCreator {
     }
 
     private void createDataSheet(HSSFWorkbook workbook) {
-        HSSFPalette palette = workbook.getCustomPalette();
-        palette.setColorAtIndex(HSSFColor.LIGHT_GREEN.index, (byte) 204, (byte) 255, (byte) 153);
-        palette.setColorAtIndex(HSSFColor.LIGHT_TURQUOISE.index, (byte) 204, (byte) 236, (byte) 255);
-
         String templateName = template.getDisplayName();
         HSSFSheet sheet = workbook.createSheet(templateName);
 
@@ -126,19 +121,19 @@ public class SpreadsheetCreator {
         header.setFont(calibri);
 
         CellStyle blue = workbook.createCellStyle();
-        blue.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);
+        blue.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE.index);
         blue.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         blue.setBorderBottom(BorderStyle.HAIR);
         blue.setFont(calibriBold);
 
         CellStyle green = workbook.createCellStyle();
-        green.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+        green.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
         green.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         green.setBorderBottom(BorderStyle.HAIR);
         green.setFont(calibriBold);
 
         CellStyle yellow = workbook.createCellStyle();
-        yellow.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
+        yellow.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.index);
         yellow.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         yellow.setBorderBottom(BorderStyle.HAIR);
         yellow.setFont(calibriBold);
