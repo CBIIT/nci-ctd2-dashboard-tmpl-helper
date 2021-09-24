@@ -568,6 +568,12 @@ public class TxtFileCreator {
         String project = template.getProject();
         Boolean story = template.getIsStory();
         Integer rank = template.getStoryRank();
+        if (rank == null) {
+            if (story)
+                rank = 1;
+            else
+                rank = 0;
+        }
         String center = template.getSubmissionCenter().getDisplayName();
         String pi = pis.get(center);
 

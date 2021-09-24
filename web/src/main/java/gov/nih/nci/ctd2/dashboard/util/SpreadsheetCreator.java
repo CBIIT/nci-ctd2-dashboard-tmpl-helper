@@ -87,9 +87,11 @@ public class SpreadsheetCreator {
         HSSFCellStyle infoStyle = workbook.createCellStyle();
         infoStyle.setFont(infoFont);
 
+        String storyRank = "0";
+        if(template.getIsStory()) storyRank = "1";
         String[] templateInfo = { template.getTier().toString(), template.getDisplayName(), template.getSummary(),
                 template.getStoryTitle(), submissionName, template.getDescription(), template.getProject(),
-                template.getIsStory().toString(), "0", template.getSubmissionCenter().getDisplayName(),
+                template.getIsStory().toString(), storyRank, template.getSubmissionCenter().getDisplayName(),
                 template.getPiName(), template.getEcoCodes() };
         HSSFRow row0 = sheet.createRow((short) 1);
         for (int i = 0; i < templateInfo.length; i++) {
