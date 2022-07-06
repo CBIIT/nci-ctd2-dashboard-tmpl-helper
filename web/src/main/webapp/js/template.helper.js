@@ -744,11 +744,11 @@ const __TemplateHelperView = (function ($) {
 
             const resetRoleDropdown = function (sc, sr) {
                 const subject2role = {
-                    'gene': ['target', 'biomarker', 'oncogene', 'perturbagen', 'master regulator', 'candidate master regulator', 'interactor', 'background'],
+                    'gene': ['target', 'biomarker', 'oncogene', 'perturbagen', 'regulator', 'interactor', 'context'],
                     'shrna': ['perturbagen'],
                     'tissue_sample': ['metastasis', 'disease', 'tissue'],
                     'cell_sample': ['cell line'],
-                    'compound': ['candidate drug', 'perturbagen', 'metabolite', 'control compound'],
+                    'compound': ['drug', 'perturbagen', 'metabolite', 'control', 'probe'],
                     'animal_model': ['strain'],
                 };
 
